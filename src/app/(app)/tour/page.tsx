@@ -9,6 +9,7 @@ import { groupByStatus, listShows } from "@/lib/data/shows";
 import type { ShowStatus } from "@/lib/supabase/types";
 import { ShowFilters } from "./_components/show-filters";
 import { ShowTable } from "./_components/show-table";
+import { ViewToggle } from "./_components/view-toggle";
 
 export const metadata = { title: "Tour. DVBBS HQ" };
 
@@ -58,13 +59,16 @@ export default async function TourPage({
         title="Pipeline"
         description="Source of truth for every show, lead through settlement."
         actions={
-          <Link
-            href="/tour/new"
-            className={buttonClasses({ variant: "primary", size: "sm" })}
-          >
-            <Plus className="size-4" aria-hidden />
-            New show
-          </Link>
+          <div className="flex items-center gap-2">
+            <ViewToggle />
+            <Link
+              href="/tour/new"
+              className={buttonClasses({ variant: "primary", size: "sm" })}
+            >
+              <Plus className="size-4" aria-hidden />
+              New show
+            </Link>
+          </div>
         }
       />
 
