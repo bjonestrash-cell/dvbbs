@@ -4,10 +4,21 @@ import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { buttonClasses } from "@/components/ui/button";
 import { getShow } from "@/lib/data/shows";
+import {
+  listTravel,
+  listLodging,
+  listCrew,
+  listSetlist,
+} from "@/lib/data/show-relations";
+import { listContacts } from "@/lib/data/contacts";
 import { formatDateLong, daysFromNow } from "@/lib/format";
 import { AtAGlance } from "./_components/at-a-glance";
 import { StatusControl } from "./_components/status-control";
 import { ActivityFeed } from "./_components/activity-feed";
+import { Travel } from "./_components/travel";
+import { Lodging } from "./_components/lodging";
+import { Crew } from "./_components/crew";
+import { Setlist } from "./_components/setlist";
 
 export async function generateMetadata({
   params,
@@ -30,6 +41,14 @@ export default async function ShowPage({
   const { showId } = await params;
   const show = await getShow(showId);
   if (!show) notFound();
+
+  const [travel, lodging, crew, setlist, crewContacts] = await Promise.all([
+    listTravel(show.id),
+    listLodging(show.id),
+    listCrew(show.id),
+    listSetlist(show.id),
+    listContacts("crew"),
+  ]);
 
   const days = daysFromNow(show.show_date);
   const isUpcoming = days !== null && days >= 0;
@@ -68,23 +87,44 @@ export default async function ShowPage({
 
         <AtAGlance show={show} />
 
-        <PlaceholderSection eyebrow="travel" title="Flights, trains, ground" />
-        <PlaceholderSection eyebrow="lodging" title="Hotel and address" />
-        <PlaceholderSection eyebrow="crew" title="Who is going" />
-        <PlaceholderSection
-          eyebrow="tech"
-          title="Rider, stage plot, notes"
-          body={show.notes ?? "."}
-        />
-        <PlaceholderSection eyebrow="setlist" title="Track IDs played" />
-        <PlaceholderSection
-          eyebrow="settlement"
-          title={
-            show.status === "completed"
-              ? "Reconcile this show"
-              : "Available after the show"
-          }
-        />
+        <Travel showId={show.id} travel={travel} />
+        <Lodging showId={show.id} lodging={lodging} />
+        <Crew showId={show.id} crew={crew} crewContacts={crewContacts} />
+
+        <section className="rounded-md border border-line bg-bg-surface p-4 md:p-5">
+          <header className="mb-2">
+            <div className="marker">tech</div>
+            <div className="text-sm text-fg">Rider, stage plot, notes</div>
+          </header>
+          <p className="text-sm text-fg-muted whitespace-pre-line">
+            {show.notes ?? "."}
+          </p>
+        </section>
+
+        <Setlist showId={show.id} setlist={setlist} />
+
+        <section className="rounded-md border border-line bg-bg-surface p-4 md:p-5">
+          <header className="mb-2">
+            <div className="marker">settlement</div>
+            <div className="text-sm text-fg">
+              {show.status === "completed"
+                ? "Reconcile this show"
+                : "Available after the show"}
+            </div>
+          </header>
+          {show.status === "completed" ? (
+            <Link
+              href={`/tour/${show.id}/settlement`}
+              className={buttonClasses({ variant: "secondary", size: "sm" })}
+            >
+              Open settlement
+            </Link>
+          ) : (
+            <p className="text-xs text-fg-dim">
+              Mark this show completed to start reconciliation.
+            </p>
+          )}
+        </section>
 
         <section className="rounded-md border border-line bg-bg-surface p-4 md:p-5">
           <header className="mb-3">
@@ -95,29 +135,5 @@ export default async function ShowPage({
         </section>
       </div>
     </>
-  );
-}
-
-function PlaceholderSection({
-  eyebrow,
-  title,
-  body,
-}: {
-  eyebrow: string;
-  title: string;
-  body?: string;
-}) {
-  return (
-    <section className="rounded-md border border-line bg-bg-surface p-4 md:p-5">
-      <header className="mb-2">
-        <div className="marker">{eyebrow}</div>
-        <div className="text-sm text-fg">{title}</div>
-      </header>
-      {body ? (
-        <p className="text-sm text-fg-muted whitespace-pre-line">{body}</p>
-      ) : (
-        <p className="text-xs text-fg-dim">CRUD lands in the next iteration.</p>
-      )}
-    </section>
   );
 }
