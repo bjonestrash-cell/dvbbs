@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/shell/sidebar";
 import { SidebarProvider } from "@/components/shell/sidebar-state";
 import { Header } from "@/components/shell/header";
 import { CommandPalette } from "@/components/shell/command-palette";
+import { CatalogFooter } from "@/components/shell/catalog-footer";
 
 export default async function AppLayout({
   children,
@@ -22,6 +23,7 @@ export default async function AppLayout({
         <div className="flex min-w-0 flex-1 flex-col">
           <Header />
           <main className="flex-1">{children}</main>
+          <CatalogFooter commitSha={commitSha} />
         </div>
         <CommandPalette />
       </div>

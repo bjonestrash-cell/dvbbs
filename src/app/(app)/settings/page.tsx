@@ -12,63 +12,100 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="settings" title="Profile and integrations" />
-      <div className="px-4 md:px-6 py-6 grid gap-4 max-w-2xl">
-        <section className="rounded-md border border-line bg-bg-surface p-4">
-          <div className="marker">you</div>
+      <PageHeader
+        eyebrow="Config"
+        title="Settings"
+        description="Profile, identity, third-party integrations."
+      />
+      <div className="px-6 md:px-10 py-10 grid gap-8 max-w-2xl">
+        <Section title="You">
           {me ? (
-            <dl className="mt-3 grid grid-cols-[120px_1fr] gap-x-4 gap-y-2 text-sm">
-              <dt className="text-fg-muted">Email</dt>
-              <dd>{me.email}</dd>
-              <dt className="text-fg-muted">Display name</dt>
-              <dd>{me.display_name ?? "."}</dd>
-              <dt className="text-fg-muted">Role</dt>
-              <dd className="marker">{me.role}</dd>
+            <dl>
+              <Row label="Email" value={me.email} />
+              <Row label="Display name" value={me.display_name ?? "—"} />
+              <Row label="Role" value={me.role} mono />
             </dl>
           ) : (
-            <p className="mt-2 text-xs text-fg-muted">
+            <p className="font-sans text-[13px] text-fg-faint">
               Public demo. No signed-in user.
             </p>
           )}
-        </section>
+        </Section>
 
-        <section className="rounded-md border border-line bg-bg-surface p-4">
-          <div className="marker">integrations</div>
-          <h2 className="mt-1 text-sm font-medium">Bandsintown sync</h2>
+        <Section title="Bandsintown sync">
           {hasBandsintown ? (
             <>
-              <p className="mt-1 text-xs text-fg-muted">
-                Daily Netlify function imports new Bandsintown events as leads.
-                Run a one-off sync below.
+              <p className="font-sans text-[13px] text-fg-dim max-w-prose">
+                A daily Netlify function imports new Bandsintown events as
+                leads. Run a one-off sync below.
               </p>
               {me?.role === "principal" ? (
-                <div className="mt-3">
+                <div className="mt-4">
                   <BandsintownSync />
                 </div>
               ) : (
-                <p className="mt-2 text-xs text-fg-dim">
+                <p className="mt-2 font-sans text-[12px] text-fg-faint">
                   Manual sync is principal-only.
                 </p>
               )}
             </>
           ) : (
-            <p className="mt-1 text-xs text-fg-muted">
+            <p className="font-sans text-[13px] text-fg-dim max-w-prose">
               Set BANDSINTOWN_API_KEY in env to enable. Daily sync runs once
               configured.
             </p>
           )}
-        </section>
+        </Section>
 
-        <section className="rounded-md border border-line bg-bg-surface p-4">
-          <div className="marker">integrations</div>
-          <h2 className="mt-1 text-sm font-medium">Mapbox</h2>
-          <p className="mt-1 text-xs text-fg-muted">
+        <Section title="Mapbox">
+          <p className="font-sans text-[13px] text-fg-dim max-w-prose">
             {hasMapbox
               ? "Configured. World map renders pins on /tour/map."
               : "Set NEXT_PUBLIC_MAPBOX_TOKEN to enable the world map."}
           </p>
-        </section>
+        </Section>
       </div>
     </>
+  );
+}
+
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <header className="mb-4">
+        <h2 className="font-display text-[20px] text-fg">{title}</h2>
+      </header>
+      <div className="border-y border-line py-6">{children}</div>
+    </section>
+  );
+}
+
+function Row({
+  label,
+  value,
+  mono,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-[140px_1fr] gap-4 py-2">
+      <dt className="label pt-1">{label}</dt>
+      <dd
+        className={
+          (mono ? "font-mono text-[12px] uppercase tracking-[0.06em] " : "font-sans text-[14px] ") +
+          "text-fg break-words"
+        }
+      >
+        {value}
+      </dd>
+    </div>
   );
 }

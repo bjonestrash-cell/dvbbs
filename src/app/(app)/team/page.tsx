@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { AUTH_DISABLED } from "@/lib/auth/mode";
 import { getCurrentMember } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateCompact } from "@/lib/format";
 
 export const metadata = { title: "Team. DVBBS HQ" };
 
@@ -12,16 +13,16 @@ export default async function TeamPage() {
     return (
       <>
         <PageHeader
-          eyebrow="team"
-          title="Members and roles"
-          description="Hidden in public demo. Sign in to manage."
+          eyebrow="Crew"
+          title="Team"
+          description="Hidden in public demo. Sign in to manage members."
         />
-        <div className="px-4 md:px-6 py-6">
-          <div className="rounded-md border border-line bg-bg-surface p-6">
-            <div className="marker">demo</div>
-            <p className="mt-2 text-sm text-fg-muted max-w-prose">
-              Team members and emails are private even when the rest of the app
-              is public. Re-enable auth to see this surface.
+        <div className="px-6 md:px-10 py-10">
+          <div className="border border-line bg-surface px-6 py-10">
+            <div className="marker mb-3">Demo</div>
+            <p className="font-sans text-[14px] text-fg-dim max-w-prose">
+              Team members and emails are kept private even when the rest of the
+              app is public. Re-enable auth to see this surface.
             </p>
           </div>
         </div>
@@ -38,51 +39,50 @@ export default async function TeamPage() {
   return (
     <>
       <PageHeader
-        eyebrow="team"
-        title="Members and roles"
+        eyebrow="Crew"
+        title="Team"
         description={
           me?.role === "principal"
             ? "Add or remove team members. Principal-only."
             : "View team. Adding members is principal-only."
         }
       />
-      <div className="px-4 md:px-6 py-6">
-        <div className="overflow-hidden rounded-md border border-line bg-bg-surface">
-          <table className="w-full text-sm">
-            <thead className="bg-bg-elev text-fg-muted">
-              <tr>
-                <th className="px-3 py-2 text-left font-medium">Name</th>
-                <th className="px-3 py-2 text-left font-medium">Email</th>
-                <th className="px-3 py-2 text-left font-medium">Role</th>
-                <th className="px-3 py-2 text-left font-medium tabular">Added</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(members ?? []).map((m) => (
-                <tr key={m.id} className="border-t border-line">
-                  <td className="px-3 py-2">{m.display_name ?? "."}</td>
-                  <td className="px-3 py-2 text-fg-muted">{m.email}</td>
-                  <td className="px-3 py-2">
-                    <span className="marker">{m.role}</span>
-                  </td>
-                  <td className="px-3 py-2 num text-fg-muted text-xs">
-                    {new Date(m.created_at).toISOString().slice(0, 10)}
-                  </td>
-                </tr>
-              ))}
-              {(!members || members.length === 0) ? (
-                <tr>
-                  <td colSpan={4} className="px-3 py-6 text-center text-fg-muted">
-                    No members yet.
-                  </td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
+      <div className="px-6 md:px-10 py-10">
+        <div className="border-y border-line">
+          <div className="grid grid-cols-[1fr_1.5fr_120px_120px] items-center gap-4 px-4 py-3 border-b border-line">
+            <span className="label">Name</span>
+            <span className="label">Email</span>
+            <span className="label">Role</span>
+            <span className="label">Added</span>
+          </div>
+          {(members ?? []).map((m) => (
+            <div
+              key={m.id}
+              className="grid grid-cols-[1fr_1.5fr_120px_120px] items-center gap-4 px-4 py-4 border-b border-line"
+            >
+              <span className="font-sans text-[14px] text-fg">
+                {m.display_name ?? "—"}
+              </span>
+              <span className="font-sans text-[13px] text-fg-dim truncate">
+                {m.email}
+              </span>
+              <span className="font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim">
+                {m.role}
+              </span>
+              <span className="num font-mono text-[11px] text-fg-faint">
+                {formatDateCompact(m.created_at)}
+              </span>
+            </div>
+          ))}
+          {(!members || members.length === 0) ? (
+            <p className="px-4 py-6 text-center font-sans text-[13px] text-fg-faint">
+              No members yet.
+            </p>
+          ) : null}
         </div>
         {me?.role === "principal" ? (
-          <p className="mt-3 text-xs text-fg-dim">
-            Add member UI lands in Phase 1.5. For now, add emails to ALLOWED_AUTH_EMAILS env var and have them sign in.
+          <p className="mt-4 font-sans text-[12px] text-fg-faint">
+            Add member UI lands later. For now, add emails to ALLOWED_AUTH_EMAILS env var and have them sign in.
           </p>
         ) : null}
       </div>

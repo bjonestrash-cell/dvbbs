@@ -1,4 +1,5 @@
 import { PageHeader } from "./page-header";
+import { ChevronGlyph } from "@/components/brand/logo";
 
 export function ComingSoon({
   eyebrow,
@@ -14,14 +15,18 @@ export function ComingSoon({
   return (
     <>
       <PageHeader eyebrow={eyebrow} title={title} description={description} />
-      <div className="px-4 md:px-6 py-8 md:py-12">
-        <div className="rounded-md border border-line bg-bg-surface p-6">
-          <div className="marker">phase {phase}</div>
-          <h2 className="mt-1 text-lg font-medium">Not yet built.</h2>
-          <p className="mt-2 max-w-prose text-sm text-fg-muted">
-            This surface ships after Tour Command Center stabilizes. Phase 1 first, then this.
-          </p>
+      <div className="px-6 md:px-10 py-16 flex flex-col items-center text-center gap-4">
+        <ChevronGlyph size={20} className="text-fg-faint" opacity={0.6} />
+        <div
+          className="display-title text-fg"
+          style={{ fontSize: "clamp(20px, 3vw, 24px)", fontWeight: 300 }}
+        >
+          Phase {phase} surface, not built yet.
         </div>
+        <p className="font-sans text-[13px] text-fg-dim max-w-prose">
+          This part of the app ships after the wedge stabilizes. Tour and
+          Releases come first.
+        </p>
       </div>
     </>
   );
