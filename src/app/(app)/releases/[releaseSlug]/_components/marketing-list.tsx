@@ -41,65 +41,71 @@ export function MarketingList({
     filter === "all" ? tasks : tasks.filter((t) => t.channel === filter);
 
   return (
-    <div className="border border-line bg-surface">
-      <header className="px-4 md:px-5 py-3 border-b border-line">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-1 flex-wrap overflow-x-auto -mx-1 px-1">
-            <FilterBracket
-              active={filter === "all"}
-              count={tasks.length}
-              onClick={() => setFilter("all")}
-            >
-              ALL
-            </FilterBracket>
-            {CHANNEL_ORDER.map((c) => {
-              const count = tasks.filter((t) => t.channel === c).length;
-              if (count === 0) return null;
-              return (
-                <FilterBracket
-                  key={c}
-                  active={filter === c}
-                  count={count}
-                  onClick={() => setFilter(c)}
-                >
-                  {CHANNEL_LABEL[c].toUpperCase()}
-                </FilterBracket>
-              );
-            })}
-          </div>
-          <button
-            type="button"
-            onClick={() => setAdding((v) => !v)}
-            className="bracket-text font-mono h-7 inline-flex items-center px-2 border border-line text-fg hover:border-line-strong hover:bg-surface-2 [transition-duration:80ms]"
+    <div className="px-6 md:px-10 py-8">
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-wrap overflow-x-auto -mx-2 px-2">
+          <FilterBracket
+            active={filter === "all"}
+            count={tasks.length}
+            onClick={() => setFilter("all")}
           >
-            <span className="opacity-60">[ </span>
-            {adding ? "CLOSE" : "+ ADD TASK"}
-            <span className="opacity-60"> ]</span>
-          </button>
+            All
+          </FilterBracket>
+          {CHANNEL_ORDER.map((c) => {
+            const count = tasks.filter((t) => t.channel === c).length;
+            if (count === 0) return null;
+            return (
+              <FilterBracket
+                key={c}
+                active={filter === c}
+                count={count}
+                onClick={() => setFilter(c)}
+              >
+                {CHANNEL_LABEL[c]}
+              </FilterBracket>
+            );
+          })}
         </div>
+        <button
+          type="button"
+          onClick={() => setAdding((v) => !v)}
+          className="inline-flex items-center gap-1.5 font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim hover:text-fg [transition-duration:80ms]"
+        >
+          {adding ? (
+            <>
+              <X className="size-3" strokeWidth={1.5} aria-hidden />
+              <span>Close</span>
+            </>
+          ) : (
+            <>
+              <Plus className="size-3" strokeWidth={1.5} aria-hidden />
+              <span>Add task</span>
+            </>
+          )}
+        </button>
       </header>
 
       {filtered.length === 0 && !adding ? (
-        <p className="px-4 py-6 marker text-center">
+        <p className="py-12 text-center font-sans text-[13px] text-fg-faint">
           {filter === "all"
-            ? "NO MARKETING TASKS YET. CLICK ADD TASK."
-            : "NO TASKS IN THIS CHANNEL."}
+            ? "No marketing tasks yet."
+            : "No tasks in this channel."}
         </p>
       ) : null}
 
-      <ul className="divide-y divide-line">
+      <ul className="border-t border-line">
         {filtered.map((t) => (
           <li
             key={t.id}
-            className="grid grid-cols-[80px_1fr_auto_auto_auto] items-center gap-3 px-4 md:px-5 py-3 hover:bg-page/40 [transition-duration:80ms]"
+            className="grid grid-cols-[100px_1fr_auto_auto_auto_auto] items-center gap-4 py-4 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
           >
-            <span className="font-mono uppercase tracking-[0.08em] text-[10px] text-fg-dim">
-              {CHANNEL_LABEL[t.channel].toUpperCase()}
+            <span className="font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+              {CHANNEL_LABEL[t.channel]}
             </span>
-            <span className="min-w-0 truncate font-mono text-[12px] text-fg uppercase tracking-[0.04em]">
+            <span className="min-w-0 truncate font-sans text-[14px] text-fg">
               {t.task}
             </span>
-            <span className="num font-mono text-[10px] text-fg-faint hidden sm:inline">
+            <span className="num font-mono text-[11px] text-fg-faint hidden sm:inline">
               {t.scheduled_for ? formatDateCompact(t.scheduled_for) : ""}
             </span>
             <MarketingStatusControl
@@ -120,9 +126,9 @@ export function MarketingList({
       {adding ? (
         <form
           action={formAction}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 md:p-5 border-t border-line bg-page/40"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 p-6 bg-surface border border-line"
         >
-          <Field label="CHANNEL">
+          <Field label="Channel">
             <select
               name="channel"
               defaultValue="instagram"
@@ -130,19 +136,19 @@ export function MarketingList({
             >
               {CHANNEL_ORDER.map((c) => (
                 <option key={c} value={c}>
-                  {CHANNEL_LABEL[c].toUpperCase()}
+                  {CHANNEL_LABEL[c]}
                 </option>
               ))}
             </select>
           </Field>
-          <Field label="STATUS">
+          <Field label="Status">
             <select name="status" defaultValue="todo" className={fieldClass}>
-              <option value="todo">TO DO</option>
-              <option value="in_progress">IN PROGRESS</option>
-              <option value="done">DONE</option>
+              <option value="todo">To do</option>
+              <option value="in_progress">In progress</option>
+              <option value="done">Done</option>
             </select>
           </Field>
-          <Field label="TASK" full>
+          <Field label="Task" full>
             <input
               name="task"
               required
@@ -150,18 +156,18 @@ export function MarketingList({
               className={fieldClass}
             />
           </Field>
-          <Field label="SCHEDULED FOR">
+          <Field label="Scheduled for">
             <input
               name="scheduled_for"
               type="date"
               className={fieldClass + " num"}
             />
           </Field>
-          <Field label="NOTES" full>
+          <Field label="Notes" full>
             <textarea name="notes" rows={2} className={textareaClass} />
           </Field>
           {state.status === "error" ? (
-            <p className="col-span-full marker text-cancelled">
+            <p className="col-span-full font-sans text-[12px] text-cancelled">
               {state.message}
             </p>
           ) : null}
@@ -169,18 +175,18 @@ export function MarketingList({
             <button
               type="submit"
               disabled={pending}
-              className="bracket-text font-mono h-9 inline-flex items-center gap-1.5 px-3 border border-line bg-fg text-page hover:bg-accent hover:text-fg disabled:opacity-60 [transition-duration:80ms]"
+              className="font-mono uppercase tracking-[0.06em] text-[11px] inline-flex items-center gap-1.5 h-9 px-4 bg-inverted text-fg-inverted hover:bg-fg disabled:opacity-60 [transition-duration:80ms]"
             >
-              {pending ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" />}
-              <span>ADD TASK</span>
+              {pending ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" strokeWidth={1.5} />}
+              <span>Add task</span>
             </button>
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="bracket-text font-mono h-9 inline-flex items-center gap-1.5 px-3 text-fg-dim hover:text-fg hover:bg-surface-2 [transition-duration:80ms]"
+              className="font-mono uppercase tracking-[0.06em] text-[11px] inline-flex items-center gap-1.5 h-9 px-3 text-fg-dim hover:text-fg hover:bg-surface-2 [transition-duration:80ms]"
             >
-              <X className="size-3" />
-              CANCEL
+              <X className="size-3" strokeWidth={1.5} />
+              Cancel
             </button>
           </div>
         </form>
@@ -192,7 +198,7 @@ export function MarketingList({
 function Monogram({ value }: { value: string | null }) {
   if (!value) {
     return (
-      <span className="size-6 grid place-items-center border border-line text-fg-faint font-mono text-[9px]">
+      <span className="size-6 grid place-items-center rounded-full bg-surface-2 text-fg-faint font-mono text-[10px]">
         —
       </span>
     );
@@ -204,17 +210,17 @@ function Monogram({ value }: { value: string | null }) {
     .map((s) => s[0]?.toUpperCase())
     .join("");
   return (
-    <span className="size-6 grid place-items-center border border-line text-fg font-mono text-[10px] uppercase tracking-[0.04em]">
+    <span className="size-6 grid place-items-center rounded-full bg-surface-2 text-fg font-mono text-[10px] tracking-[0.04em]">
       {initials}
     </span>
   );
 }
 
 const fieldClass =
-  "h-9 w-full border border-line bg-page px-2.5 font-mono text-[12px] uppercase text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
+  "h-9 w-full border border-line bg-surface px-3 font-sans text-[13px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
 
 const textareaClass =
-  "w-full border border-line bg-page px-2.5 py-1.5 font-mono text-[12px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong resize-y";
+  "w-full border border-line bg-surface px-3 py-2 font-sans text-[13px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong resize-y";
 
 function Field({
   label,
@@ -226,7 +232,7 @@ function Field({
   full?: boolean;
 }) {
   return (
-    <label className={"flex flex-col gap-1" + (full ? " sm:col-span-2" : "")}>
+    <label className={"flex flex-col gap-1.5" + (full ? " sm:col-span-2" : "")}>
       <span className="label">{label}</span>
       {children}
     </label>

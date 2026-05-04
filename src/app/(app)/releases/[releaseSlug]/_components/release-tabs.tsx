@@ -7,13 +7,13 @@ import { cn } from "@/lib/utils/cn";
 export function ReleaseTabs({ slug }: { slug: string }) {
   const pathname = usePathname();
   const tabs = [
-    { href: `/releases/${slug}`, label: "OVERVIEW" },
-    { href: `/releases/${slug}/assets`, label: "ASSETS" },
-    { href: `/releases/${slug}/marketing`, label: "MARKETING" },
+    { href: `/releases/${slug}`, label: "Overview" },
+    { href: `/releases/${slug}/assets`, label: "Assets" },
+    { href: `/releases/${slug}/marketing`, label: "Marketing" },
   ];
   return (
-    <nav className="border-b border-line bg-page px-4 md:px-6 py-3">
-      <ul className="flex flex-wrap items-center gap-1">
+    <nav className="border-b border-line bg-page px-6 md:px-10">
+      <ul className="flex flex-wrap items-center gap-8">
         {tabs.map((t) => {
           const active = pathname === t.href;
           return (
@@ -22,15 +22,13 @@ export function ReleaseTabs({ slug }: { slug: string }) {
                 href={t.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "bracket-text font-mono h-7 inline-flex items-center px-2 border [transition-duration:80ms]",
+                  "inline-flex items-center h-10 font-mono uppercase tracking-[0.14em] text-[11px] [transition-duration:80ms] border-b",
                   active
-                    ? "bg-fg text-page border-fg"
-                    : "border-line text-fg hover:border-line-strong hover:bg-surface-2",
+                    ? "text-fg border-fg"
+                    : "text-fg-dim border-transparent hover:text-fg",
                 )}
               >
-                <span className="opacity-60">[ </span>
                 {t.label}
-                <span className="opacity-60"> ]</span>
               </Link>
             </li>
           );

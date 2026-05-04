@@ -23,29 +23,29 @@ export default async function ReleaseOverviewPage({
   if (!release) notFound();
 
   const fields: { label: string; value: React.ReactNode }[] = [
-    { label: "TITLE", value: release.title },
-    { label: "TYPE", value: release.type },
-    { label: "LABEL", value: release.label ?? "." },
+    { label: "Title", value: release.title },
+    { label: "Type", value: release.type },
+    { label: "Label", value: release.label ?? "." },
     { label: "ISRC", value: release.isrc ?? "." },
     { label: "UPC", value: release.upc ?? "." },
     {
-      label: "RELEASE DATE",
+      label: "Release date",
       value: release.release_date
         ? formatDateCompact(release.release_date)
         : ".",
     },
     {
-      label: "COLLABORATORS",
+      label: "Collaborators",
       value: release.collaborators?.length
         ? release.collaborators.join(", ")
         : ".",
     },
     {
-      label: "SPLITS",
+      label: "Splits",
       value: release.splits ? JSON.stringify(release.splits) : ".",
     },
     {
-      label: "SMART LINK",
+      label: "Smart link",
       value: release.smart_link_slug
         ? `/link/${release.smart_link_slug}`
         : ".",
@@ -53,22 +53,22 @@ export default async function ReleaseOverviewPage({
   ];
 
   return (
-    <div className="px-4 md:px-6 py-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <section className="border border-line bg-surface">
-        <div className="px-4 py-3 border-b border-line">
-          <div className="marker">DETAILS</div>
-        </div>
+    <div className="px-6 md:px-10 py-10 grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-16">
+      <section>
+        <header className="mb-6">
+          <div className="marker">Details</div>
+        </header>
         <dl>
           {fields.map((f, i) => (
             <div
               key={f.label}
               className={
-                "grid grid-cols-[140px_1fr] gap-3 px-4 py-2.5 text-[12px] " +
+                "py-3 grid grid-cols-[160px_1fr] gap-4 " +
                 (i < fields.length - 1 ? "border-b border-line" : "")
               }
             >
-              <dt className="label">{f.label}</dt>
-              <dd className="font-mono text-fg uppercase tracking-[0.04em] truncate">
+              <dt className="label pt-1">{f.label}</dt>
+              <dd className="font-sans text-[14px] text-fg break-words">
                 {f.value}
               </dd>
             </div>
@@ -76,19 +76,17 @@ export default async function ReleaseOverviewPage({
         </dl>
       </section>
 
-      <section className="border border-line bg-surface">
-        <div className="px-4 py-3 border-b border-line">
-          <div className="marker">NOTES</div>
-        </div>
-        <div className="px-4 py-4">
-          {release.notes ? (
-            <p className="font-mono text-[12px] text-fg-dim leading-[1.5] whitespace-pre-line">
-              {release.notes}
-            </p>
-          ) : (
-            <p className="marker">NO NOTES YET.</p>
-          )}
-        </div>
+      <section>
+        <header className="mb-6">
+          <div className="marker">Notes</div>
+        </header>
+        {release.notes ? (
+          <p className="font-sans text-[14px] text-fg leading-[1.7] whitespace-pre-line max-w-[480px]">
+            {release.notes}
+          </p>
+        ) : (
+          <p className="font-sans text-[13px] text-fg-faint">No notes yet.</p>
+        )}
       </section>
     </div>
   );

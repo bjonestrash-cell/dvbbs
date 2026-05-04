@@ -11,15 +11,15 @@ const ITEMS: { key: keyof Release; label: string; name: string }[] = [
 
 export function StreamingIcons({ release }: { release: Release }) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       {ITEMS.map((item) => {
         const url = release[item.key] as string | null;
         const active = !!url;
         const cls = cn(
-          "size-7 grid place-items-center border font-mono uppercase text-[10px] tracking-[0.06em] [transition-duration:80ms]",
+          "size-8 grid place-items-center rounded-full border font-mono text-[10px] tracking-[0.04em] [transition-duration:80ms]",
           active
-            ? "border-line text-fg hover:border-fg hover:bg-fg hover:text-page"
-            : "border-line text-fg-faint opacity-50",
+            ? "border-line text-fg-dim hover:border-fg hover:bg-inverted hover:text-fg-inverted"
+            : "border-line text-fg-faint opacity-30",
         );
         if (active) {
           return (

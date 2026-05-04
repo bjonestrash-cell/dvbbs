@@ -14,38 +14,38 @@ export default async function ReleasesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="releases"
-        title="Catalog"
-        description="Idea through release. Drag a card later to change status."
+        eyebrow="Catalog"
+        title="Releases"
+        description="Track every record from idea to release. Drag a card later to change status."
         actions={
           <div className="flex items-center gap-2">
             <Link
               href="/releases/links"
               className={buttonClasses({ variant: "bracket", size: "sm" })}
             >
-              <span className="opacity-60">[</span>SMART LINKS<span className="opacity-60">]</span>
+              Smart links
             </Link>
             <Link
               href="/releases/new"
-              className={buttonClasses({ variant: "bracket", size: "sm" })}
+              className={buttonClasses({ variant: "primary", size: "sm" })}
             >
-              <span className="opacity-60">[</span>+ NEW RELEASE<span className="opacity-60">]</span>
+              + New release
             </Link>
           </div>
         }
       />
 
       {releases.length === 0 ? (
-        <div className="px-4 md:px-6 py-6">
+        <div className="px-6 md:px-10 py-10">
           <EmptyState
-            title="CATALOG IS QUIET. SHIP A TRACK."
-            hint="ADD THE FIRST IDEA TO START THE ROADMAP."
+            title="The catalog is quiet."
+            hint="Schedule a release to start the roadmap."
             action={
               <Link
                 href="/releases/new"
-                className={buttonClasses({ variant: "bracket", size: "sm" })}
+                className={buttonClasses({ variant: "primary", size: "sm" })}
               >
-                <span className="opacity-60">[</span>+ NEW RELEASE<span className="opacity-60">]</span>
+                + New release
               </Link>
             }
           />

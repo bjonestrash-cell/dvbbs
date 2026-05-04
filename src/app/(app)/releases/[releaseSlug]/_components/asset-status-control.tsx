@@ -7,11 +7,11 @@ import type { AssetStatus } from "@/lib/supabase/types";
 import { StatusBracket, STATUS_TONE } from "@/components/ui/status-bracket";
 
 const OPTIONS: { value: AssetStatus; label: string }[] = [
-  { value: "not_started", label: "NOT STARTED" },
-  { value: "in_progress", label: "IN PROGRESS" },
-  { value: "review", label: "REVIEW" },
-  { value: "approved", label: "APPROVED" },
-  { value: "final", label: "FINAL" },
+  { value: "not_started", label: "Not started" },
+  { value: "in_progress", label: "In progress" },
+  { value: "review", label: "Review" },
+  { value: "approved", label: "Approved" },
+  { value: "final", label: "Final" },
 ];
 
 export function AssetStatusControl({
@@ -46,22 +46,25 @@ export function AssetStatusControl({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1 border border-line bg-page px-1.5 h-6 hover:border-line-strong [transition-duration:80ms]"
+        className="inline-flex items-center gap-1.5 hover:opacity-75 [transition-duration:80ms]"
       >
         <StatusBracket tone={STATUS_TONE[optimistic] ?? "default"}>
-          {OPTIONS.find((o) => o.value === optimistic)?.label ??
-            optimistic.toUpperCase()}
+          {OPTIONS.find((o) => o.value === optimistic)?.label ?? optimistic}
         </StatusBracket>
         {pending ? (
-          <Loader2 className="size-2.5 animate-spin text-fg-dim" aria-hidden />
+          <Loader2 className="size-3 animate-spin text-fg-faint" aria-hidden />
         ) : (
-          <ChevronDown className="size-2.5 text-fg-dim" aria-hidden />
+          <ChevronDown
+            className="size-3 text-fg-faint"
+            strokeWidth={1.5}
+            aria-hidden
+          />
         )}
       </button>
       {open ? (
         <div
           role="menu"
-          className="absolute z-30 mt-1 w-44 border border-line bg-page shadow-2xl right-0"
+          className="absolute z-30 mt-1 w-44 border border-line bg-surface shadow-[0_4px_12px_rgba(26,22,18,0.06)] right-0"
           onMouseLeave={() => setOpen(false)}
         >
           <ul>
@@ -70,7 +73,7 @@ export function AssetStatusControl({
                 <button
                   type="button"
                   onClick={() => pick(o.value)}
-                  className="flex w-full items-center justify-start px-3 py-1.5 hover:bg-surface-2 [transition-duration:80ms]"
+                  className="flex w-full items-center px-3 py-2 hover:bg-surface-2 [transition-duration:80ms]"
                 >
                   <StatusBracket tone={STATUS_TONE[o.value] ?? "default"}>
                     {o.label}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 export function CopySmartLinkButton({
@@ -16,11 +17,11 @@ export function CopySmartLinkButton({
     return (
       <span
         className={cn(
-          "bracket-text font-mono h-7 inline-flex items-center px-2 border border-line text-fg-faint opacity-60",
+          "inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[11px] text-fg-faint",
           className,
         )}
       >
-        <span className="opacity-60">[</span>NO SMART LINK<span className="opacity-60">]</span>
+        No smart link
       </span>
     );
   }
@@ -44,16 +45,13 @@ export function CopySmartLinkButton({
       type="button"
       onClick={copy}
       className={cn(
-        "bracket-text font-mono h-7 inline-flex items-center px-2 border [transition-duration:80ms]",
-        copied
-          ? "bg-confirmed text-page border-confirmed"
-          : "border-line text-fg hover:border-line-strong hover:bg-surface-2",
+        "inline-flex items-center gap-1.5 font-mono uppercase tracking-[0.06em] text-[11px] [transition-duration:80ms]",
+        copied ? "text-confirmed" : "text-fg-dim hover:text-fg",
         className,
       )}
     >
-      <span className="opacity-60">[ </span>
-      {copied ? "COPIED" : "COPY SMART LINK"}
-      <span className="opacity-60"> ]</span>
+      <span>{copied ? "Copied" : "Copy smart link"}</span>
+      <ArrowRight className="size-3" strokeWidth={1.5} aria-hidden />
     </button>
   );
 }

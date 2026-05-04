@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useActionState } from "react";
-import { Plus, X, Loader2, ExternalLink } from "lucide-react";
+import { Plus, X, Loader2, ArrowRight } from "lucide-react";
 import { addAsset, removeAsset, initialAssetState } from "../_actions/assets";
 import { AssetStatusControl } from "./asset-status-control";
 import { DeleteButton } from "@/app/(app)/tour/[showId]/_components/travel";
@@ -10,7 +10,7 @@ import {
   ASSET_TYPE_LABEL,
   ASSET_TYPES_ORDER,
 } from "@/lib/data/release-shared";
-import { asciiProgress, formatDateCompact } from "@/lib/format";
+import { formatDateCompact, progressRatio } from "@/lib/format";
 
 export function AssetsList({
   releaseId,
@@ -32,57 +32,68 @@ export function AssetsList({
   const done = assets.filter(
     (a) => a.status === "approved" || a.status === "final",
   ).length;
-  const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+  const ratio = progressRatio(done, Math.max(total, 1));
+  const pct = Math.round(ratio * 100);
 
   return (
-    <div className="border border-line bg-surface">
-      <header className="px-4 md:px-5 py-4 border-b border-line">
-        <div className="flex items-baseline justify-between gap-4">
-          <div>
-            <div className="marker">CHECKLIST</div>
-            <div className="num font-mono text-[11px] text-fg-dim mt-0.5 uppercase tracking-[0.06em]">
-              {done.toString().padStart(2, "0")} OF {total.toString().padStart(2, "0")} APPROVED
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setAdding((v) => !v)}
-            className="bracket-text font-mono h-7 inline-flex items-center px-2 border border-line text-fg hover:border-line-strong hover:bg-surface-2 [transition-duration:80ms]"
-          >
-            <span className="opacity-60">[ </span>
-            {adding ? "CLOSE" : "+ ADD ASSET"}
-            <span className="opacity-60"> ]</span>
-          </button>
+    <div className="px-6 md:px-10 py-8">
+      <header className="mb-6">
+        <div className="font-sans text-[14px] text-fg">
+          {done} of {total} assets approved
         </div>
-        <div className="mt-3 num font-mono text-[12px] text-fg leading-none whitespace-pre tracking-[0.05em]">
-          {asciiProgress(done, Math.max(total, 1))}
+        <div className="mt-3 h-[2px] w-full bg-surface-2 overflow-hidden">
+          <div
+            className="h-full bg-accent [transition-duration:80ms]"
+            style={{ width: `${pct}%` }}
+          />
         </div>
+        <div className="mt-2 num font-mono text-[11px] text-fg-faint">{pct}%</div>
       </header>
 
+      <div className="flex justify-end mb-3">
+        <button
+          type="button"
+          onClick={() => setAdding((v) => !v)}
+          className="inline-flex items-center gap-1.5 font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim hover:text-fg [transition-duration:80ms]"
+        >
+          {adding ? (
+            <>
+              <X className="size-3" strokeWidth={1.5} aria-hidden />
+              <span>Close</span>
+            </>
+          ) : (
+            <>
+              <Plus className="size-3" strokeWidth={1.5} aria-hidden />
+              <span>Add asset</span>
+            </>
+          )}
+        </button>
+      </div>
+
       {assets.length === 0 && !adding ? (
-        <p className="px-4 py-6 marker text-center">
-          NO ASSETS TRACKED YET. CLICK ADD.
+        <p className="py-12 text-center font-sans text-[13px] text-fg-faint">
+          No assets tracked yet.
         </p>
       ) : null}
 
-      <ul className="divide-y divide-line">
+      <ul className="border-t border-line">
         {assets.map((a) => (
           <li
             key={a.id}
-            className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-3 px-4 md:px-5 py-3 hover:bg-page/40 [transition-duration:80ms]"
+            className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 py-4 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
           >
             <div className="min-w-0 flex flex-col gap-0.5">
-              <span className="font-mono uppercase tracking-[0.06em] text-[12px] text-fg truncate">
-                {ASSET_TYPE_LABEL[a.asset_type] ?? a.asset_type.toUpperCase()}
+              <span className="font-sans text-[14px] text-fg truncate">
+                {ASSET_TYPE_LABEL[a.asset_type] ?? a.asset_type}
               </span>
               {a.notes ? (
-                <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-fg-faint truncate">
+                <span className="font-sans text-[12px] text-fg-faint truncate">
                   {a.notes}
                 </span>
               ) : null}
             </div>
-            <span className="num font-mono text-[10px] text-fg-faint hidden sm:inline">
-              {a.due_date ? `DUE ${formatDateCompact(a.due_date)}` : ""}
+            <span className="num font-mono text-[11px] text-fg-faint hidden sm:inline">
+              {a.due_date ? `Due ${formatDateCompact(a.due_date)}` : ""}
             </span>
             <span>
               {a.file_url ? (
@@ -90,16 +101,14 @@ export function AssetsList({
                   href={a.file_url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="bracket-text font-mono inline-flex items-center gap-1 text-fg hover:text-accent [transition-duration:80ms]"
+                  className="inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim hover:text-fg [transition-duration:80ms]"
                 >
-                  <span className="opacity-60">[</span>FILE
-                  <ExternalLink className="size-3" aria-hidden />
-                  <span className="opacity-60">]</span>
+                  <span>View</span>
+                  <ArrowRight className="size-3" strokeWidth={1.5} aria-hidden />
                 </a>
               ) : (
-                <span className="bracket-text font-mono text-fg-faint">
-                  <span className="opacity-60">[</span>NO FILE
-                  <span className="opacity-60">]</span>
+                <span className="font-mono uppercase tracking-[0.06em] text-[11px] text-fg-faint">
+                  No file
                 </span>
               )}
             </span>
@@ -120,9 +129,9 @@ export function AssetsList({
       {adding ? (
         <form
           action={formAction}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 md:p-5 border-t border-line bg-page/40"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 p-6 bg-surface border border-line"
         >
-          <Field label="TYPE">
+          <Field label="Type">
             <select
               name="asset_type"
               defaultValue="master_wav"
@@ -135,19 +144,19 @@ export function AssetsList({
               ))}
             </select>
           </Field>
-          <Field label="STATUS">
+          <Field label="Status">
             <select name="status" defaultValue="not_started" className={fieldClass}>
-              <option value="not_started">NOT STARTED</option>
-              <option value="in_progress">IN PROGRESS</option>
-              <option value="review">REVIEW</option>
-              <option value="approved">APPROVED</option>
-              <option value="final">FINAL</option>
+              <option value="not_started">Not started</option>
+              <option value="in_progress">In progress</option>
+              <option value="review">Review</option>
+              <option value="approved">Approved</option>
+              <option value="final">Final</option>
             </select>
           </Field>
-          <Field label="DUE DATE">
+          <Field label="Due date">
             <input name="due_date" type="date" className={fieldClass + " num"} />
           </Field>
-          <Field label="FILE URL">
+          <Field label="File URL">
             <input
               name="file_url"
               type="url"
@@ -155,11 +164,11 @@ export function AssetsList({
               className={fieldClass}
             />
           </Field>
-          <Field label="NOTES" full>
+          <Field label="Notes" full>
             <textarea name="notes" rows={2} className={textareaClass} />
           </Field>
           {state.status === "error" ? (
-            <p className="col-span-full marker text-cancelled">
+            <p className="col-span-full font-sans text-[12px] text-cancelled">
               {state.message}
             </p>
           ) : null}
@@ -167,18 +176,18 @@ export function AssetsList({
             <button
               type="submit"
               disabled={pending}
-              className="bracket-text font-mono h-9 inline-flex items-center gap-1.5 px-3 border border-line bg-fg text-page hover:bg-accent hover:text-fg disabled:opacity-60 [transition-duration:80ms]"
+              className="font-mono uppercase tracking-[0.06em] text-[11px] inline-flex items-center gap-1.5 h-9 px-4 bg-inverted text-fg-inverted hover:bg-fg disabled:opacity-60 [transition-duration:80ms]"
             >
-              {pending ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" />}
-              <span>ADD ASSET</span>
+              {pending ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" strokeWidth={1.5} />}
+              <span>Add asset</span>
             </button>
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="bracket-text font-mono h-9 inline-flex items-center gap-1.5 px-3 text-fg-dim hover:text-fg hover:bg-surface-2 [transition-duration:80ms]"
+              className="font-mono uppercase tracking-[0.06em] text-[11px] inline-flex items-center gap-1.5 h-9 px-3 text-fg-dim hover:text-fg hover:bg-surface-2 [transition-duration:80ms]"
             >
-              <X className="size-3" />
-              CANCEL
+              <X className="size-3" strokeWidth={1.5} />
+              Cancel
             </button>
           </div>
         </form>
@@ -188,10 +197,10 @@ export function AssetsList({
 }
 
 const fieldClass =
-  "h-9 w-full border border-line bg-page px-2.5 font-mono text-[12px] uppercase text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
+  "h-9 w-full border border-line bg-surface px-3 font-sans text-[13px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
 
 const textareaClass =
-  "w-full border border-line bg-page px-2.5 py-1.5 font-mono text-[12px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong resize-y";
+  "w-full border border-line bg-surface px-3 py-2 font-sans text-[13px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong resize-y";
 
 function Field({
   label,
@@ -203,7 +212,7 @@ function Field({
   full?: boolean;
 }) {
   return (
-    <label className={"flex flex-col gap-1" + (full ? " sm:col-span-2" : "")}>
+    <label className={"flex flex-col gap-1.5" + (full ? " sm:col-span-2" : "")}>
       <span className="label">{label}</span>
       {children}
     </label>
