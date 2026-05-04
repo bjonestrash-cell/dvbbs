@@ -21,6 +21,125 @@ export type ContactType =
 
 export type LegType = "flight" | "train" | "car" | "ferry" | "other";
 
+export type ReleaseType =
+  | "single"
+  | "ep"
+  | "album"
+  | "remix"
+  | "edit"
+  | "bootleg";
+
+export type ReleaseStatus =
+  | "idea"
+  | "in_production"
+  | "mixing"
+  | "mastered"
+  | "delivered"
+  | "scheduled"
+  | "released"
+  | "archived";
+
+export type AssetType =
+  | "master_wav"
+  | "instrumental"
+  | "stems"
+  | "radio_edit"
+  | "clean"
+  | "dirty"
+  | "cover_art"
+  | "press_shot"
+  | "music_video"
+  | "lyric_video"
+  | "press_release"
+  | "one_sheet"
+  | "splits_doc";
+
+export type AssetStatus =
+  | "not_started"
+  | "in_progress"
+  | "review"
+  | "approved"
+  | "final";
+
+export type MarketingChannel =
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "twitter"
+  | "newsletter"
+  | "press"
+  | "radio"
+  | "dsp_pitch"
+  | "ads"
+  | "other";
+
+export type MarketingStatus = "todo" | "in_progress" | "done";
+
+export interface Release {
+  id: string;
+  title: string;
+  slug: string;
+  type: ReleaseType;
+  status: ReleaseStatus;
+  release_date: string | null;
+  label: string | null;
+  isrc: string | null;
+  upc: string | null;
+  cover_art_url: string | null;
+  collaborators: string[] | null;
+  splits: Record<string, unknown> | null;
+  spotify_url: string | null;
+  apple_url: string | null;
+  soundcloud_url: string | null;
+  youtube_url: string | null;
+  beatport_url: string | null;
+  smart_link_slug: string | null;
+  presave_url: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReleaseAsset {
+  id: string;
+  release_id: string;
+  asset_type: AssetType;
+  status: AssetStatus;
+  file_url: string | null;
+  due_date: string | null;
+  notes: string | null;
+}
+
+export interface ReleaseMarketing {
+  id: string;
+  release_id: string;
+  channel: MarketingChannel;
+  task: string;
+  status: MarketingStatus;
+  scheduled_for: string | null;
+  owner_id: string | null;
+  notes: string | null;
+}
+
+export interface SmartLink {
+  id: string;
+  slug: string;
+  release_id: string | null;
+  title: string | null;
+  destinations: Record<string, string>;
+  click_count: number;
+  created_at: string;
+}
+
+export interface SmartLinkClick {
+  id: string;
+  smart_link_id: string;
+  platform: string | null;
+  country: string | null;
+  user_agent: string | null;
+  clicked_at: string;
+}
+
 export interface TeamMember {
   id: string;
   user_id: string | null;
