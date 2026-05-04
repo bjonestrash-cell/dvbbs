@@ -22,7 +22,7 @@ export type NavItem = {
 
 export const NAV: NavItem[] = [
   { href: "/tour", label: "Tour", icon: Calendar, phase: 1, ready: true, desktop: true, mobile: true },
-  { href: "/releases", label: "Releases", icon: Disc3, phase: 2, ready: false, desktop: true, mobile: true },
+  { href: "/releases", label: "Releases", icon: Disc3, phase: 2, ready: true, desktop: true, mobile: true },
   { href: "/merch", label: "Merch", icon: Shirt, phase: 3, ready: false, desktop: true, mobile: true },
   { href: "/contacts", label: "Contacts", icon: Users, phase: 1, ready: true, desktop: true, mobile: false },
   { href: "/inbox", label: "Inbox", icon: Inbox, phase: 4, ready: false, desktop: true, mobile: true },

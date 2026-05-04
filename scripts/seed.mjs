@@ -427,6 +427,39 @@ async function ensureShow(payload) {
         await sb.from("release_marketing").insert({ release_id: releaseId, ...t });
       }
       console.log("seeded marketing tasks for", "roadtrip");
+
+      // Smart link for the scheduled release.
+      const linkSlug = "roadtrip";
+      const existingLink = await sb
+        .from("smart_links")
+        .select("id")
+        .eq("slug", linkSlug)
+        .maybeSingle();
+      if (existingLink.error) {
+        console.warn(
+          "smart link seed skipped, table not found:",
+          existingLink.error.message,
+        );
+      } else if (!existingLink.data) {
+        const { error: linkErr } = await sb.from("smart_links").insert({
+          slug: linkSlug,
+          release_id: releaseId,
+          title: "Roadtrip, with A-Trak",
+          destinations: {
+            spotify: "https://open.spotify.com/artist/3sl1tH2T0Eaom1AHL94VY7",
+            apple: "https://music.apple.com/us/artist/dvbbs/580391984",
+            soundcloud: "https://soundcloud.com/dvbbs",
+            youtube: "https://www.youtube.com/@DVBBS",
+            beatport: "https://www.beatport.com/artist/dvbbs/308432",
+          },
+          click_count: 0,
+        });
+        if (linkErr) {
+          console.warn("smart link seed failed:", linkErr.message);
+        } else {
+          console.log("seeded smart link /link/" + linkSlug);
+        }
+      }
     }
   }
 
