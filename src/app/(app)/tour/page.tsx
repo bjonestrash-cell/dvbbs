@@ -5,10 +5,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { groupByStatus, listShows } from "@/lib/data/shows";
 import { getDashboard } from "@/lib/data/dashboard";
-import {
-  formatCountdownDays,
-  greeting as greetingPhrase,
-} from "@/lib/format";
+import { formatCountdownDays, greeting as greetingPhrase } from "@/lib/format";
 import type { ShowStatus } from "@/lib/supabase/types";
 import { ShowFilters } from "./_components/show-filters";
 import { ShowTable } from "./_components/show-table";
@@ -57,80 +54,95 @@ export default async function TourPage({
   ]);
 
   const groups = groupByStatus(shows);
-  const greetingLine = `${greetingPhrase()} DEMO // ${dashboard.attentionCount.toString().padStart(2, "0")} ITEMS NEED YOUR ATTENTION`;
+
+  const greetingNode = (
+    <div>
+      <div
+        className="display-title text-fg"
+        style={{ fontSize: "clamp(20px, 3vw, 24px)", fontWeight: 300 }}
+      >
+        {greetingPhrase()}, Demo.
+      </div>
+      <div className="mt-1 font-sans text-fg-dim text-[14px]">
+        {dashboard.attentionCount === 0
+          ? "Nothing needs your attention right now."
+          : `${dashboard.attentionCount} ${dashboard.attentionCount === 1 ? "item needs" : "items need"} your attention.`}
+      </div>
+    </div>
+  );
 
   const cards: StatCardItem[] = [
     {
       id: "next",
-      label: "NEXT SHOW",
+      label: "Next show",
       value:
         dashboard.nextShow
           ? formatCountdownDays(dashboard.nextShow.date)
           : "—",
       hint: dashboard.nextShow
-        ? `${dashboard.nextShow.city} / ${dashboard.nextShow.venue}`
-        : "NOTHING SCHEDULED",
+        ? `${toName(dashboard.nextShow.city)} · ${toName(dashboard.nextShow.venue)}`
+        : "Nothing scheduled",
       tone: dashboard.nextShow ? "live" : "default",
     },
     {
       id: "confirmed90",
-      label: "CONFIRMED 90D",
+      label: "Confirmed 90d",
       value: statTotals.confirmed90.toString().padStart(2, "0"),
-      hint: "ON THE BOOKS",
+      hint: "On the books",
     },
     {
       id: "pending",
-      label: "PENDING OFFERS",
+      label: "Pending offers",
       value: statTotals.pending.toString().padStart(2, "0"),
-      hint: "AWAITING DECISION",
+      hint: "Awaiting decision",
     },
     {
       id: "completed",
-      label: "COMPLETED",
+      label: "Completed",
       value: statTotals.completed.toString().padStart(2, "0"),
-      hint: "NEEDS SETTLEMENT REVIEW",
+      hint: "Needs settlement review",
     },
   ];
 
   return (
     <>
       <PageHeader
-        eyebrow="tour"
+        eyebrow="Tour"
         title="Pipeline"
-        description="Source of truth for every show, lead through settlement"
-        greeting={greetingLine}
+        description="Source of truth for every show, lead through settlement."
+        greeting={greetingNode}
         actions={
           <div className="flex items-center gap-2">
             <ViewToggle />
             <Link
               href="/tour/new"
-              className={buttonClasses({ variant: "bracket", size: "sm" })}
+              className={buttonClasses({ variant: "primary", size: "sm" })}
             >
-              <span className="opacity-60">[</span>+ NEW SHOW<span className="opacity-60">]</span>
+              + New show
             </Link>
           </div>
         }
       />
 
-      <div className="pt-4">
+      <div className="pt-8 md:pt-10">
         <StatCardGrid cards={cards} />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-10 md:mt-12">
         <ShowFilters counts={statusCounts} />
         <ShowTable
           groups={groups}
           empty={
-            <div className="px-4 md:px-6 py-6">
+            <div className="px-6 md:px-10 py-10">
               <EmptyState
-                title="NO BOOKINGS. START SOMETHING."
-                hint="ADD THE FIRST SHOW TO KICK OFF THE PIPELINE."
+                title="Nothing scheduled."
+                hint="Add your first show to start the pipeline."
                 action={
                   <Link
                     href="/tour/new"
-                    className={buttonClasses({ variant: "bracket", size: "sm" })}
+                    className={buttonClasses({ variant: "primary", size: "sm" })}
                   >
-                    <span className="opacity-60">[</span>+ NEW SHOW<span className="opacity-60">]</span>
+                    + New show
                   </Link>
                 }
               />
@@ -140,6 +152,13 @@ export default async function TourPage({
       </div>
     </>
   );
+}
+
+function toName(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/(^|\s|\/|,|-)([a-z])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`)
+    .replace(/\bTbd\b/g, "TBD");
 }
 
 async function loadStatTotals() {

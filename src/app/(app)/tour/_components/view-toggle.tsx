@@ -5,27 +5,26 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
 const VIEWS = [
-  { href: "/tour", label: "LIST" },
-  { href: "/tour/calendar", label: "CALENDAR" },
-  { href: "/tour/map", label: "MAP" },
+  { href: "/tour", label: "List" },
+  { href: "/tour/calendar", label: "Calendar" },
+  { href: "/tour/map", label: "Map" },
 ] as const;
 
 export function ViewToggle() {
   const pathname = usePathname();
   return (
-    <div className="inline-flex border border-line">
-      {VIEWS.map((v, i) => {
+    <div className="inline-flex items-center gap-1">
+      {VIEWS.map((v) => {
         const active = pathname === v.href;
         return (
           <Link
             key={v.href}
             href={v.href}
             className={cn(
-              "h-7 inline-flex items-center px-2.5 font-mono uppercase tracking-[0.08em] text-[10px] [transition-duration:80ms]",
-              i > 0 && "border-l border-line",
+              "h-8 inline-flex items-center px-3 rounded-full border font-mono uppercase tracking-[0.06em] text-[11px] [transition-duration:80ms]",
               active
-                ? "bg-fg text-page"
-                : "text-fg-dim hover:bg-surface-2 hover:text-fg",
+                ? "bg-inverted text-fg-inverted border-inverted"
+                : "bg-transparent border-line text-fg-dim hover:border-line-strong hover:text-fg",
             )}
           >
             {v.label}

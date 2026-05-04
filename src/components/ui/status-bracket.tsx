@@ -63,7 +63,7 @@ export function StatusBracket({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 font-mono uppercase tracking-[0.12em] text-[10px] text-fg-dim",
+        "inline-flex items-center gap-1.5 font-mono tracking-[0.06em] text-[11px] text-fg-dim",
         strikethrough && "line-through",
         className,
       )}
@@ -95,9 +95,9 @@ export function FilterBracket({
       type={type}
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border h-8 px-4 font-mono uppercase tracking-[0.06em] text-[11px] [transition-duration:80ms]",
+        "inline-flex items-center gap-1.5 rounded-full border h-8 px-4 font-mono tracking-[0.06em] text-[11px] [transition-duration:80ms]",
         active
-          ? "bg-fg text-fg-inverted border-fg"
+          ? "bg-inverted text-fg-inverted border-inverted"
           : "bg-transparent border-line text-fg-dim hover:border-line-strong hover:text-fg",
         className,
       )}

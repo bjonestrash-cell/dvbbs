@@ -72,7 +72,7 @@
 }
 
 @theme inline {
-  --font-display: var(--font-cormorant);
+  --font-display: var(--font-fraunces);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
@@ -105,7 +105,8 @@ html, body {
    ========================================================================= */
 
 .font-display {
-  font-family: var(--font-display), "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  font-family: var(--font-display), "Fraunces", Georgia, "Times New Roman", serif;
+  font-variation-settings: "SOFT" 50;
 }
 
 .font-mono {
@@ -150,17 +151,19 @@ html, body {
   line-height: 1;
 }
 
-/* Display titles, refined editorial */
+/* Display titles, modern editorial serif */
 .display-title {
-  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  font-family: var(--font-display), "Fraunces", Georgia, serif;
+  font-variation-settings: "SOFT" 50;
   font-weight: 300;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   line-height: 1;
 }
 
 /* Display stats, big tabular numerics */
 .display-stat {
-  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  font-family: var(--font-display), "Fraunces", Georgia, serif;
+  font-variation-settings: "SOFT" 50;
   font-weight: 300;
   letter-spacing: -0.02em;
   line-height: 1;

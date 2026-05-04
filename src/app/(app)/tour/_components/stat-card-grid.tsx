@@ -94,7 +94,7 @@ export function StatCardGrid({ cards }: { cards: StatCardItem[] }) {
       onDragEnd={onDragEnd}
     >
       <SortableContext items={ordered.map((c) => c.id)} strategy={rectSortingStrategy}>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-line border-y md:border border-line md:mx-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-6 md:px-10">
           {ordered.map((card, i) => (
             <SortableStatCard key={card.id} card={card} index={i + 1} />
           ))}
@@ -121,8 +121,9 @@ function SortableStatCard({
         : null,
     ),
     transition,
-    opacity: isDragging ? 0.9 : 1,
+    opacity: isDragging ? 0.95 : 1,
     zIndex: isDragging ? 20 : 1,
+    boxShadow: isDragging ? "0 4px 12px rgba(26,22,18,0.04)" : "none",
   };
 
   return (
@@ -130,63 +131,37 @@ function SortableStatCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "relative bg-page p-4 sm:p-5 group",
+        "relative bg-surface border border-line p-6 group",
         "select-none touch-none",
       )}
     >
       <div className="flex items-start justify-between">
-        <span className="label">
+        <span className="marker">
           {index.toString().padStart(2, "0")}
-          <span className="opacity-50"> /</span>
+          <span className="opacity-60"> /</span>
         </span>
-        <div className="flex items-center gap-1 text-fg-faint">
-          <button
-            {...attributes}
-            {...listeners}
-            type="button"
-            aria-label="Reorder card"
-            className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [transition-duration:80ms] hover:text-fg cursor-grab active:cursor-grabbing"
-          >
-            <GripVertical className="size-3" aria-hidden />
-          </button>
-          <ChevronTick />
-        </div>
+        <button
+          {...attributes}
+          {...listeners}
+          type="button"
+          aria-label="Reorder card"
+          className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [transition-duration:80ms] text-fg-faint hover:text-fg-dim cursor-grab active:cursor-grabbing"
+        >
+          <GripVertical className="size-3.5" strokeWidth={1.5} aria-hidden />
+        </button>
       </div>
-      <div className="mt-4 marker">{card.label}</div>
-      <div className="mt-2 display-stat text-fg" style={{ fontSize: "clamp(36px, 6vw, 56px)" }}>
+      <div className="mt-5 marker">{card.label}</div>
+      <div
+        className="mt-3 display-stat text-fg tabular"
+        style={{ fontSize: "clamp(36px, 5.5vw, 48px)", letterSpacing: "-0.02em" }}
+      >
         {card.value}
       </div>
       {card.hint ? (
-        <div className="mt-2 font-mono text-[11px] text-fg-dim uppercase tracking-[0.06em] line-clamp-2">
+        <div className="mt-3 font-sans text-[13px] text-fg-dim line-clamp-2">
           {card.hint}
         </div>
       ) : null}
-      {card.tone === "live" ? (
-        <span
-          aria-hidden
-          className="absolute bottom-0 left-0 right-0 h-px bg-accent"
-        />
-      ) : null}
     </article>
-  );
-}
-
-function ChevronTick() {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      fill="none"
-      aria-hidden
-      className="text-fg-faint"
-    >
-      <path
-        d="M1 3 L5 7 L9 3"
-        stroke="currentColor"
-        strokeWidth="1"
-        fill="none"
-      />
-    </svg>
   );
 }

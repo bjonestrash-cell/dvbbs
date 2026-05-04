@@ -34,6 +34,14 @@ export async function generateMetadata({
   };
 }
 
+function titleCase(s: string | null): string {
+  if (!s) return "TBD";
+  return s
+    .toLowerCase()
+    .replace(/(^|\s|-)([a-z])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`)
+    .replace(/\bTbd\b/g, "TBD");
+}
+
 export default async function ShowPage({
   params,
 }: {
@@ -52,26 +60,28 @@ export default async function ShowPage({
   ]);
 
   const initialCountdown = formatCountdown(show.show_date, show.set_time);
+  const cityTitle = titleCase(show.city);
+  const venueTitle = titleCase(show.venue_name);
 
   return (
     <>
       <PageHeader
-        eyebrow="tour show"
-        title={`${show.city ?? "TBD"} / ${show.venue_name ?? "TBD"}`}
+        eyebrow="Tour"
+        title={`${cityTitle}, ${venueTitle}`}
         description={formatDateLong(show.show_date)}
         actions={
           <Link
             href="/tour"
             className={buttonClasses({ variant: "ghost", size: "sm" })}
           >
-            <ArrowLeft className="size-4" aria-hidden />
-            ALL SHOWS
+            <ArrowLeft className="size-4" strokeWidth={1.5} aria-hidden />
+            All shows
           </Link>
         }
       />
 
-      <div className="px-4 md:px-6 py-4 flex flex-col gap-4">
-        <div className="flex flex-wrap items-end gap-6">
+      <div className="px-6 md:px-10 py-8 flex flex-col gap-6">
+        <div className="flex flex-wrap items-end gap-8">
           <StatusControl showId={show.id} status={show.status} />
           <CountdownDisplay
             date={show.show_date}
@@ -86,25 +96,27 @@ export default async function ShowPage({
         <Lodging showId={show.id} lodging={lodging} />
         <Crew showId={show.id} crew={crew} crewContacts={crewContacts} />
 
-        <section className="border border-line bg-surface p-4 md:p-5">
-          <header className="mb-2">
-            <div className="marker">TECH</div>
-            <div className="text-[13px] text-fg">RIDER, STAGE PLOT, NOTES</div>
+        <section className="border border-line bg-surface p-6">
+          <header className="mb-3">
+            <div className="marker">Tech</div>
+            <div className="font-sans text-[14px] text-fg mt-1">
+              Rider, stage plot, notes
+            </div>
           </header>
-          <p className="text-[12px] text-fg-dim whitespace-pre-line">
-            {show.notes ?? "."}
+          <p className="font-sans text-[13px] text-fg-dim leading-[1.6] whitespace-pre-line">
+            {show.notes ?? "No notes yet."}
           </p>
         </section>
 
         <Setlist showId={show.id} setlist={setlist} />
 
-        <section className="border border-line bg-surface p-4 md:p-5">
-          <header className="mb-2">
-            <div className="marker">SETTLEMENT</div>
-            <div className="text-[13px] text-fg">
+        <section className="border border-line bg-surface p-6">
+          <header className="mb-3">
+            <div className="marker">Settlement</div>
+            <div className="font-sans text-[14px] text-fg mt-1">
               {show.status === "completed"
-                ? "RECONCILE THIS SHOW"
-                : "AVAILABLE AFTER THE SHOW"}
+                ? "Reconcile this show"
+                : "Available after the show"}
             </div>
           </header>
           {show.status === "completed" ? (
@@ -112,19 +124,21 @@ export default async function ShowPage({
               href={`/tour/${show.id}/settlement`}
               className={buttonClasses({ variant: "bracket", size: "sm" })}
             >
-              <span className="opacity-60">[</span>OPEN SETTLEMENT<span className="opacity-60">]</span>
+              Open settlement
             </Link>
           ) : (
-            <p className="text-[11px] text-fg-faint uppercase tracking-[0.08em]">
-              MARK THIS SHOW COMPLETED TO START RECONCILIATION.
+            <p className="font-sans text-[13px] text-fg-dim">
+              Mark this show completed to start reconciliation.
             </p>
           )}
         </section>
 
-        <section className="border border-line bg-surface p-4 md:p-5">
-          <header className="mb-3">
-            <div className="marker">ACTIVITY</div>
-            <div className="text-[13px] text-fg">AUDIT TRAIL</div>
+        <section className="border border-line bg-surface p-6">
+          <header className="mb-4">
+            <div className="marker">Activity</div>
+            <div className="font-sans text-[14px] text-fg mt-1">
+              Audit trail
+            </div>
           </header>
           <ActivityFeed showId={show.id} />
         </section>

@@ -27,15 +27,13 @@ export function CountdownDisplay({
   const past = days !== null && days < 0;
 
   return (
-    <div className="flex items-end gap-3">
+    <div className="flex flex-col gap-1">
+      <span className="marker">{past ? "Show ended" : "Time to stage"}</span>
       <span
         className="display-stat text-fg num"
-        style={{ fontSize: "clamp(40px, 6vw, 64px)" }}
+        style={{ fontSize: "clamp(36px, 5vw, 56px)" }}
       >
         {text}
-      </span>
-      <span className="marker pb-2">
-        {past ? "AGO" : "TO STAGE"}
       </span>
     </div>
   );

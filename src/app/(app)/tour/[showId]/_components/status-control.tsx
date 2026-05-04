@@ -7,13 +7,13 @@ import { StatusBracket, STATUS_TONE } from "@/components/ui/status-bracket";
 import type { ShowStatus } from "@/lib/supabase/types";
 
 const ALL: { value: ShowStatus; label: string }[] = [
-  { value: "lead", label: "LEAD" },
-  { value: "offered", label: "OFFERED" },
-  { value: "holding", label: "HOLDING" },
-  { value: "confirmed", label: "CONFIRMED" },
-  { value: "contracted", label: "CONTRACTED" },
-  { value: "completed", label: "COMPLETED" },
-  { value: "cancelled", label: "CANCELLED" },
+  { value: "lead", label: "Lead" },
+  { value: "offered", label: "Offered" },
+  { value: "holding", label: "Holding" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "contracted", label: "Contracted" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
 ];
 
 export function StatusControl({
@@ -41,44 +41,51 @@ export function StatusControl({
   }
 
   return (
-    <div className="relative inline-block">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 border border-line bg-page px-2 h-7 hover:border-line-strong [transition-duration:80ms]"
-      >
-        <StatusBracket tone={STATUS_TONE[optimistic] ?? "default"}>
-          {ALL.find((x) => x.value === optimistic)?.label ?? optimistic.toUpperCase()}
-        </StatusBracket>
-        {pending ? (
-          <Loader2 className="size-3 animate-spin text-fg-dim" aria-hidden />
-        ) : (
-          <ChevronDown className="size-3 text-fg-dim" aria-hidden />
-        )}
-      </button>
-      {open ? (
-        <div
-          role="menu"
-          className="absolute z-30 mt-1 w-48 border border-line bg-page shadow-2xl"
-          onMouseLeave={() => setOpen(false)}
+    <div className="flex flex-col gap-1">
+      <span className="marker">Status</span>
+      <div className="relative inline-block">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 h-8 hover:border-line-strong [transition-duration:80ms]"
         >
-          <ul>
-            {ALL.map((s) => (
-              <li key={s.value}>
-                <button
-                  type="button"
-                  onClick={() => pick(s.value)}
-                  className="flex w-full items-center justify-between px-3 py-2 hover:bg-surface-2 [transition-duration:80ms]"
-                >
-                  <StatusBracket tone={STATUS_TONE[s.value] ?? "default"}>
-                    {s.label}
-                  </StatusBracket>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+          <StatusBracket tone={STATUS_TONE[optimistic] ?? "default"}>
+            {ALL.find((x) => x.value === optimistic)?.label ?? optimistic}
+          </StatusBracket>
+          {pending ? (
+            <Loader2 className="size-3 animate-spin text-fg-dim" aria-hidden />
+          ) : (
+            <ChevronDown
+              className="size-3 text-fg-faint"
+              strokeWidth={1.5}
+              aria-hidden
+            />
+          )}
+        </button>
+        {open ? (
+          <div
+            role="menu"
+            className="absolute z-30 mt-1 w-48 border border-line bg-surface shadow-[0_4px_12px_rgba(26,22,18,0.06)]"
+            onMouseLeave={() => setOpen(false)}
+          >
+            <ul>
+              {ALL.map((s) => (
+                <li key={s.value}>
+                  <button
+                    type="button"
+                    onClick={() => pick(s.value)}
+                    className="flex w-full items-center px-3 py-2 hover:bg-surface-2 [transition-duration:80ms]"
+                  >
+                    <StatusBracket tone={STATUS_TONE[s.value] ?? "default"}>
+                      {s.label}
+                    </StatusBracket>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
