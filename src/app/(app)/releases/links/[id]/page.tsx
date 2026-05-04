@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
-import { StatCard } from "@/components/ui/stat-card";
 import { buttonClasses } from "@/components/ui/button";
 import {
   getSmartLinkById,
@@ -11,8 +10,7 @@ import {
   clicksByCountry,
   PLATFORM_LABEL,
 } from "@/lib/data/smart-links";
-import { formatDateShort } from "@/lib/format";
-import { formatDistanceToNow, parseISO } from "date-fns";
+import { formatDateCompact, formatRelative } from "@/lib/format";
 
 export async function generateMetadata({
   params,
@@ -37,7 +35,7 @@ export default async function SmartLinkDetailPage({
   const [recent, byPlatform, byCountry] = await Promise.all([
     listClicks(link.id, 20),
     clicksByPlatform(link.id),
-    clicksByCountry(link.id, 5),
+    clicksByCountry(link.id, 10),
   ]);
 
   const dests = link.destinations as Record<string, string>;
@@ -46,139 +44,145 @@ export default async function SmartLinkDetailPage({
   return (
     <>
       <PageHeader
-        eyebrow="smart link"
+        eyebrow="Catalog"
         title={link.title ?? `/link/${link.slug}`}
-        description={`Public URL, /link/${link.slug}`}
+        description={`Public URL · /link/${link.slug}`}
         actions={
           <div className="flex items-center gap-2">
             <a
               href={`/link/${link.slug}`}
               target="_blank"
               rel="noreferrer noopener"
-              className={buttonClasses({ variant: "secondary", size: "sm" })}
+              className={buttonClasses({ variant: "bracket", size: "sm" })}
             >
-              <ExternalLink className="size-4" aria-hidden />
+              <ArrowUpRight className="size-3.5" strokeWidth={1.5} aria-hidden />
               Open
             </a>
             <Link
               href="/releases/links"
               className={buttonClasses({ variant: "ghost", size: "sm" })}
             >
-              <ArrowLeft className="size-4" aria-hidden />
+              <ArrowLeft className="size-4" strokeWidth={1.5} aria-hidden />
               All links
             </Link>
           </div>
         }
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 px-4 md:px-6 pt-4">
-        <StatCard
-          label="total clicks"
-          value={link.click_count}
-          hint="all time"
-        />
-        <StatCard
-          label="platforms"
-          value={destEntries.length}
-          hint="destinations"
-        />
-        <StatCard
-          label="last click"
-          value={
-            recent[0]
-              ? formatDistanceToNow(parseISO(recent[0].clicked_at), {
-                  addSuffix: false,
-                })
-              : "."
-          }
-          hint={recent[0]?.platform ?? ""}
-        />
-        <StatCard
-          label="top platform"
-          value={byPlatform[0]?.platform ?? "."}
-          hint={byPlatform[0] ? `${byPlatform[0].count} clicks` : "no data"}
-        />
-      </div>
+      <div className="px-6 md:px-10 py-10 grid gap-10">
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
+          <Stat label="Total clicks" value={link.click_count.toString()} />
+          <Stat label="Platforms" value={destEntries.length.toString()} />
+          <Stat
+            label="Last click"
+            value={recent[0] ? formatRelative(recent[0].clicked_at) : "—"}
+            small
+          />
+          <Stat
+            label="Top platform"
+            value={
+              byPlatform[0]
+                ? PLATFORM_LABEL[byPlatform[0].platform as keyof typeof PLATFORM_LABEL] ??
+                  byPlatform[0].platform
+                : "—"
+            }
+            small
+          />
+        </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-4 md:px-6 py-4">
-        <section className="rounded-md border border-line bg-bg-surface p-4">
-          <header className="mb-3">
-            <div className="marker">platforms</div>
-            <div className="text-sm text-fg">Click distribution</div>
-          </header>
-          {byPlatform.length === 0 ? (
-            <p className="text-xs text-fg-dim">No clicks yet.</p>
-          ) : (
-            <ul className="flex flex-col gap-1.5">
-              {byPlatform.map((p) => {
-                const max = byPlatform[0].count;
-                const pct = Math.round((p.count / max) * 100);
-                return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <section>
+            <header className="mb-4">
+              <div className="marker">Platforms</div>
+              <h2 className="font-display text-[18px] text-fg mt-1">
+                Click distribution
+              </h2>
+            </header>
+            {byPlatform.length === 0 ? (
+              <p className="font-sans text-[13px] text-fg-faint">No clicks yet.</p>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {byPlatform.map((p) => {
+                  const max = byPlatform[0].count;
+                  const pct = Math.round((p.count / max) * 100);
+                  return (
+                    <li
+                      key={p.platform}
+                      className="grid grid-cols-[120px_1fr_60px] items-center gap-3"
+                    >
+                      <span className="font-sans text-[13px] text-fg">
+                        {PLATFORM_LABEL[p.platform as keyof typeof PLATFORM_LABEL] ??
+                          p.platform}
+                      </span>
+                      <span className="h-[2px] bg-surface-2 relative overflow-hidden">
+                        <span
+                          className="absolute left-0 top-0 h-full bg-accent"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </span>
+                      <span className="num font-mono text-right text-[12px] text-fg-dim">
+                        {p.count}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+
+          <section>
+            <header className="mb-4">
+              <div className="marker">Countries</div>
+              <h2 className="font-display text-[18px] text-fg mt-1">Top 10</h2>
+            </header>
+            {byCountry.length === 0 ? (
+              <p className="font-sans text-[13px] text-fg-faint">
+                No geographic data yet.
+              </p>
+            ) : (
+              <ul className="flex flex-col">
+                {byCountry.map((c, i) => (
                   <li
-                    key={p.platform}
-                    className="grid grid-cols-[80px_1fr_40px] items-center gap-3 text-xs"
+                    key={c.country}
+                    className={
+                      "grid grid-cols-[1fr_60px] items-center py-2 " +
+                      (i < byCountry.length - 1 ? "border-b border-line" : "")
+                    }
                   >
-                    <span className="marker">
-                      {PLATFORM_LABEL[p.platform as keyof typeof PLATFORM_LABEL] ??
-                        p.platform}
+                    <span className="font-sans text-[13px] text-fg">
+                      {c.country}
                     </span>
-                    <span className="h-1.5 rounded-full bg-bg-elev relative overflow-hidden">
-                      <span
-                        className="absolute left-0 top-0 h-full bg-accent"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </span>
-                    <span className="num text-right text-fg-muted">
-                      {p.count}
+                    <span className="num font-mono text-right text-[12px] text-fg-dim">
+                      {c.count}
                     </span>
                   </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
 
-        <section className="rounded-md border border-line bg-bg-surface p-4">
-          <header className="mb-3">
-            <div className="marker">countries</div>
-            <div className="text-sm text-fg">Top 5</div>
+        <section>
+          <header className="mb-4">
+            <div className="marker">Destinations</div>
+            <h2 className="font-display text-[18px] text-fg mt-1">
+              Where each platform sends
+            </h2>
           </header>
-          {byCountry.length === 0 ? (
-            <p className="text-xs text-fg-dim">No geographic data yet.</p>
-          ) : (
-            <ul className="flex flex-col gap-1.5">
-              {byCountry.map((c) => (
-                <li
-                  key={c.country}
-                  className="grid grid-cols-[1fr_60px] items-center text-xs"
-                >
-                  <span className="text-fg-muted">{c.country}</span>
-                  <span className="num text-right text-fg-muted">{c.count}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section className="rounded-md border border-line bg-bg-surface p-4 lg:col-span-2">
-          <header className="mb-3">
-            <div className="marker">destinations</div>
-            <div className="text-sm text-fg">Where each platform sends</div>
-          </header>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {destEntries.map(([platform, url]) => (
               <li key={platform}>
                 <a
                   href={url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="flex items-center justify-between rounded-md border border-line bg-bg-input px-3 py-2 text-sm transition-colors hover:border-line-strong"
+                  className="flex items-center justify-between border border-line bg-surface px-4 py-3 hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms]"
                 >
-                  <span className="marker">
+                  <span className="font-sans text-[13px] text-fg">
                     {PLATFORM_LABEL[platform as keyof typeof PLATFORM_LABEL] ??
                       platform}
                   </span>
-                  <span className="truncate text-xs text-fg-muted ml-2">
+                  <span className="font-mono text-[11px] text-fg-faint truncate ml-3 max-w-[60%]">
                     {url}
                   </span>
                 </a>
@@ -187,32 +191,35 @@ export default async function SmartLinkDetailPage({
           </ul>
         </section>
 
-        <section className="rounded-md border border-line bg-bg-surface p-4 lg:col-span-2">
-          <header className="mb-3">
-            <div className="marker">recent clicks</div>
-            <div className="text-sm text-fg">Last 20</div>
+        <section>
+          <header className="mb-4">
+            <div className="marker">Recent clicks</div>
+            <h2 className="font-display text-[18px] text-fg mt-1">Last 20</h2>
           </header>
           {recent.length === 0 ? (
-            <p className="text-xs text-fg-dim">No clicks yet.</p>
+            <p className="font-sans text-[13px] text-fg-faint">No clicks yet.</p>
           ) : (
-            <ul className="flex flex-col gap-1">
-              {recent.map((c) => (
+            <ul>
+              {recent.map((c, i) => (
                 <li
                   key={c.id}
-                  className="grid grid-cols-[80px_80px_1fr_60px] items-baseline gap-3 text-xs"
+                  className={
+                    "grid grid-cols-[110px_120px_1fr_60px] items-baseline gap-3 py-3 " +
+                    (i < recent.length - 1 ? "border-b border-line" : "")
+                  }
                 >
-                  <span className="num text-fg-muted">
-                    {formatDistanceToNow(parseISO(c.clicked_at), {
-                      addSuffix: false,
-                    })}
+                  <span className="num font-mono text-[11px] text-fg-faint">
+                    {formatRelative(c.clicked_at)}
                   </span>
-                  <span className="marker">
-                    {c.platform ?? "unknown"}
+                  <span className="font-sans text-[12px] text-fg-dim">
+                    {PLATFORM_LABEL[c.platform as keyof typeof PLATFORM_LABEL] ??
+                      c.platform ??
+                      "Unknown"}
                   </span>
-                  <span className="text-fg-dim truncate">
+                  <span className="font-mono text-[11px] text-fg-faint truncate">
                     {c.user_agent ?? ""}
                   </span>
-                  <span className="text-right text-fg-muted">
+                  <span className="font-mono text-[11px] text-fg-dim text-right">
                     {c.country ?? ""}
                   </span>
                 </li>
@@ -220,13 +227,36 @@ export default async function SmartLinkDetailPage({
             </ul>
           )}
         </section>
-      </div>
 
-      <div className="px-4 md:px-6 pb-6">
-        <p className="text-xs text-fg-dim num">
-          Created {formatDateShort(link.created_at)}.
+        <p className="num font-mono text-[10px] text-fg-faint">
+          Created {formatDateCompact(link.created_at)}.
         </p>
       </div>
     </>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  small,
+}: {
+  label: string;
+  value: string;
+  small?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="marker">{label}</span>
+      <span
+        className="display-stat text-fg tabular"
+        style={{
+          fontSize: small ? "clamp(20px, 2.5vw, 24px)" : "clamp(32px, 4vw, 48px)",
+          letterSpacing: "-0.02em",
+        }}
+      >
+        {value}
+      </span>
+    </div>
   );
 }

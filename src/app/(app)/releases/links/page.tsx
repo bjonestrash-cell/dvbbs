@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Plus, Link2, ExternalLink } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { buttonClasses } from "@/components/ui/button";
 import { listSmartLinks } from "@/lib/data/smart-links";
-import { formatDateShort } from "@/lib/format";
+import { formatDateCompact } from "@/lib/format";
 
 export const metadata = { title: "Smart links. DVBBS HQ" };
 
@@ -14,7 +14,7 @@ export default async function SmartLinksPage() {
   return (
     <>
       <PageHeader
-        eyebrow="releases"
+        eyebrow="Catalog"
         title="Smart links"
         description="One slug per release, routes to the listener's preferred platform."
         actions={
@@ -22,76 +22,65 @@ export default async function SmartLinksPage() {
             href="/releases/links/new"
             className={buttonClasses({ variant: "primary", size: "sm" })}
           >
-            <Plus className="size-4" aria-hidden />
-            New link
+            + New link
           </Link>
         }
       />
       {links.length === 0 ? (
-        <div className="px-4 md:px-6 py-6">
+        <div className="px-6 md:px-10 py-10">
           <EmptyState
-            icon={<Link2 className="size-6" aria-hidden />}
             title="No smart links yet."
-            description="Create one to start routing fans to the right platform."
+            hint="Create one to start routing fans to the right platform."
             action={
               <Link
                 href="/releases/links/new"
                 className={buttonClasses({ variant: "primary", size: "sm" })}
               >
-                <Plus className="size-4" aria-hidden />
-                New link
+                + New link
               </Link>
             }
           />
         </div>
       ) : (
-        <div className="px-4 md:px-6 py-4">
-          <div className="overflow-hidden rounded-md border border-line bg-bg-surface">
-            <table className="w-full text-sm">
-              <thead className="bg-bg-elev text-fg-muted">
-                <tr>
-                  <th className="px-3 py-2 text-left font-medium">Slug</th>
-                  <th className="px-3 py-2 text-left font-medium">Title</th>
-                  <th className="px-3 py-2 text-right font-medium">Clicks</th>
-                  <th className="px-3 py-2 text-right font-medium">Created</th>
-                  <th className="px-3 py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {links.map((l) => (
-                  <tr key={l.id} className="border-t border-line">
-                    <td className="px-3 py-2 num">
-                      <Link
-                        href={`/releases/links/${l.id}`}
-                        className="text-fg hover:underline"
-                      >
-                        /link/{l.slug}
-                      </Link>
-                    </td>
-                    <td className="px-3 py-2 text-fg-muted">
-                      {l.title ?? l.release_title ?? "."}
-                    </td>
-                    <td className="px-3 py-2 text-right num">
-                      {l.click_count}
-                    </td>
-                    <td className="px-3 py-2 text-right num text-xs text-fg-muted">
-                      {formatDateShort(l.created_at)}
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      <a
-                        href={`/link/${l.slug}`}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="inline-flex items-center gap-1 text-xs text-fg-muted hover:text-fg"
-                      >
-                        Open
-                        <ExternalLink className="size-3" aria-hidden />
-                      </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="px-6 md:px-10 py-8">
+          <div className="border-y border-line">
+            <div className="hidden sm:grid grid-cols-[1fr_1.5fr_120px_140px_120px] items-center gap-4 px-4 py-3 border-b border-line">
+              <span className="label">Slug</span>
+              <span className="label">Release</span>
+              <span className="label text-right">Clicks</span>
+              <span className="label text-right">Last clicked</span>
+              <span className="label text-right">Action</span>
+            </div>
+            <ul>
+              {links.map((l) => (
+                <li
+                  key={l.id}
+                  className="grid grid-cols-[1fr_1.5fr_120px_140px_120px] items-center gap-4 px-4 py-5 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
+                >
+                  <span className="num font-mono text-[13px] text-fg">
+                    /link/{l.slug}
+                  </span>
+                  <span className="font-sans text-[13px] text-fg-dim truncate">
+                    {l.title ?? l.release_title ?? "—"}
+                  </span>
+                  <span className="display-stat text-fg text-right tabular text-[24px]">
+                    {l.click_count}
+                  </span>
+                  <span className="num font-mono text-[11px] text-fg-faint text-right">
+                    {formatDateCompact(l.created_at)}
+                  </span>
+                  <span className="text-right">
+                    <Link
+                      href={`/releases/links/${l.id}`}
+                      className="inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim hover:text-fg [transition-duration:80ms]"
+                    >
+                      <span>Analytics</span>
+                      <ArrowRight className="size-3" strokeWidth={1.5} aria-hidden />
+                    </Link>
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       )}
