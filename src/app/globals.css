@@ -1,66 +1,90 @@
 @import "tailwindcss";
 
+/* =============================================================================
+   DVBBS HQ design tokens, brutalist club aesthetic.
+   Pure black, mono everywhere, anti-decorative. Berghain / Boiler Room / RA.
+   ========================================================================= */
+
 @theme {
   /* Surfaces */
-  --color-bg-base: #0a0a0a;
-  --color-bg-surface: #141414;
-  --color-bg-elev: #1a1a1a;
-  --color-bg-input: #0e0e0e;
+  --color-page: #000000;
+  --color-surface: #0a0a0a;
+  --color-surface-2: #141414;
 
   /* Lines */
-  --color-line: #2a2a2a;
-  --color-line-strong: #3a3a3a;
-  --color-line-soft: #1f1f1f;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
 
   /* Foreground */
-  --color-fg: #ededed;
-  --color-fg-muted: #8a8a8a;
-  --color-fg-dim: #5a5a5a;
-  --color-fg-faint: #3a3a3a;
+  --color-fg: #f5f5f5;
+  --color-fg-dim: rgba(245, 245, 245, 0.55);
+  --color-fg-faint: rgba(245, 245, 245, 0.35);
 
-  /* Brand accent (saturated red, used sparingly) */
-  --color-accent: #ff2d2d;
-  --color-accent-hover: #ff4646;
-  --color-accent-fg: #ffffff;
+  /* Brand accent, deeper saturation than before */
+  --color-accent: #ff1f1f;
+  --color-accent-dim: rgba(255, 31, 31, 0.15);
+  --color-accent-fg: #000000;
 
-  /* Status pills, low saturation, readable as text on dark bg */
-  --color-status-lead: #8a8a8a;
-  --color-status-offered: #7e9bbf;
-  --color-status-holding: #c89e60;
-  --color-status-confirmed: #6dba89;
-  --color-status-contracted: #4cad7a;
-  --color-status-completed: #6f6f6f;
-  --color-status-cancelled: #c07474;
-  --color-status-paid: #6dba89;
-  --color-status-unpaid: #c89e60;
+  /* Status colors */
+  --color-confirmed: #6fe6a8;
+  --color-contracted: #6fe6a8;
+  --color-holding: #e8b547;
+  --color-offered: #5ba3f5;
+  --color-lead: rgba(245, 245, 245, 0.5);
+  --color-completed: rgba(245, 245, 245, 0.35);
+  --color-cancelled: #ff1f1f;
 
-  /* Radii */
-  --radius-xs: 0.125rem;
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
+  /* Asset/marketing extra status mapping */
+  --color-not-started: rgba(245, 245, 245, 0.35);
+  --color-in-progress: #e8b547;
+  --color-review: #5ba3f5;
+  --color-approved: #6fe6a8;
+  --color-final: #ff1f1f;
+  --color-todo: rgba(245, 245, 245, 0.35);
+  --color-done: #6fe6a8;
 
-  /* Motion */
+  /* Legacy aliases so existing utilities resolve to new values */
+  --color-bg-base: var(--color-page);
+  --color-bg-surface: var(--color-surface);
+  --color-bg-elev: var(--color-surface-2);
+  --color-bg-input: var(--color-surface-2);
+  --color-fg-muted: var(--color-fg-dim);
+  --color-status-lead: var(--color-lead);
+  --color-status-offered: var(--color-offered);
+  --color-status-holding: var(--color-holding);
+  --color-status-confirmed: var(--color-confirmed);
+  --color-status-contracted: var(--color-contracted);
+  --color-status-completed: var(--color-completed);
+  --color-status-cancelled: var(--color-cancelled);
+  --color-status-paid: var(--color-confirmed);
+  --color-status-unpaid: var(--color-holding);
+
+  /* Motion, snap not bounce */
   --ease-snap: cubic-bezier(0.2, 0, 0, 1);
-  --duration-snap: 120ms;
-  --duration-fade: 200ms;
+  --duration-snap: 80ms;
+  --duration-fade: 100ms;
+  --duration-drag: 120ms;
 }
 
 @theme inline {
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-geist);
+  --font-display: var(--font-anton);
   --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-mono);
 }
 
 :root {
   color-scheme: dark;
 }
 
+/* =============================================================================
+   Base
+   ========================================================================= */
+
 html, body {
-  background: var(--color-bg-base);
+  background: var(--color-page);
   color: var(--color-fg);
-  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-feature-settings: "cv11", "ss01";
+  font-family: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  font-feature-settings: "tnum", "zero", "ss01";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -70,9 +94,16 @@ html, body {
   color: var(--color-accent-fg);
 }
 
-/* Tabular numerics anywhere money, dates, capacities, BPMs live */
+/* =============================================================================
+   Typography utilities
+   ========================================================================= */
+
+.font-display {
+  font-family: var(--font-display), Impact, "Helvetica Neue Condensed", sans-serif;
+}
+
+/* Mono numerics, used everywhere a number lives */
 .num {
-  font-family: var(--font-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum", "zero";
   letter-spacing: 0;
@@ -83,27 +114,88 @@ html, body {
   font-feature-settings: "tnum";
 }
 
-/* Display marker, uppercase tight tracking */
+/* Section marker (eyebrow), e.g., "TOUR /" */
 .marker {
-  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--color-fg-muted);
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-fg-faint);
+  line-height: 1;
 }
 
-/* Scrollbars */
+/* Field labels, "GROSS PAID", smaller and more spaced than marker */
+.label {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-fg-faint);
+  line-height: 1;
+}
+
+/* Display titles, big poster moments */
+.display-title {
+  font-family: var(--font-display), Impact, "Helvetica Neue Condensed", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  font-weight: 400;
+}
+
+/* Big stat numbers */
+.display-stat {
+  font-family: var(--font-display), Impact, sans-serif;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* =============================================================================
+   Bracket pattern, applied via the StatusBracket / Bracket components
+   ========================================================================= */
+
+.bracket-text {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   Scrollbars, dim and unintrusive
+   ========================================================================= */
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: var(--color-line);
-  border-radius: 4px;
-  border: 2px solid var(--color-bg-base);
+  border: 2px solid var(--color-page);
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-line-strong); }
 
-/* Grain overlay for auth screens only */
+/* =============================================================================
+   Page-wide grain overlay (1.5% noise opacity)
+   ========================================================================= */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.06;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+}
+
+/* Heavier grain for the public smart-link landing */
 .grain {
   position: relative;
 }
@@ -112,31 +204,56 @@ html, body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
-  opacity: 0.5;
   z-index: 9999;
+  opacity: 0.08;
   mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
 }
 
-/* Chevron motif divider */
+/* =============================================================================
+   Section dividers, chevron tick row at low opacity
+   ========================================================================= */
+
 .chevron-rule {
-  height: 1px;
-  background-image: linear-gradient(
-    90deg,
-    var(--color-line) 0,
-    var(--color-line) 6px,
-    transparent 6px,
-    transparent 10px
-  );
-  background-size: 10px 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 24px;
+  opacity: 0.15;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-fg);
+  user-select: none;
+}
+.chevron-rule::before {
+  content: "▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽";
+  letter-spacing: 0.4em;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-/* Angled corner cut on stat cards */
-.angle-cut {
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+/* =============================================================================
+   Loading: blinking cursor
+   ========================================================================= */
+
+.cursor-blink::after {
+  content: "▮";
+  display: inline-block;
+  animation: blink 600ms step-end infinite;
+  margin-left: 4px;
+  color: var(--color-fg);
 }
 
-/* Reduced motion respected globally */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* =============================================================================
+   Reduced motion
+   ========================================================================= */
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -144,17 +261,32 @@ html, body {
   }
 }
 
-/* Default focus ring */
+/* =============================================================================
+   Focus ring
+   ========================================================================= */
+
 :where(button, a, input, select, textarea, [role="button"]):focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline: 1px solid var(--color-accent);
+  outline-offset: 1px;
 }
 
-/* Disable iOS tap highlight */
+/* =============================================================================
+   Tap highlight
+   ========================================================================= */
+
 * { -webkit-tap-highlight-color: transparent; }
 
-/* Form normalization */
 input, select, textarea {
   font: inherit;
   color: inherit;
+}
+
+/* =============================================================================
+   Custom cursor on interactive elements (desktop only)
+   ========================================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+  a, button, [role="button"], [data-clickable], select, summary {
+    cursor: url("/cursors/chevron.svg") 6 6, pointer;
+  }
 }

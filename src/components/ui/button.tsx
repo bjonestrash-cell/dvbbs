@@ -1,26 +1,30 @@
 import * as React from "react";
 import { cn } from "@/lib/utils/cn";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Variant = "primary" | "bracket" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const variantClass: Record<Variant, string> = {
-  primary: "bg-accent text-accent-fg hover:bg-accent-hover",
+  primary:
+    "bg-fg text-page hover:bg-accent hover:text-fg",
+  bracket:
+    "bg-transparent text-fg border border-line hover:bg-fg hover:text-page hover:border-fg",
+  // "secondary" is the legacy alias for the bracket variant.
   secondary:
-    "bg-bg-elev text-fg border border-line hover:border-line-strong",
-  ghost: "text-fg hover:bg-bg-elev",
+    "bg-transparent text-fg border border-line hover:bg-fg hover:text-page hover:border-fg",
+  ghost: "text-fg hover:bg-surface-2",
   danger:
-    "bg-bg-elev text-status-cancelled border border-line hover:border-status-cancelled/60",
+    "bg-transparent text-cancelled border border-line hover:bg-cancelled hover:text-page hover:border-cancelled",
 };
 
 const sizeClass: Record<Size, string> = {
-  sm: "h-8 px-2.5 text-sm",
-  md: "h-10 px-3.5 text-sm",
-  lg: "h-11 px-4 text-sm",
+  sm: "h-8 px-3 text-[11px]",
+  md: "h-10 px-4 text-[12px]",
+  lg: "h-12 px-5 text-[13px]",
 };
 
 export function buttonClasses({
-  variant = "secondary",
+  variant = "bracket",
   size = "md",
   className,
 }: {
@@ -29,7 +33,9 @@ export function buttonClasses({
   className?: string;
 } = {}) {
   return cn(
-    "inline-flex items-center justify-center gap-1.5 rounded-md font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+    "inline-flex items-center justify-center gap-2 font-mono uppercase tracking-[0.08em] font-medium transition-colors",
+    "disabled:cursor-not-allowed disabled:opacity-50",
+    "[transition-duration:80ms]",
     variantClass[variant],
     sizeClass[size],
     className,
@@ -43,7 +49,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
-    { className, variant = "secondary", size = "md", type = "button", ...rest },
+    { className, variant = "bracket", size = "md", type = "button", children, ...rest },
     ref,
   ) {
     return (
@@ -52,7 +58,28 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         className={buttonClasses({ variant, size, className })}
         {...rest}
-      />
+      >
+        {variant === "bracket" ? (
+          <>
+            <span className="opacity-60">[</span>
+            <span>{children}</span>
+            <span className="opacity-60">]</span>
+          </>
+        ) : (
+          children
+        )}
+      </button>
     );
   },
 );
+
+/** Wrap any element (e.g., <Link>) with bracket-button styling and the [..] decorations. */
+export function BracketShell({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <span className="opacity-60">[</span>
+      <span>{children}</span>
+      <span className="opacity-60">]</span>
+    </>
+  );
+}

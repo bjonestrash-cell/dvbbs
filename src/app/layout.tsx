@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Geist, Geist_Mono } from "next/font/google";
+import { Anton, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const anton = Anton({
+  variable: "--font-anton",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const geist = Geist({
-  variable: "--font-geist",
-  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -32,9 +27,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${geist.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${anton.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-bg-base text-fg">{children}</body>
+      <body className="min-h-full bg-page text-fg">{children}</body>
     </html>
   );
 }
