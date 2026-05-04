@@ -1,0 +1,12 @@
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[functions]
+  node_bundler = "esbuild"
+
+# bandsintown-sync exports `config = { schedule: "@daily" }` from inside the
+# function so no schedule is set here. List exists to surface the function.
