@@ -1,7 +1,7 @@
 import { AUTH_DISABLED } from "@/lib/auth/mode";
 import { requireMember } from "@/lib/auth/dal";
 import { Sidebar } from "@/components/shell/sidebar";
-import { BottomNav } from "@/components/shell/bottom-nav";
+import { SidebarProvider } from "@/components/shell/sidebar-state";
 import { Header } from "@/components/shell/header";
 import { CommandPalette } from "@/components/shell/command-palette";
 
@@ -13,15 +13,18 @@ export default async function AppLayout({
   if (!AUTH_DISABLED) {
     await requireMember();
   }
+  const commitSha = process.env.NEXT_PUBLIC_COMMIT_SHA ?? "local";
+
   return (
-    <div className="flex min-h-dvh">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header />
-        <main className="flex-1 pb-16 md:pb-0">{children}</main>
+    <SidebarProvider>
+      <div className="flex min-h-dvh bg-page">
+        <Sidebar commitSha={commitSha} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Header />
+          <main className="flex-1">{children}</main>
+        </div>
+        <CommandPalette />
       </div>
-      <BottomNav />
-      <CommandPalette />
-    </div>
+    </SidebarProvider>
   );
 }
