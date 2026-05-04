@@ -289,6 +289,147 @@ async function ensureShow(payload) {
 
   for (const s of shows) await ensureShow(s);
 
+  // Releases (Phase 2 schema must be applied; warn and skip if missing).
+  const releases = [
+    {
+      title: "Tsunami",
+      slug: "tsunami",
+      type: "single",
+      status: "released",
+      release_date: "2013-08-12",
+      label: "Spinnin' Records",
+      collaborators: ["Borgeous"],
+      spotify_url: "https://open.spotify.com/track/0oXFrdT2EHlxfZRq8GjKKR",
+      notes: "Breakout single, certified gold across multiple territories.",
+    },
+    {
+      title: "Not Going Home",
+      slug: "not-going-home",
+      type: "single",
+      status: "released",
+      release_date: "2015-04-13",
+      label: "Doorn Records",
+      collaborators: ["CMC$"],
+      spotify_url: "https://open.spotify.com/track/2lVxIrInkVyB75LoRksAEW",
+      notes: "Festival anthem.",
+    },
+    {
+      title: "Roadtrip",
+      slug: "roadtrip",
+      type: "single",
+      status: "scheduled",
+      release_date: dateAt(35),
+      label: "Big Beat Records",
+      collaborators: ["A-Trak"],
+      notes: "Lead single off the upcoming EP. Pre-save campaign live.",
+    },
+    {
+      title: "Untitled, working title Sunset",
+      slug: "sunset-wip",
+      type: "single",
+      status: "mixing",
+      label: null,
+      collaborators: ["Tinashe"],
+      notes: "Vocal stems delivered. Mixing with Sean Divine this week.",
+    },
+    {
+      title: "Tsunami, 2026 VIP",
+      slug: "tsunami-vip",
+      type: "remix",
+      status: "in_production",
+      collaborators: [],
+      notes: "Anniversary VIP edit for the Tomorrowland mainstage drop.",
+    },
+    {
+      title: "Roadtrip Vol. 2 EP",
+      slug: "roadtrip-vol-2-ep",
+      type: "ep",
+      status: "idea",
+      collaborators: ["A-Trak", "Borgeous"],
+      notes: "Five-track follow-up. Tracklist tentative.",
+    },
+  ];
+
+  let releasesOk = true;
+  for (const r of releases) {
+    const existing = await sb
+      .from("releases")
+      .select("id")
+      .eq("slug", r.slug)
+      .maybeSingle();
+    if (existing.error) {
+      console.warn(
+        "skipping releases seed, table not found:",
+        existing.error.message,
+      );
+      releasesOk = false;
+      break;
+    }
+    if (existing.data?.id) {
+      console.log("skip existing release", r.slug);
+      continue;
+    }
+    const { error } = await sb.from("releases").insert(r);
+    if (error) {
+      console.error("Failed to insert release", r.slug, error.message);
+    } else {
+      console.log("inserted release", r.status, r.title);
+    }
+  }
+
+  if (releasesOk) {
+    // Sample assets and marketing rows on the scheduled release.
+    const { data: scheduled } = await sb
+      .from("releases")
+      .select("id")
+      .eq("slug", "roadtrip")
+      .maybeSingle();
+    const releaseId = scheduled?.id;
+
+    if (releaseId) {
+      const assets = [
+        { asset_type: "master_wav", status: "approved" },
+        { asset_type: "instrumental", status: "approved" },
+        { asset_type: "stems", status: "final" },
+        { asset_type: "radio_edit", status: "in_progress", due_date: dateAt(7) },
+        { asset_type: "cover_art", status: "approved" },
+        { asset_type: "press_shot", status: "review" },
+        { asset_type: "music_video", status: "in_progress", due_date: dateAt(20) },
+        { asset_type: "press_release", status: "not_started", due_date: dateAt(14) },
+        { asset_type: "splits_doc", status: "approved" },
+      ];
+      for (const a of assets) {
+        const { count } = await sb
+          .from("release_assets")
+          .select("id", { count: "exact", head: true })
+          .eq("release_id", releaseId)
+          .eq("asset_type", a.asset_type);
+        if ((count ?? 0) > 0) continue;
+        await sb.from("release_assets").insert({ release_id: releaseId, ...a });
+      }
+      console.log("seeded assets for", "roadtrip");
+
+      const tasks = [
+        { channel: "instagram", task: "Reel teaser, 15s drop preview", status: "in_progress", scheduled_for: dateAt(10) },
+        { channel: "tiktok", task: "Sound creator partnership, 3 creators", status: "todo", scheduled_for: dateAt(14) },
+        { channel: "dsp_pitch", task: "Spotify editorial pitch, mint-Pop and Front Left", status: "in_progress", scheduled_for: dateAt(21) },
+        { channel: "press", task: "Billboard premiere, exclusive interview", status: "todo", scheduled_for: dateAt(28) },
+        { channel: "newsletter", task: "Pre-save email blast", status: "done", scheduled_for: dateAt(-2) },
+        { channel: "youtube", task: "Lyric video upload + premiere", status: "todo", scheduled_for: dateAt(35) },
+      ];
+      for (const t of tasks) {
+        const { count } = await sb
+          .from("release_marketing")
+          .select("id", { count: "exact", head: true })
+          .eq("release_id", releaseId)
+          .eq("task", t.task);
+        if ((count ?? 0) > 0) continue;
+        await sb.from("release_marketing").insert({ release_id: releaseId, ...t });
+      }
+      console.log("seeded marketing tasks for", "roadtrip");
+    }
+  }
+
   console.log("done.");
 })().catch((e) => {
   console.error(e);

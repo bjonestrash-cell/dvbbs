@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Release, ReleaseStatus } from "@/lib/supabase/types";
 
@@ -33,15 +34,17 @@ export async function listReleases(): Promise<Release[]> {
   return (data ?? []) as Release[];
 }
 
-export async function getReleaseBySlug(slug: string): Promise<Release | null> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("releases")
-    .select("*")
-    .eq("slug", slug)
-    .maybeSingle();
-  return (data as Release | null) ?? null;
-}
+export const getReleaseBySlug = cache(
+  async (slug: string): Promise<Release | null> => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("releases")
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+    return (data as Release | null) ?? null;
+  },
+);
 
 export function groupByReleaseStatus(
   releases: Release[],
