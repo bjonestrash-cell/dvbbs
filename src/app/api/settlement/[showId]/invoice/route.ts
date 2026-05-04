@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { AUTH_DISABLED } from "@/lib/auth/mode";
 import { requireMember } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
@@ -6,7 +7,9 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ showId: string }> },
 ) {
-  await requireMember();
+  if (!AUTH_DISABLED) {
+    await requireMember();
+  }
   const { showId } = await params;
 
   const supabase = await createClient();

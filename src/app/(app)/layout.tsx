@@ -1,3 +1,4 @@
+import { AUTH_DISABLED } from "@/lib/auth/mode";
 import { requireMember } from "@/lib/auth/dal";
 import { Sidebar } from "@/components/shell/sidebar";
 import { BottomNav } from "@/components/shell/bottom-nav";
@@ -9,7 +10,9 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireMember();
+  if (!AUTH_DISABLED) {
+    await requireMember();
+  }
   return (
     <div className="flex min-h-dvh">
       <Sidebar />

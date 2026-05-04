@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { AUTH_DISABLED } from "@/lib/auth/mode";
 import { requireMember } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
@@ -22,7 +23,9 @@ const NAV_HITS: SearchHit[] = [
 ];
 
 export async function GET(req: NextRequest) {
-  await requireMember();
+  if (!AUTH_DISABLED) {
+    await requireMember();
+  }
   const q = (req.nextUrl.searchParams.get("q") ?? "").trim();
   if (!q) return NextResponse.json({ hits: NAV_HITS.slice(0, 5) });
 

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { AUTH_DISABLED } from "@/lib/auth/mode";
 
 const PUBLIC_PREFIXES = ["/login", "/auth/", "/link/"];
 
@@ -8,6 +9,12 @@ function isPublicPath(path: string): boolean {
 }
 
 export async function proxy(request: NextRequest) {
+  // Demo mode: pass through every request without checking auth.
+  // Set AUTH_DISABLED to false in src/lib/auth/mode.ts to re-enable the wall.
+  if (AUTH_DISABLED) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

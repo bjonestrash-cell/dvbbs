@@ -1,11 +1,34 @@
 import { PageHeader } from "@/components/ui/page-header";
-import { requireMember } from "@/lib/auth/dal";
+import { AUTH_DISABLED } from "@/lib/auth/mode";
+import { getCurrentMember } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Team. DVBBS HQ" };
 
 export default async function TeamPage() {
-  const me = await requireMember();
+  const me = AUTH_DISABLED ? null : await getCurrentMember();
+
+  if (AUTH_DISABLED) {
+    return (
+      <>
+        <PageHeader
+          eyebrow="team"
+          title="Members and roles"
+          description="Hidden in public demo. Sign in to manage."
+        />
+        <div className="px-4 md:px-6 py-6">
+          <div className="rounded-md border border-line bg-bg-surface p-6">
+            <div className="marker">demo</div>
+            <p className="mt-2 text-sm text-fg-muted max-w-prose">
+              Team members and emails are private even when the rest of the app
+              is public. Re-enable auth to see this surface.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   const supabase = await createClient();
   const { data: members } = await supabase
     .from("team_members")
@@ -18,7 +41,7 @@ export default async function TeamPage() {
         eyebrow="team"
         title="Members and roles"
         description={
-          me.role === "principal"
+          me?.role === "principal"
             ? "Add or remove team members. Principal-only."
             : "View team. Adding members is principal-only."
         }
@@ -57,7 +80,7 @@ export default async function TeamPage() {
             </tbody>
           </table>
         </div>
-        {me.role === "principal" ? (
+        {me?.role === "principal" ? (
           <p className="mt-3 text-xs text-fg-dim">
             Add member UI lands in Phase 1.5. For now, add emails to ALLOWED_AUTH_EMAILS env var and have them sign in.
           </p>

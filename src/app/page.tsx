@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/dal";
 
-export default async function RootPage() {
-  const user = await getCurrentUser();
-  if (user) redirect("/tour");
-  redirect("/login");
+export default function RootPage() {
+  // In demo mode, send everyone to /tour. Auth-aware redirect (logged-in vs
+  // /login) lives in src/app/page.auth.tsx.bak when re-enabled.
+  redirect("/tour");
 }
