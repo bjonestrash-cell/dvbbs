@@ -5,15 +5,15 @@ import {
   RELEASE_STATUS_ORDER,
 } from "@/lib/data/releases";
 import type { Release } from "@/lib/supabase/types";
-import { formatYear, formatDateShort } from "@/lib/format";
+import { formatDateCompact, formatYear } from "@/lib/format";
 
 const TYPE_LABEL: Record<Release["type"], string> = {
-  single: "single",
+  single: "SINGLE",
   ep: "EP",
-  album: "album",
-  remix: "remix",
-  edit: "edit",
-  bootleg: "bootleg",
+  album: "ALBUM",
+  remix: "REMIX",
+  edit: "EDIT",
+  bootleg: "BOOTLEG",
 };
 
 export function ReleaseBoard({
@@ -23,51 +23,66 @@ export function ReleaseBoard({
 }) {
   return (
     <div className="overflow-x-auto px-4 md:px-6 py-4">
-      <div className="flex gap-2 min-w-max">
+      <div className="flex min-w-max divide-x divide-line border border-line">
         {RELEASE_STATUS_ORDER.map((status) => {
           const items = groups.get(status) ?? [];
           return (
             <section
               key={status}
-              className="w-72 shrink-0 rounded-md border border-line bg-bg-surface flex flex-col"
+              className="w-72 shrink-0 bg-page flex flex-col"
             >
-              <header className="flex items-center justify-between border-b border-line px-3 py-2">
-                <span className="marker">{RELEASE_STATUS_LABEL[status]}</span>
-                <span className="text-fg-dim text-xs num">
-                  {items.length}
+              <header className="flex items-center justify-between border-b border-line px-3 py-2.5">
+                <span className="bracket-text font-mono text-fg">
+                  <span className="opacity-60">[ </span>
+                  {RELEASE_STATUS_LABEL[status].toUpperCase()}
+                  <span className="opacity-60"> ]</span>
+                </span>
+                <span className="num text-[11px] text-fg-faint">
+                  {items.length.toString().padStart(2, "0")}
                 </span>
               </header>
-              <ul className="flex flex-col gap-1.5 p-2 min-h-32">
+              <ul className="flex flex-col gap-px bg-line">
                 {items.map((r) => (
-                  <li key={r.id}>
+                  <li key={r.id} className="bg-page">
                     <Link
                       href={`/releases/${r.slug}`}
-                      className="block rounded-md border border-line bg-bg-input p-2.5 transition-colors hover:border-line-strong"
+                      className="block p-3 hover:bg-surface [transition-duration:80ms]"
                     >
-                      <div className="flex items-start gap-2.5">
-                        <CoverArt url={r.cover_art_url} title={r.title} />
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm text-fg truncate">
-                            {r.title}
-                          </div>
-                          <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-fg-muted">
-                            <span className="marker">{TYPE_LABEL[r.type]}</span>
-                            {r.release_date ? (
-                              <span className="num">
-                                {r.status === "released"
-                                  ? formatYear(r.release_date)
-                                  : formatDateShort(r.release_date)}
-                              </span>
-                            ) : null}
-                          </div>
+                      <CoverArt url={r.cover_art_url} title={r.title} />
+                      <div className="mt-3">
+                        <h3
+                          className="font-display uppercase text-fg leading-[0.95] tracking-[-0.02em] line-clamp-2"
+                          style={{ fontSize: 18 }}
+                        >
+                          {r.title}
+                        </h3>
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <span className="bracket-text font-mono text-fg-dim">
+                            <span className="opacity-60">[</span>
+                            {TYPE_LABEL[r.type]}
+                            <span className="opacity-60">]</span>
+                          </span>
+                          <span className="text-fg-faint">·</span>
+                          <span className="num text-[11px] text-fg-dim">
+                            {r.release_date
+                              ? r.status === "released"
+                                ? formatYear(r.release_date)
+                                : formatDateCompact(r.release_date)
+                              : "TBD"}
+                          </span>
                         </div>
+                        {r.collaborators?.length ? (
+                          <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.06em] text-fg-faint truncate">
+                            WITH {r.collaborators.join(", ")}
+                          </div>
+                        ) : null}
                       </div>
                     </Link>
                   </li>
                 ))}
                 {items.length === 0 ? (
-                  <li className="px-2 py-3 text-xs text-fg-dim text-center">
-                    Empty
+                  <li className="bg-page py-6 text-center font-mono uppercase tracking-[0.12em] text-[10px] text-fg-faint opacity-60">
+                    {"// EMPTY"}
                   </li>
                 ) : null}
               </ul>
@@ -88,8 +103,8 @@ function CoverArt({
 }) {
   if (!url) {
     return (
-      <div className="size-10 shrink-0 grid place-items-center rounded-sm bg-bg-elev border border-line">
-        <Disc3 className="size-4 text-fg-dim" aria-hidden />
+      <div className="aspect-square grid place-items-center bg-surface-2 border border-line">
+        <Disc3 className="size-8 text-fg-faint" aria-hidden />
       </div>
     );
   }
@@ -98,7 +113,7 @@ function CoverArt({
     <img
       src={url}
       alt={`${title} cover art`}
-      className="size-10 shrink-0 rounded-sm border border-line object-cover"
+      className="aspect-square w-full object-cover border border-line"
     />
   );
 }

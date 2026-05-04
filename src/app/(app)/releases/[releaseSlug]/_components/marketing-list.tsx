@@ -14,6 +14,8 @@ import {
   MARKETING_CHANNEL_LABEL as CHANNEL_LABEL,
   MARKETING_CHANNEL_ORDER as CHANNEL_ORDER,
 } from "@/lib/data/release-shared";
+import { FilterBracket } from "@/components/ui/status-bracket";
+import { formatDateCompact } from "@/lib/format";
 
 export function MarketingList({
   releaseId,
@@ -39,57 +41,49 @@ export function MarketingList({
     filter === "all" ? tasks : tasks.filter((t) => t.channel === filter);
 
   return (
-    <div className="rounded-md border border-line bg-bg-surface">
-      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-2.5">
-        <div className="flex items-center gap-1.5 flex-wrap">
+    <div className="border border-line bg-surface">
+      <header className="px-4 md:px-5 py-3 border-b border-line">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-1 flex-wrap overflow-x-auto -mx-1 px-1">
+            <FilterBracket
+              active={filter === "all"}
+              count={tasks.length}
+              onClick={() => setFilter("all")}
+            >
+              ALL
+            </FilterBracket>
+            {CHANNEL_ORDER.map((c) => {
+              const count = tasks.filter((t) => t.channel === c).length;
+              if (count === 0) return null;
+              return (
+                <FilterBracket
+                  key={c}
+                  active={filter === c}
+                  count={count}
+                  onClick={() => setFilter(c)}
+                >
+                  {CHANNEL_LABEL[c].toUpperCase()}
+                </FilterBracket>
+              );
+            })}
+          </div>
           <button
             type="button"
-            onClick={() => setFilter("all")}
-            className={
-              "h-7 rounded-sm border px-2 text-[11px] font-medium uppercase tracking-wide transition-colors " +
-              (filter === "all"
-                ? "border-line-strong bg-bg-elev text-fg"
-                : "border-line text-fg-muted hover:border-line-strong hover:text-fg")
-            }
+            onClick={() => setAdding((v) => !v)}
+            className="bracket-text font-mono h-7 inline-flex items-center px-2 border border-line text-fg hover:border-line-strong hover:bg-surface-2 [transition-duration:80ms]"
           >
-            All ({tasks.length})
+            <span className="opacity-60">[ </span>
+            {adding ? "CLOSE" : "+ ADD TASK"}
+            <span className="opacity-60"> ]</span>
           </button>
-          {CHANNEL_ORDER.map((c) => {
-            const count = tasks.filter((t) => t.channel === c).length;
-            if (count === 0) return null;
-            const active = filter === c;
-            return (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setFilter(c)}
-                className={
-                  "h-7 rounded-sm border px-2 text-[11px] font-medium uppercase tracking-wide transition-colors " +
-                  (active
-                    ? "border-line-strong bg-bg-elev text-fg"
-                    : "border-line text-fg-muted hover:border-line-strong hover:text-fg")
-                }
-              >
-                {CHANNEL_LABEL[c]} {count > 0 ? `(${count})` : ""}
-              </button>
-            );
-          })}
         </div>
-        <button
-          type="button"
-          onClick={() => setAdding((v) => !v)}
-          className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-fg-muted transition-colors hover:bg-bg-elev hover:text-fg"
-        >
-          {adding ? <X className="size-3" /> : <Plus className="size-3" />}
-          {adding ? "Close" : "Add task"}
-        </button>
       </header>
 
       {filtered.length === 0 && !adding ? (
-        <p className="px-4 py-6 text-xs text-fg-dim text-center">
+        <p className="px-4 py-6 marker text-center">
           {filter === "all"
-            ? "No marketing tasks yet. Click Add task."
-            : "No tasks in this channel."}
+            ? "NO MARKETING TASKS YET. CLICK ADD TASK."
+            : "NO TASKS IN THIS CHANNEL."}
         </p>
       ) : null}
 
@@ -97,18 +91,23 @@ export function MarketingList({
         {filtered.map((t) => (
           <li
             key={t.id}
-            className="grid grid-cols-[80px_1fr_auto_auto_auto] items-center gap-3 px-4 py-2.5 text-sm"
+            className="grid grid-cols-[80px_1fr_auto_auto_auto] items-center gap-3 px-4 md:px-5 py-3 hover:bg-page/40 [transition-duration:80ms]"
           >
-            <span className="marker">{CHANNEL_LABEL[t.channel]}</span>
-            <span className="min-w-0 truncate text-fg">{t.task}</span>
-            <span className="num text-xs text-fg-muted">
-              {t.scheduled_for ?? ""}
+            <span className="font-mono uppercase tracking-[0.08em] text-[10px] text-fg-dim">
+              {CHANNEL_LABEL[t.channel].toUpperCase()}
+            </span>
+            <span className="min-w-0 truncate font-mono text-[12px] text-fg uppercase tracking-[0.04em]">
+              {t.task}
+            </span>
+            <span className="num font-mono text-[10px] text-fg-faint hidden sm:inline">
+              {t.scheduled_for ? formatDateCompact(t.scheduled_for) : ""}
             </span>
             <MarketingStatusControl
               taskId={t.id}
               releaseSlug={releaseSlug}
               status={t.status}
             />
+            <Monogram value={null} />
             <DeleteButton
               onConfirm={async () => {
                 await removeMarketing(t.id, releaseSlug);
@@ -121,25 +120,29 @@ export function MarketingList({
       {adding ? (
         <form
           action={formAction}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 border-t border-line bg-bg-base/40"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 md:p-5 border-t border-line bg-page/40"
         >
-          <Field label="Channel">
-            <select name="channel" defaultValue="instagram" className={fieldClass}>
+          <Field label="CHANNEL">
+            <select
+              name="channel"
+              defaultValue="instagram"
+              className={fieldClass}
+            >
               {CHANNEL_ORDER.map((c) => (
                 <option key={c} value={c}>
-                  {CHANNEL_LABEL[c]}
+                  {CHANNEL_LABEL[c].toUpperCase()}
                 </option>
               ))}
             </select>
           </Field>
-          <Field label="Status">
+          <Field label="STATUS">
             <select name="status" defaultValue="todo" className={fieldClass}>
-              <option value="todo">To do</option>
-              <option value="in_progress">In progress</option>
-              <option value="done">Done</option>
+              <option value="todo">TO DO</option>
+              <option value="in_progress">IN PROGRESS</option>
+              <option value="done">DONE</option>
             </select>
           </Field>
-          <Field label="Task" full>
+          <Field label="TASK" full>
             <input
               name="task"
               required
@@ -147,35 +150,37 @@ export function MarketingList({
               className={fieldClass}
             />
           </Field>
-          <Field label="Scheduled for">
+          <Field label="SCHEDULED FOR">
             <input
               name="scheduled_for"
               type="date"
               className={fieldClass + " num"}
             />
           </Field>
-          <Field label="Notes" full>
+          <Field label="NOTES" full>
             <textarea name="notes" rows={2} className={textareaClass} />
           </Field>
           {state.status === "error" ? (
-            <p className="col-span-full text-xs text-accent">{state.message}</p>
+            <p className="col-span-full marker text-cancelled">
+              {state.message}
+            </p>
           ) : null}
           <div className="col-span-full flex items-center gap-2 pt-1">
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
+              className="bracket-text font-mono h-9 inline-flex items-center gap-1.5 px-3 border border-line bg-fg text-page hover:bg-accent hover:text-fg disabled:opacity-60 [transition-duration:80ms]"
             >
-              {pending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-              Add task
+              {pending ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" />}
+              <span>ADD TASK</span>
             </button>
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm text-fg-muted hover:bg-bg-elev"
+              className="bracket-text font-mono h-9 inline-flex items-center gap-1.5 px-3 text-fg-dim hover:text-fg hover:bg-surface-2 [transition-duration:80ms]"
             >
-              <X className="size-4" />
-              Cancel
+              <X className="size-3" />
+              CANCEL
             </button>
           </div>
         </form>
@@ -184,11 +189,32 @@ export function MarketingList({
   );
 }
 
+function Monogram({ value }: { value: string | null }) {
+  if (!value) {
+    return (
+      <span className="size-6 grid place-items-center border border-line text-fg-faint font-mono text-[9px]">
+        —
+      </span>
+    );
+  }
+  const initials = value
+    .split(/[\s.@]/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase())
+    .join("");
+  return (
+    <span className="size-6 grid place-items-center border border-line text-fg font-mono text-[10px] uppercase tracking-[0.04em]">
+      {initials}
+    </span>
+  );
+}
+
 const fieldClass =
-  "h-9 w-full rounded-md border border-line bg-bg-input px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-9 w-full border border-line bg-page px-2.5 font-mono text-[12px] uppercase text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
 
 const textareaClass =
-  "w-full rounded-md border border-line bg-bg-input px-2.5 py-1.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong resize-y";
+  "w-full border border-line bg-page px-2.5 py-1.5 font-mono text-[12px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong resize-y";
 
 function Field({
   label,
@@ -201,7 +227,7 @@ function Field({
 }) {
   return (
     <label className={"flex flex-col gap-1" + (full ? " sm:col-span-2" : "")}>
-      <span className="marker">{label}</span>
+      <span className="label">{label}</span>
       {children}
     </label>
   );
