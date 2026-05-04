@@ -1,21 +1,20 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import { StatusPill } from "@/components/ui/status-pill";
+import { StatusBracket, STATUS_TONE } from "@/components/ui/status-bracket";
 import {
   formatCapacity,
-  formatDateShort,
+  formatDate,
   formatMoney,
 } from "@/lib/format";
 import type { Show, ShowStatus } from "@/lib/supabase/types";
 
 const STATUS_LABEL: Record<ShowStatus, string> = {
-  lead: "Lead",
-  offered: "Offered",
-  holding: "Holding",
-  confirmed: "Confirmed",
-  contracted: "Contracted",
-  completed: "Completed",
-  cancelled: "Cancelled",
+  lead: "LEAD",
+  offered: "OFFERED",
+  holding: "HOLDING",
+  confirmed: "CONFIRMED",
+  contracted: "CONTRACTED",
+  completed: "COMPLETED",
+  cancelled: "CANCELLED",
 };
 
 export function ShowTable({
@@ -29,60 +28,61 @@ export function ShowTable({
   if (allEmpty) return <>{empty}</>;
 
   return (
-    <div className="border-y border-line md:rounded-md md:border md:mx-6 md:my-4 overflow-hidden">
+    <div className="border-y border-line md:border-x md:mx-6 md:my-4">
       {Array.from(groups.entries()).map(([status, shows]) => {
         if (shows.length === 0) return null;
         return (
           <section key={status}>
-            <header className="flex items-center justify-between border-b border-line bg-bg-elev/50 px-3 py-1.5">
-              <div className="flex items-center gap-2">
-                <span className="marker">{STATUS_LABEL[status]}</span>
-                <span className="text-fg-dim text-xs num">
-                  {shows.length}
-                </span>
-              </div>
+            <header className="flex items-center gap-2 px-4 md:px-3 pt-8 pb-2 first-of-type:pt-4">
+              <span className="font-mono uppercase tracking-[0.08em] text-[11px] text-fg-dim">
+                {STATUS_LABEL[status]}
+              </span>
+              <span className="text-fg-faint">/</span>
+              <span className="num text-[11px] text-fg-faint">
+                {shows.length.toString().padStart(2, "0")}
+              </span>
             </header>
-            <ul className="divide-y divide-line">
-              {shows.map((s) => (
-                <li key={s.id}>
-                  <Link
-                    href={`/tour/${s.id}`}
-                    className="grid grid-cols-[80px_1fr_auto] md:grid-cols-[110px_minmax(0,2fr)_minmax(0,1fr)_90px_120px_60px] items-center gap-3 px-3 py-2.5 text-sm transition-colors hover:bg-bg-elev focus-visible:bg-bg-elev"
-                  >
-                    <span className="num text-fg-muted text-xs md:text-sm">
-                      {formatDateShort(s.show_date)}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-fg">
-                        {s.city ?? "TBD"}
+            <div className="border-t border-line">
+              <ul>
+                {shows.map((s) => (
+                  <li key={s.id} className="border-b border-line last:border-b-0">
+                    <Link
+                      href={`/tour/${s.id}`}
+                      className="grid grid-cols-[88px_1fr_auto] sm:grid-cols-[120px_minmax(0,2fr)_36px_minmax(70px,80px)_120px_110px] items-center gap-3 px-4 md:px-3 py-3 hover:bg-surface [transition-duration:80ms]"
+                    >
+                      <span className="num font-mono text-[11px] text-fg-dim uppercase tracking-[0.06em]">
+                        {formatDate(s.show_date)}
                       </span>
-                      <span className="block truncate text-xs text-fg-muted">
-                        {s.venue_name ?? "Venue TBD"}
+                      <span className="min-w-0">
+                        <span className="block truncate font-mono text-[12px] text-fg">
+                          {(s.city ?? "TBD").toUpperCase()}
+                        </span>
+                        <span className="block truncate font-mono text-[11px] text-fg-dim">
+                          {(s.venue_name ?? "Venue TBD").toUpperCase()}
+                        </span>
                       </span>
-                    </span>
-                    <span className="hidden md:inline truncate text-xs text-fg-muted">
-                      {s.country ?? ""}
-                    </span>
-                    <span className="hidden md:inline num text-fg-muted text-xs">
-                      {formatCapacity(s.capacity)}
-                    </span>
-                    <span className="hidden md:inline num text-fg-muted text-xs">
-                      {formatMoney(
-                        s.fee_confirmed ?? s.fee_offered,
-                        s.currency,
-                      )}
-                    </span>
-                    <span className="flex items-center justify-end gap-1.5">
-                      <StatusPill status={s.status} />
-                      <ChevronRight
-                        className="size-4 text-fg-dim hidden md:inline"
-                        aria-hidden
-                      />
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                      <span className="hidden sm:inline font-mono text-[11px] text-fg-faint">
+                        {(s.country ?? "").toUpperCase()}
+                      </span>
+                      <span className="hidden sm:inline num font-mono text-[11px] text-fg-dim">
+                        {s.capacity ? formatCapacity(s.capacity) : "."}
+                      </span>
+                      <span className="hidden sm:inline num font-mono text-[11px] text-fg-dim">
+                        {formatMoney(
+                          s.fee_confirmed ?? s.fee_offered,
+                          s.currency,
+                        )}
+                      </span>
+                      <span className="flex items-center justify-end">
+                        <StatusBracket tone={STATUS_TONE[s.status] ?? "default"}>
+                          {STATUS_LABEL[s.status]}
+                        </StatusBracket>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
         );
       })}

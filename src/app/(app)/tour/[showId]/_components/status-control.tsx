@@ -3,17 +3,17 @@
 import { useTransition, useState } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { setShowStatus } from "../actions";
-import { StatusPill } from "@/components/ui/status-pill";
+import { StatusBracket, STATUS_TONE } from "@/components/ui/status-bracket";
 import type { ShowStatus } from "@/lib/supabase/types";
 
 const ALL: { value: ShowStatus; label: string }[] = [
-  { value: "lead", label: "Lead" },
-  { value: "offered", label: "Offered" },
-  { value: "holding", label: "Holding" },
-  { value: "confirmed", label: "Confirmed" },
-  { value: "contracted", label: "Contracted" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "lead", label: "LEAD" },
+  { value: "offered", label: "OFFERED" },
+  { value: "holding", label: "HOLDING" },
+  { value: "confirmed", label: "CONFIRMED" },
+  { value: "contracted", label: "CONTRACTED" },
+  { value: "completed", label: "COMPLETED" },
+  { value: "cancelled", label: "CANCELLED" },
 ];
 
 export function StatusControl({
@@ -45,31 +45,34 @@ export function StatusControl({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 rounded-md border border-line bg-bg-surface px-1.5 py-0.5 transition-colors hover:border-line-strong"
+        className="inline-flex items-center gap-1.5 border border-line bg-page px-2 h-7 hover:border-line-strong [transition-duration:80ms]"
       >
-        <StatusPill status={optimistic} />
+        <StatusBracket tone={STATUS_TONE[optimistic] ?? "default"}>
+          {ALL.find((x) => x.value === optimistic)?.label ?? optimistic.toUpperCase()}
+        </StatusBracket>
         {pending ? (
-          <Loader2 className="size-3 animate-spin text-fg-muted" aria-hidden />
+          <Loader2 className="size-3 animate-spin text-fg-dim" aria-hidden />
         ) : (
-          <ChevronDown className="size-3 text-fg-muted" aria-hidden />
+          <ChevronDown className="size-3 text-fg-dim" aria-hidden />
         )}
       </button>
       {open ? (
         <div
           role="menu"
-          className="absolute z-30 mt-1 w-44 rounded-md border border-line bg-bg-surface shadow-2xl"
+          className="absolute z-30 mt-1 w-48 border border-line bg-page shadow-2xl"
           onMouseLeave={() => setOpen(false)}
         >
-          <ul className="p-1">
+          <ul>
             {ALL.map((s) => (
               <li key={s.value}>
                 <button
                   type="button"
                   onClick={() => pick(s.value)}
-                  className="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-sm text-fg-muted transition-colors hover:bg-bg-elev hover:text-fg"
+                  className="flex w-full items-center justify-between px-3 py-2 hover:bg-surface-2 [transition-duration:80ms]"
                 >
-                  <span>{s.label}</span>
-                  <StatusPill status={s.value} />
+                  <StatusBracket tone={STATUS_TONE[s.value] ?? "default"}>
+                    {s.label}
+                  </StatusBracket>
                 </button>
               </li>
             ))}

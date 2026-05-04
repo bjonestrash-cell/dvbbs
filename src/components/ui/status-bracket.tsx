@@ -111,10 +111,10 @@ export function FilterBracket({
       type={type}
       onClick={onClick}
       className={cn(
-        "bracket-text font-mono h-7 inline-flex items-center px-2 transition-colors",
+        "bracket-text font-mono h-7 inline-flex items-center px-2 border [transition-duration:80ms]",
         active
-          ? "bg-fg text-page"
-          : "text-fg hover:bg-surface-2",
+          ? "bg-fg text-page border-fg"
+          : "border-line text-fg hover:border-line-strong hover:bg-surface-2",
         className,
       )}
     >

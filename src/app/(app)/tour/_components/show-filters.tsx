@@ -4,19 +4,23 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ShowStatus } from "@/lib/supabase/types";
-import { cn } from "@/lib/utils/cn";
+import { FilterBracket } from "@/components/ui/status-bracket";
 
 const STATUSES: { value: ShowStatus; label: string }[] = [
-  { value: "lead", label: "Lead" },
-  { value: "offered", label: "Offered" },
-  { value: "holding", label: "Holding" },
-  { value: "confirmed", label: "Confirmed" },
-  { value: "contracted", label: "Contracted" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "lead", label: "LEAD" },
+  { value: "offered", label: "OFFERED" },
+  { value: "holding", label: "HOLDING" },
+  { value: "confirmed", label: "CONFIRMED" },
+  { value: "contracted", label: "CONTRACTED" },
+  { value: "completed", label: "COMPLETED" },
+  { value: "cancelled", label: "CANCELLED" },
 ];
 
-export function ShowFilters() {
+export function ShowFilters({
+  counts,
+}: {
+  counts?: Partial<Record<ShowStatus, number>>;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
@@ -69,10 +73,13 @@ export function ShowFilters() {
   const anyFilter = selected.length > 0 || q || from || to;
 
   return (
-    <div className="flex flex-col gap-2 px-4 md:px-6 py-3 border-b border-line bg-bg-base">
+    <div className="flex flex-col gap-2 px-4 md:px-6 py-3 border-b border-line bg-page">
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-48 max-w-sm">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-fg-dim" aria-hidden />
+          <Search
+            className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-fg-faint"
+            aria-hidden
+          />
           <input
             type="search"
             value={searchText}
@@ -81,8 +88,8 @@ export function ShowFilters() {
               if (e.key === "Enter") setSearch(searchText);
             }}
             onBlur={() => setSearch(searchText)}
-            placeholder="Search city or venue"
-            className="h-8 w-full rounded-md border border-line bg-bg-input pl-8 pr-2 text-sm placeholder:text-fg-dim outline-none focus:border-line-strong"
+            placeholder="SEARCH CITY OR VENUE"
+            className="h-8 w-full border border-line bg-surface pl-8 pr-2 font-mono uppercase tracking-[0.08em] text-[11px] placeholder:text-fg-faint outline-none focus:border-line-strong"
           />
         </div>
 
@@ -90,15 +97,17 @@ export function ShowFilters() {
           type="date"
           value={from}
           onChange={(e) => setRange("from", e.target.value)}
-          className="h-8 rounded-md border border-line bg-bg-input px-2 text-sm text-fg outline-none focus:border-line-strong num"
+          className="h-8 border border-line bg-surface px-2 font-mono text-[11px] text-fg outline-none focus:border-line-strong num"
           aria-label="From date"
         />
-        <span className="text-fg-dim text-xs">to</span>
+        <span className="text-fg-faint text-[10px] uppercase tracking-[0.12em]">
+          TO
+        </span>
         <input
           type="date"
           value={to}
           onChange={(e) => setRange("to", e.target.value)}
-          className="h-8 rounded-md border border-line bg-bg-input px-2 text-sm text-fg outline-none focus:border-line-strong num"
+          className="h-8 border border-line bg-surface px-2 font-mono text-[11px] text-fg outline-none focus:border-line-strong num"
           aria-label="To date"
         />
 
@@ -106,33 +115,25 @@ export function ShowFilters() {
           <button
             type="button"
             onClick={clearAll}
-            className="h-8 inline-flex items-center gap-1 rounded-md px-2 text-xs text-fg-muted transition-colors hover:bg-bg-elev hover:text-fg"
+            className="h-8 inline-flex items-center gap-1 px-2 font-mono uppercase tracking-[0.08em] text-[10px] text-fg-dim hover:text-fg [transition-duration:80ms]"
           >
             <X className="size-3" aria-hidden />
-            Clear
+            CLEAR
           </button>
         ) : null}
       </div>
 
-      <div className="flex flex-wrap gap-1">
-        {STATUSES.map((s) => {
-          const active = selected.includes(s.value);
-          return (
-            <button
-              key={s.value}
-              type="button"
-              onClick={() => toggleStatus(s.value)}
-              className={cn(
-                "h-7 rounded-sm border px-2 text-[11px] font-medium uppercase tracking-wide transition-colors",
-                active
-                  ? "border-line-strong bg-bg-elev text-fg"
-                  : "border-line text-fg-muted hover:border-line-strong hover:text-fg",
-              )}
-            >
-              {s.label}
-            </button>
-          );
-        })}
+      <div className="flex flex-wrap gap-1 -mx-1 px-1 overflow-x-auto sm:overflow-visible sm:flex-wrap">
+        {STATUSES.map((s) => (
+          <FilterBracket
+            key={s.value}
+            active={selected.includes(s.value)}
+            count={counts?.[s.value] ?? null}
+            onClick={() => toggleStatus(s.value)}
+          >
+            {s.label}
+          </FilterBracket>
+        ))}
       </div>
     </div>
   );
