@@ -5,22 +5,26 @@ type Variant = "primary" | "bracket" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const variantClass: Record<Variant, string> = {
+  // Primary CTA, inverted block. Warm near-black surface, cream text.
   primary:
-    "bg-fg text-page hover:bg-accent hover:text-fg",
+    "bg-inverted text-fg-inverted hover:bg-fg",
+  // Refined hairline outline button. The default visual.
   bracket:
-    "bg-transparent text-fg border border-line hover:bg-fg hover:text-page hover:border-fg",
-  // "secondary" is the legacy alias for the bracket variant.
+    "bg-surface text-fg border border-line hover:border-line-strong hover:bg-surface-2",
+  // Legacy alias for outline button.
   secondary:
-    "bg-transparent text-fg border border-line hover:bg-fg hover:text-page hover:border-fg",
-  ghost: "text-fg hover:bg-surface-2",
+    "bg-surface text-fg border border-line hover:border-line-strong hover:bg-surface-2",
+  // Quiet text-only button.
+  ghost: "text-fg-dim hover:text-fg hover:bg-surface-2",
+  // Destructive outline.
   danger:
-    "bg-transparent text-cancelled border border-line hover:bg-cancelled hover:text-page hover:border-cancelled",
+    "bg-surface text-cancelled border border-line hover:border-cancelled",
 };
 
 const sizeClass: Record<Size, string> = {
-  sm: "h-8 px-3 text-[11px]",
-  md: "h-10 px-4 text-[12px]",
-  lg: "h-12 px-5 text-[13px]",
+  sm: "h-8 px-3 text-[11px] tracking-[0.06em]",
+  md: "h-10 px-4 text-[12px] tracking-[0.06em]",
+  lg: "h-12 px-5 text-[13px] tracking-[0.06em]",
 };
 
 export function buttonClasses({
@@ -33,9 +37,9 @@ export function buttonClasses({
   className?: string;
 } = {}) {
   return cn(
-    "inline-flex items-center justify-center gap-2 font-mono uppercase tracking-[0.08em] font-medium transition-colors",
-    "disabled:cursor-not-allowed disabled:opacity-50",
+    "inline-flex items-center justify-center gap-2 font-mono uppercase font-medium",
     "[transition-duration:80ms]",
+    "disabled:cursor-not-allowed disabled:opacity-50",
     variantClass[variant],
     sizeClass[size],
     className,
@@ -59,27 +63,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={buttonClasses({ variant, size, className })}
         {...rest}
       >
-        {variant === "bracket" ? (
-          <>
-            <span className="opacity-60">[</span>
-            <span>{children}</span>
-            <span className="opacity-60">]</span>
-          </>
-        ) : (
-          children
-        )}
+        {children}
       </button>
     );
   },
 );
 
-/** Wrap any element (e.g., <Link>) with bracket-button styling and the [..] decorations. */
+/** Backward-compat shell, now a no-op pass-through. The bracket [] decorations
+ *  belonged to the prior brutalist pass and have been removed. */
 export function BracketShell({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <span className="opacity-60">[</span>
-      <span>{children}</span>
-      <span className="opacity-60">]</span>
-    </>
-  );
+  return <>{children}</>;
 }

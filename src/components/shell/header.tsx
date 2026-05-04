@@ -14,17 +14,15 @@ export async function Header() {
     })),
   ]);
 
-  const name = (member?.display_name || member?.email?.split("@")[0] || "DEMO")
-    .toUpperCase();
+  const rawName =
+    member?.display_name || member?.email?.split("@")[0] || "DEMO";
 
   return (
-    <header
-      className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-line bg-page/95 px-4 md:px-6 backdrop-blur supports-[backdrop-filter]:bg-page/85"
-    >
+    <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-page/90 px-6 md:px-10 py-4 backdrop-blur supports-[backdrop-filter]:bg-page/75">
       <MobileMenuButton />
       <div className="ml-auto min-w-0">
         <PersonalizedStatus
-          name={name}
+          name={rawName}
           nextShow={dashboard.nextShow}
           onTheRoadDays={dashboard.onTheRoadDays}
         />

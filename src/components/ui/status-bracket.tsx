@@ -1,12 +1,14 @@
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Bracketed status text. Replaces all status pill chips across the app.
+ * Status indicator. Pivoted from bracketed text to a small colored dot
+ * followed by a mono label. Export name is kept so existing call sites
+ * (StatusBracket / FilterBracket) continue to compile.
  *
- *   <StatusBracket tone="confirmed">CONFIRMED</StatusBracket>  =>  [CONFIRMED]
+ *   <StatusBracket tone="confirmed">Confirmed</StatusBracket>  =>  ● Confirmed
  *
- * Geist Mono, 10px, uppercase, tracking 0.08em. No padding, no border, no
- * background. Color comes from the tone token.
+ * Geist Mono, 10px, uppercase, tracking 0.12em. The dot uses the tone color,
+ * the label uses --text-secondary.
  */
 export type Tone =
   | "confirmed"
@@ -26,57 +28,53 @@ export type Tone =
   | "default"
   | "accent";
 
-const TONE: Record<Tone, string> = {
-  confirmed: "text-confirmed",
-  contracted: "text-contracted",
-  holding: "text-holding",
-  offered: "text-offered",
-  lead: "text-lead",
-  completed: "text-completed",
-  cancelled: "text-cancelled",
-  not_started: "text-not-started",
-  in_progress: "text-in-progress",
-  review: "text-review",
-  approved: "text-approved",
-  final: "text-final",
-  todo: "text-todo",
-  done: "text-done",
-  default: "text-fg",
-  accent: "text-accent",
+const DOT: Record<Tone, string> = {
+  confirmed: "bg-confirmed",
+  contracted: "bg-contracted",
+  holding: "bg-holding",
+  offered: "bg-offered",
+  lead: "bg-lead",
+  completed: "bg-completed",
+  cancelled: "bg-cancelled",
+  not_started: "bg-not-started",
+  in_progress: "bg-in-progress",
+  review: "bg-review",
+  approved: "bg-approved",
+  final: "bg-final",
+  todo: "bg-todo",
+  done: "bg-done",
+  default: "bg-fg-faint",
+  accent: "bg-accent",
 };
 
 export function StatusBracket({
   children,
   tone = "default",
-  spaced = false,
   strikethrough,
   className,
 }: {
   children: React.ReactNode;
   tone?: Tone;
+  /** legacy prop, kept for backward compat */
   spaced?: boolean;
   strikethrough?: boolean;
   className?: string;
 }) {
-  const open = spaced ? "[ " : "[";
-  const close = spaced ? " ]" : "]";
   return (
     <span
       className={cn(
-        "bracket-text font-mono",
-        TONE[tone],
+        "inline-flex items-center gap-1.5 font-mono uppercase tracking-[0.12em] text-[10px] text-fg-dim",
         strikethrough && "line-through",
         className,
       )}
     >
-      <span className="opacity-60">{open}</span>
-      {children}
-      <span className="opacity-60">{close}</span>
+      <span aria-hidden className={cn("size-1.5 rounded-full", DOT[tone])} />
+      <span>{children}</span>
     </span>
   );
 }
 
-/** Bracketed filter pill, supports active state and optional count. */
+/** Filter pill, quiet-luxury rounded full with hairline border. */
 export function FilterBracket({
   active,
   count,
@@ -92,33 +90,27 @@ export function FilterBracket({
   className?: string;
   type?: "button" | "submit";
 }) {
-  const label = (
-    <>
-      <span className="opacity-60">{"[ "}</span>
-      <span>{children}</span>
-      {typeof count === "number" && count > 0 ? (
-        <>
-          <span className="opacity-60"> · </span>
-          <span className="num">{count.toString().padStart(2, "0")}</span>
-        </>
-      ) : null}
-      <span className="opacity-60">{" ]"}</span>
-    </>
-  );
-
   return (
     <button
       type={type}
       onClick={onClick}
       className={cn(
-        "bracket-text font-mono h-7 inline-flex items-center px-2 border [transition-duration:80ms]",
+        "inline-flex items-center gap-1.5 rounded-full border h-8 px-4 font-mono uppercase tracking-[0.06em] text-[11px] [transition-duration:80ms]",
         active
-          ? "bg-fg text-page border-fg"
-          : "border-line text-fg hover:border-line-strong hover:bg-surface-2",
+          ? "bg-fg text-fg-inverted border-fg"
+          : "bg-transparent border-line text-fg-dim hover:border-line-strong hover:text-fg",
         className,
       )}
     >
-      {label}
+      <span>{children}</span>
+      {typeof count === "number" && count > 0 ? (
+        <>
+          <span aria-hidden className="opacity-50">·</span>
+          <span className="num text-[10px]">
+            {count.toString().padStart(2, "0")}
+          </span>
+        </>
+      ) : null}
     </button>
   );
 }
@@ -134,16 +126,13 @@ export const STATUS_TONE: Record<string, Tone> = {
   cancelled: "cancelled",
   paid: "confirmed",
   unpaid: "holding",
-  // Asset statuses
   not_started: "not_started",
   in_progress: "in_progress",
   review: "review",
   approved: "approved",
   final: "final",
-  // Marketing statuses
   todo: "todo",
   done: "done",
-  // Release statuses
   idea: "lead",
   mixing: "offered",
   mastered: "holding",

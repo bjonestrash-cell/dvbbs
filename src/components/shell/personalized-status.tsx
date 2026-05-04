@@ -12,35 +12,45 @@ type NextShow = {
 };
 
 const TZ_CITY: Record<string, string> = {
-  "America/Los_Angeles": "LAGUNA BEACH",
-  "America/New_York": "NEW YORK",
-  "America/Chicago": "CHICAGO",
-  "America/Denver": "DENVER",
-  "America/Toronto": "TORONTO",
-  "America/Vancouver": "VANCOUVER",
-  "America/Mexico_City": "MEXICO CITY",
-  "Europe/London": "LONDON",
-  "Europe/Berlin": "BERLIN",
-  "Europe/Amsterdam": "AMSTERDAM",
-  "Europe/Madrid": "IBIZA",
-  "Europe/Paris": "PARIS",
-  "Europe/Brussels": "BRUSSELS",
-  "Europe/Rome": "ROME",
-  "Europe/Vienna": "VIENNA",
-  "Asia/Tokyo": "TOKYO",
-  "Asia/Singapore": "SINGAPORE",
-  "Asia/Dubai": "DUBAI",
-  "Australia/Sydney": "SYDNEY",
+  "America/Los_Angeles": "Laguna Beach",
+  "America/New_York": "New York",
+  "America/Chicago": "Chicago",
+  "America/Denver": "Denver",
+  "America/Toronto": "Toronto",
+  "America/Vancouver": "Vancouver",
+  "America/Mexico_City": "Mexico City",
+  "Europe/London": "London",
+  "Europe/Berlin": "Berlin",
+  "Europe/Amsterdam": "Amsterdam",
+  "Europe/Madrid": "Ibiza",
+  "Europe/Paris": "Paris",
+  "Europe/Brussels": "Brussels",
+  "Europe/Rome": "Rome",
+  "Europe/Vienna": "Vienna",
+  "Asia/Tokyo": "Tokyo",
+  "Asia/Singapore": "Singapore",
+  "Asia/Dubai": "Dubai",
+  "Australia/Sydney": "Sydney",
 };
 
 function tzToCity(tz: string): string {
   if (TZ_CITY[tz]) return TZ_CITY[tz];
   const tail = tz.split("/").pop();
-  return tail ? tail.replace(/_/g, " ").toUpperCase() : "ROAMING";
+  if (!tail) return "Roaming";
+  return tail
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/(^|\s)\S/g, (c) => c.toUpperCase());
 }
 
 function pad(n: number) {
   return n.toString().padStart(2, "0");
+}
+
+function toName(name: string): string {
+  if (!name) return "Demo";
+  const lower = name.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
 export function PersonalizedStatus({
@@ -61,7 +71,7 @@ export function PersonalizedStatus({
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
       setCity(tzToCity(tz));
     } catch {
-      setCity("ROAMING");
+      setCity("Roaming");
     }
     const tick = () => {
       const d = new Date();
@@ -76,42 +86,35 @@ export function PersonalizedStatus({
   const countdown = nextShow
     ? formatCountdown(nextShow.date, nextShow.time, now)
     : null;
+  const labelDisplay = toName(name);
+  const venueDisplay = nextShow ? toName(nextShow.label) : null;
+  const shortCountdown = countdown
+    ? countdown.split(" ").slice(0, 2).join(" ")
+    : null;
 
   return (
-    <div className="text-right font-mono text-[10px] uppercase tracking-[0.08em] leading-[1.5] text-fg-dim min-w-0">
-      <div className="flex items-baseline justify-end gap-2 truncate">
-        <span className="text-fg">{name}</span>
-        <span className="opacity-50">·</span>
-        <span className="num text-fg">{time}</span>
-        <span className="hidden sm:inline">{city}</span>
+    <div className="text-right min-w-0 leading-tight">
+      <div className="font-display text-[16px] text-fg leading-[1.1]">
+        {labelDisplay}
       </div>
-      <div className="hidden sm:flex items-baseline justify-end gap-2">
-        <span>ON THE ROAD,</span>
-        <span className="num text-fg">{onTheRoadDays}D</span>
-        <span className="opacity-50">|</span>
-        <span>NEXT,</span>
-        {nextShow && countdown ? (
+      <div className="mt-0.5 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-dim">
+        <span className="num">{time}</span>
+        <span className="opacity-50 mx-1.5">·</span>
+        <span>{city}</span>
+      </div>
+      <div className="hidden sm:block mt-1 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+        On the road,{" "}
+        <span className="num text-fg-dim">{onTheRoadDays}d</span>
+        <span className="opacity-50 mx-1.5">·</span>
+        Next,{" "}
+        {nextShow && shortCountdown ? (
           <>
-            <span className="text-fg truncate max-w-[120px] inline-block">
-              {nextShow.label}
-            </span>
-            <span className="opacity-50">/</span>
-            <span className="num text-fg">{countdown}</span>
+            <span className="text-fg-dim">{venueDisplay}</span>
+            <span className="opacity-50 mx-1">/</span>
+            <span className="num text-fg-dim">{shortCountdown}</span>
           </>
         ) : (
-          <span className="text-fg-faint">NO SHOW SCHEDULED</span>
-        )}
-      </div>
-      {/* Mobile compact line */}
-      <div className="sm:hidden truncate text-fg-dim">
-        {nextShow && countdown ? (
-          <>
-            NEXT, <span className="text-fg truncate">{nextShow.label}</span>
-            <span className="opacity-50"> / </span>
-            <span className="num text-fg">{countdown}</span>
-          </>
-        ) : (
-          <span className="text-fg-faint">NO SHOW SCHEDULED</span>
+          <span>None</span>
         )}
       </div>
     </div>

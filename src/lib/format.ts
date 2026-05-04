@@ -1,20 +1,20 @@
 import { format, parseISO, differenceInSeconds } from "date-fns";
 
-/** "FRI 18.05.26" club timetable format. */
+/** "Mon 18.05.26" club timetable, sentence case day abbrev. */
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return ".";
   try {
-    return format(parseISO(iso), "EEE dd.MM.yy").toUpperCase();
+    return format(parseISO(iso), "EEE dd.MM.yy");
   } catch {
     return iso;
   }
 }
 
-/** "FRIDAY 18 MAY 2026" full editorial date. */
+/** "Friday 18 May 2026" full editorial date, sentence case. */
 export function formatDateLong(iso: string | null | undefined): string {
   if (!iso) return ".";
   try {
-    return format(parseISO(iso), "EEEE dd LLLL yyyy").toUpperCase();
+    return format(parseISO(iso), "EEEE dd LLLL yyyy");
   } catch {
     return iso;
   }
@@ -40,10 +40,9 @@ export function formatYear(iso: string | null | undefined): string {
   }
 }
 
-/** "23:00" 24-hour HH:MM, accepts ISO times "23:00:00", or full ISO datetimes. */
+/** "23:00" 24-hour HH:MM. */
 export function formatTime(value: string | null | undefined): string {
   if (!value) return ".";
-  // Time-only string from Postgres time column, e.g. "23:00:00"
   if (/^\d{2}:\d{2}/.test(value)) return value.slice(0, 5);
   try {
     return format(parseISO(value), "HH:mm");
@@ -52,7 +51,7 @@ export function formatTime(value: string | null | undefined): string {
   }
 }
 
-/** "FRI 18.05.26 / 23:00" combined. */
+/** "Mon 18.05.26 / 23:00" combined. */
 export function formatDateTime(
   date: string | null | undefined,
   time: string | null | undefined,
@@ -77,10 +76,10 @@ export function formatMoney(
   return `${code} ${n}`;
 }
 
-/** "5,000 CAP" capacity with suffix. */
+/** "5,000 cap" capacity, lowercase suffix. */
 export function formatCapacity(n: number | null | undefined): string {
   if (n === null || n === undefined) return ".";
-  return `${new Intl.NumberFormat("en-US").format(n)} CAP`;
+  return `${new Intl.NumberFormat("en-US").format(n)} cap`;
 }
 
 /** Plain comma-separated number, e.g. "12,345". */
@@ -97,7 +96,7 @@ export function daysFromNow(iso: string | null | undefined): number | null {
   return Math.round((t - Date.now()) / 86_400_000);
 }
 
-/** Compute live "13D 04H 22M" countdown to a target ISO date+time. */
+/** "13d 04h 22m" live countdown. Lowercase units. */
 export function formatCountdown(
   isoDate: string | null | undefined,
   isoTime: string | null | undefined = null,
@@ -111,64 +110,65 @@ export function formatCountdown(
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  return `${pad(days)}D ${pad(hours)}H ${pad(minutes)}M`;
+  return `${pad(days)}d ${pad(hours)}h ${pad(minutes)}m`;
 }
 
-/** Compact countdown "13D" with no hours/minutes. */
+/** "13d" short countdown, or "21d ago". */
 export function formatCountdownDays(
   isoDate: string | null | undefined,
 ): string {
   const d = daysFromNow(isoDate);
   if (d === null) return ".";
-  if (d < 0) return `${Math.abs(d)}D AGO`;
-  return `${d}D`;
+  if (d < 0) return `${Math.abs(d)}d ago`;
+  return `${d}d`;
 }
 
-/** Distance from now, e.g. "12M AGO", "3H AGO". For activity feeds. */
+/** "12m ago" relative timestamp. Lowercase units. */
 export function formatRelative(iso: string | null | undefined): string {
   if (!iso) return ".";
   try {
     const seconds = differenceInSeconds(new Date(), parseISO(iso));
-    if (seconds < 60) return "JUST NOW";
+    if (seconds < 60) return "Just now";
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}M AGO`;
+    if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}H AGO`;
+    if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
-    if (days < 30) return `${days}D AGO`;
+    if (days < 30) return `${days}d ago`;
     return formatDateCompact(iso);
   } catch {
     return iso;
   }
 }
 
-/** Time of day greeting based on local hour. */
+/** Time of day greeting, sentence case. */
 export function greeting(now: Date = new Date()): string {
   const h = now.getHours();
-  if (h < 5) return "LATE NIGHT";
-  if (h < 12) return "GOOD MORNING";
-  if (h < 17) return "GOOD AFTERNOON";
-  if (h < 22) return "GOOD EVENING";
-  return "LATE NIGHT";
+  if (h < 5) return "Late night";
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  if (h < 22) return "Good evening";
+  return "Late night";
 }
 
 function pad(n: number): string {
   return n.toString().padStart(2, "0");
 }
 
-/** Build a Unicode block ASCII progress bar, e.g. "████░░░░░░ 40%". */
-export function asciiProgress(
-  done: number,
-  total: number,
-  segments = 20,
-): string {
-  if (total === 0) return "░".repeat(segments) + " 0%";
-  const ratio = Math.min(1, Math.max(0, done / total));
-  const filled = Math.round(ratio * segments);
-  const empty = segments - filled;
-  const pct = Math.round(ratio * 100);
-  return "█".repeat(filled) + "░".repeat(empty) + ` ${pct}%`;
+/**
+ * Numeric progress, 0..1 ratio with rounded percent. Used by the new thin
+ * progress bar UI in the asset checklist (replaces the ASCII block bar).
+ */
+export function progressRatio(done: number, total: number): number {
+  if (total === 0) return 0;
+  return Math.min(1, Math.max(0, done / total));
 }
 
-/** Legacy compatibility, used elsewhere in the codebase pre-overhaul. */
+/** Legacy ASCII helper kept for back-compat. Returns the percent only now. */
+export function asciiProgress(done: number, total: number): string {
+  const pct = Math.round(progressRatio(done, total) * 100);
+  return `${pct}%`;
+}
+
+/** Legacy alias used by prior call sites. */
 export const formatDateShort = formatDate;

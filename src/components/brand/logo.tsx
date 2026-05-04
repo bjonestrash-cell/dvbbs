@@ -1,13 +1,11 @@
 import { cn } from "@/lib/utils/cn";
 
 /**
- * DVBBS HQ wordmark. Typographic recreation:
- *   - chevron tick mark (filled triangle) on the left
- *   - "DVBBS" set in Anton, uppercase, tight tracking
- *   - "HQ" in Geist Mono below, wider tracking
+ * DVBBS HQ wordmark, quiet-luxury treatment.
  *
- * Uses currentColor so it inverts cleanly when the surrounding nav item
- * is in active (white-on-black) state.
+ * Layout: chevron tick mark (small, refined) on the left, Cormorant Garamond
+ * "Dvbbs" in tight tracking, with mono "HQ" stacked below at +0.2em tracking.
+ * Uses currentColor so the mark inverts cleanly on hover or active states.
  */
 export function Logo({
   size = "md",
@@ -40,23 +38,24 @@ export function Logo({
       style={{ height: dim }}
       aria-label="DVBBS HQ"
     >
-      <Chevron size={dim - 4} />
+      <Chevron size={dim - 6} />
       <span className="flex flex-col leading-none">
         <span
-          className="font-display uppercase"
+          className="font-display"
           style={{
             fontSize: titlePx,
+            fontWeight: 400,
             letterSpacing: "-0.03em",
-            lineHeight: 0.9,
+            lineHeight: 1,
           }}
         >
-          DVBBS
+          Dvbbs
         </span>
         <span
-          className="font-mono uppercase mt-0.5"
+          className="font-mono uppercase mt-1"
           style={{
             fontSize: subPx,
-            letterSpacing: "0.32em",
+            letterSpacing: "0.2em",
             color: "var(--color-fg-faint)",
             lineHeight: 1,
           }}
@@ -69,16 +68,16 @@ export function Logo({
 }
 
 const SIZE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
-  sm: 24,
-  md: 32,
-  lg: 48,
+  sm: 28,
+  md: 36,
+  lg: 56,
   xl: 80,
 };
 const TITLE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   sm: 18,
   md: 24,
   lg: 36,
-  xl: 60,
+  xl: 56,
 };
 const SUB_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   sm: 8,
@@ -87,7 +86,7 @@ const SUB_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   xl: 14,
 };
 
-/** Solid filled chevron tick used as the brand mark glyph. */
+/** Refined chevron tick used as the brand mark glyph. */
 function Chevron({ size }: { size: number }) {
   return (
     <svg
@@ -97,21 +96,26 @@ function Chevron({ size }: { size: number }) {
       fill="none"
       aria-hidden
       role="presentation"
+      strokeLinecap="square"
     >
       <path
-        d="M2 8 L16 22 L30 8 L26 8 L16 18 L6 8 Z"
-        fill="currentColor"
+        d="M4 12 L16 22 L28 12"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
       />
       <path
-        d="M2 16 L16 30 L30 16 L26 16 L16 26 L6 16 Z"
-        fill="currentColor"
+        d="M4 18 L16 28 L28 18"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
         opacity="0.4"
       />
     </svg>
   );
 }
 
-/** Standalone chevron for use as a divider/icon. */
+/** Standalone chevron for inline use. */
 export function ChevronGlyph({
   size = 12,
   className,
@@ -131,7 +135,12 @@ export function ChevronGlyph({
       className={className}
       style={{ opacity }}
     >
-      <path d="M2 12 L16 26 L30 12 L26 12 L16 22 L6 12 Z" fill="currentColor" />
+      <path
+        d="M4 12 L16 22 L28 12"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
+      />
     </svg>
   );
 }

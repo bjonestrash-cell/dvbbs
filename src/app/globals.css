@@ -1,53 +1,58 @@
 @import "tailwindcss";
 
 /* =============================================================================
-   DVBBS HQ design tokens, brutalist club aesthetic.
-   Pure black, mono everywhere, anti-decorative. Berghain / Boiler Room / RA.
+   DVBBS HQ design tokens, quiet luxury / editorial / warm cream.
+   References: Balenciaga, Rhode, The Row, Aimé Leon Dore, Bottega, Lemaire,
+   Khaite, Aman Resorts, Jacquemus. Confident through restraint.
    ========================================================================= */
 
 @theme {
   /* Surfaces */
-  --color-page: #000000;
-  --color-surface: #0a0a0a;
-  --color-surface-2: #141414;
+  --color-page: #f8f6f3;          /* warm cream */
+  --color-surface: #ffffff;        /* elevated white card */
+  --color-surface-2: #f1ede7;      /* hover, faint warm gray */
+  --color-inverted: #1a1612;       /* warm near-black for inverted CTAs */
 
   /* Lines */
-  --color-line: rgba(255, 255, 255, 0.08);
-  --color-line-strong: rgba(255, 255, 255, 0.16);
+  --color-line: rgba(26, 22, 18, 0.08);
+  --color-line-strong: rgba(26, 22, 18, 0.18);
+  --color-line-inverted: rgba(248, 246, 243, 0.16);
 
   /* Foreground */
-  --color-fg: #f5f5f5;
-  --color-fg-dim: rgba(245, 245, 245, 0.55);
-  --color-fg-faint: rgba(245, 245, 245, 0.35);
+  --color-fg: #1a1612;             /* deep warm black */
+  --color-fg-dim: #6b6863;         /* warm gray */
+  --color-fg-faint: #a8a39c;       /* lighter warm gray */
+  --color-fg-inverted: #f8f6f3;    /* on dark surfaces */
 
-  /* Brand accent, deeper saturation than before */
-  --color-accent: #ff1f1f;
-  --color-accent-dim: rgba(255, 31, 31, 0.15);
-  --color-accent-fg: #000000;
+  /* Brand accent, warm coffee */
+  --color-accent: #8b6f4e;
+  --color-accent-soft: #c9a77a;
+  --color-accent-bg: rgba(139, 111, 78, 0.08);
+  --color-accent-fg: #f8f6f3;
 
-  /* Status colors */
-  --color-confirmed: #6fe6a8;
-  --color-contracted: #6fe6a8;
-  --color-holding: #e8b547;
-  --color-offered: #5ba3f5;
-  --color-lead: rgba(245, 245, 245, 0.5);
-  --color-completed: rgba(245, 245, 245, 0.35);
-  --color-cancelled: #ff1f1f;
+  /* Status, dusty/muted */
+  --color-confirmed: #7a8471;
+  --color-contracted: #7a8471;
+  --color-holding: #c9a66b;
+  --color-offered: #8fa1b4;
+  --color-lead: #a8a39c;
+  --color-completed: #c4bcb0;
+  --color-cancelled: #b5614d;
 
   /* Asset/marketing extra status mapping */
-  --color-not-started: rgba(245, 245, 245, 0.35);
-  --color-in-progress: #e8b547;
-  --color-review: #5ba3f5;
-  --color-approved: #6fe6a8;
-  --color-final: #ff1f1f;
-  --color-todo: rgba(245, 245, 245, 0.35);
-  --color-done: #6fe6a8;
+  --color-not-started: #a8a39c;
+  --color-in-progress: #c9a66b;
+  --color-review: #8fa1b4;
+  --color-approved: #7a8471;
+  --color-final: #8b6f4e;
+  --color-todo: #a8a39c;
+  --color-done: #7a8471;
 
-  /* Legacy aliases so existing utilities resolve to new values */
+  /* Legacy aliases so prior utilities resolve */
   --color-bg-base: var(--color-page);
   --color-bg-surface: var(--color-surface);
   --color-bg-elev: var(--color-surface-2);
-  --color-bg-input: var(--color-surface-2);
+  --color-bg-input: var(--color-surface);
   --color-fg-muted: var(--color-fg-dim);
   --color-status-lead: var(--color-lead);
   --color-status-offered: var(--color-offered);
@@ -59,7 +64,7 @@
   --color-status-paid: var(--color-confirmed);
   --color-status-unpaid: var(--color-holding);
 
-  /* Motion, snap not bounce */
+  /* Motion */
   --ease-snap: cubic-bezier(0.2, 0, 0, 1);
   --duration-snap: 80ms;
   --duration-fade: 100ms;
@@ -67,31 +72,32 @@
 }
 
 @theme inline {
-  --font-display: var(--font-anton);
+  --font-display: var(--font-cormorant);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  --font-sans: var(--font-geist-mono);
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 /* =============================================================================
-   Base
+   Base, body lives on warm cream. Inter is the default body font.
    ========================================================================= */
 
 html, body {
   background: var(--color-page);
   color: var(--color-fg);
-  font-family: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
-  font-feature-settings: "tnum", "zero", "ss01";
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+  font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--color-accent);
-  color: var(--color-accent-fg);
+  background: var(--color-fg);
+  color: var(--color-fg-inverted);
 }
 
 /* =============================================================================
@@ -99,77 +105,99 @@ html, body {
    ========================================================================= */
 
 .font-display {
-  font-family: var(--font-display), Impact, "Helvetica Neue Condensed", sans-serif;
+  font-family: var(--font-display), "Cormorant Garamond", Georgia, "Times New Roman", serif;
 }
 
-/* Mono numerics, used everywhere a number lives */
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+.font-sans {
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Numerics */
 .num {
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum", "zero";
+  font-feature-settings: "tnum";
   letter-spacing: 0;
 }
-
 .tabular {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-/* Section marker (eyebrow), e.g., "TOUR /" */
+/* Section markers, "Tour" eyebrow above page titles */
 .marker {
   font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-fg-faint);
-  line-height: 1;
-}
-
-/* Field labels, "GROSS PAID", smaller and more spaced than marker */
-.label {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   font-size: 10px;
   font-weight: 500;
   color: var(--color-fg-faint);
   line-height: 1;
 }
 
-/* Display titles, big poster moments */
-.display-title {
-  font-family: var(--font-display), Impact, "Helvetica Neue Condensed", sans-serif;
+/* Field labels */
+.label {
+  font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-  font-weight: 400;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-fg-faint);
+  line-height: 1;
 }
 
-/* Big stat numbers */
+/* Display titles, refined editorial */
+.display-title {
+  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+/* Display stats, big tabular numerics */
 .display-stat {
-  font-family: var(--font-display), Impact, sans-serif;
+  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  font-weight: 300;
   letter-spacing: -0.02em;
-  font-weight: 400;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
 /* =============================================================================
-   Bracket pattern, applied via the StatusBracket / Bracket components
+   Subtle paper texture, very low opacity warm noise
    ========================================================================= */
 
-.bracket-text {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 10px;
-  line-height: 1;
-  white-space: nowrap;
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.02;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0.6 0 0 0 0 0 0.55 0 0 0 0 0 0.45 0 0 0 0 0 0.5 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
 }
 
 /* =============================================================================
-   Scrollbars, dim and unintrusive
+   Skeleton loader, faint warm gray with subtle pulse
+   ========================================================================= */
+
+.skeleton {
+  background: var(--color-surface-2);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.5; }
+}
+
+/* =============================================================================
+   Scrollbars, subtle
    ========================================================================= */
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -179,76 +207,6 @@ html, body {
   border: 2px solid var(--color-page);
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-line-strong); }
-
-/* =============================================================================
-   Page-wide grain overlay (1.5% noise opacity)
-   ========================================================================= */
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0.06;
-  mix-blend-mode: screen;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
-}
-
-/* Heavier grain for the public smart-link landing */
-.grain {
-  position: relative;
-}
-.grain::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.08;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
-}
-
-/* =============================================================================
-   Section dividers, chevron tick row at low opacity
-   ========================================================================= */
-
-.chevron-rule {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  height: 24px;
-  opacity: 0.15;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-fg);
-  user-select: none;
-}
-.chevron-rule::before {
-  content: "▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽ ▽";
-  letter-spacing: 0.4em;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-/* =============================================================================
-   Loading: blinking cursor
-   ========================================================================= */
-
-.cursor-blink::after {
-  content: "▮";
-  display: inline-block;
-  animation: blink 600ms step-end infinite;
-  margin-left: 4px;
-  color: var(--color-fg);
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
 
 /* =============================================================================
    Reduced motion
@@ -262,16 +220,16 @@ body::before {
 }
 
 /* =============================================================================
-   Focus ring
+   Focus ring: 1px accent, instant
    ========================================================================= */
 
 :where(button, a, input, select, textarea, [role="button"]):focus-visible {
   outline: 1px solid var(--color-accent);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
 /* =============================================================================
-   Tap highlight
+   Tap highlight off
    ========================================================================= */
 
 * { -webkit-tap-highlight-color: transparent; }
@@ -281,12 +239,15 @@ input, select, textarea {
   color: inherit;
 }
 
-/* =============================================================================
-   Custom cursor on interactive elements (desktop only)
-   ========================================================================= */
-
-@media (hover: hover) and (pointer: fine) {
-  a, button, [role="button"], [data-clickable], select, summary {
-    cursor: url("/cursors/chevron.svg") 6 6, pointer;
-  }
+/* Legacy bracket-text alias remains so untouched files render acceptable text */
+.bracket-text {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
 }
+
+/* Legacy grain class, kept as alias for any stray reference, no-op now */
+.grain { position: relative; }

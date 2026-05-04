@@ -13,12 +13,11 @@ export function Sidebar({ commitSha }: { commitSha?: string }) {
 
   return (
     <>
-      {/* Desktop sidebar, fixed-width column. Collapses to 56px. */}
       <aside
         className={cn(
-          "hidden md:flex h-dvh shrink-0 flex-col border-r border-line bg-page",
+          "hidden md:flex h-dvh shrink-0 flex-col bg-surface border-r border-line",
           "transition-[width] [transition-duration:120ms] ease-out",
-          collapsed ? "w-14" : "w-60",
+          collapsed ? "w-16" : "w-[260px]",
         )}
         aria-label="Primary navigation"
       >
@@ -32,7 +31,6 @@ export function Sidebar({ commitSha }: { commitSha?: string }) {
         />
       </aside>
 
-      {/* Mobile drawer, full-screen overlay. */}
       {mobileOpen ? (
         <div
           className="fixed inset-0 z-50 flex md:hidden"
@@ -44,9 +42,9 @@ export function Sidebar({ commitSha }: { commitSha?: string }) {
             type="button"
             aria-label="Close navigation"
             onClick={() => setMobileOpen(false)}
-            className="absolute inset-0 bg-page/80"
+            className="absolute inset-0 bg-inverted/30"
           />
-          <aside className="relative z-10 w-[78%] max-w-72 h-dvh bg-page border-r border-line flex flex-col">
+          <aside className="relative z-10 w-[80%] max-w-[300px] h-dvh bg-surface border-r border-line flex flex-col">
             <SidebarBody
               collapsed={false}
               mobile
@@ -83,8 +81,8 @@ function SidebarBody({
     <>
       <div
         className={cn(
-          "flex h-14 shrink-0 items-center border-b border-line",
-          collapsed ? "justify-center px-0" : "justify-between px-4",
+          "flex shrink-0 items-center border-b border-line",
+          collapsed ? "justify-center px-0 py-6" : "justify-between px-6 py-6",
         )}
       >
         <Link
@@ -100,14 +98,14 @@ function SidebarBody({
             type="button"
             onClick={onClose}
             aria-label="Close navigation"
-            className="size-8 grid place-items-center text-fg-dim hover:text-fg"
+            className="size-8 grid place-items-center text-fg-dim hover:text-fg [transition-duration:80ms]"
           >
-            <X className="size-4" aria-hidden />
+            <X className="size-4" strokeWidth={1.5} aria-hidden />
           </button>
         ) : null}
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-2">
+      <nav className="flex-1 overflow-y-auto py-3">
         <ul className="flex flex-col">
           {NAV.map((item) => {
             const active =
@@ -120,41 +118,36 @@ function SidebarBody({
                   onClick={onItemClick}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex h-10 items-center font-mono uppercase tracking-[0.08em] text-[12px]",
+                    "flex items-center font-sans text-[13px]",
                     "[transition-duration:80ms]",
-                    collapsed && !mobile ? "justify-center px-0" : "px-4",
+                    collapsed && !mobile
+                      ? "justify-center px-0 py-3"
+                      : "gap-3 px-6 py-3",
                     active
-                      ? "bg-fg text-page"
+                      ? "bg-inverted text-fg-inverted"
                       : "text-fg-dim hover:bg-surface-2 hover:text-fg",
                   )}
                 >
-                  {active ? (
-                    <span
-                      aria-hidden
-                      className="absolute left-0 top-0 bottom-0 w-px bg-accent"
-                    />
-                  ) : null}
                   <Icon
                     aria-hidden
-                    className={cn(
-                      "size-4 shrink-0",
-                      collapsed && !mobile ? "" : "mr-3",
-                    )}
+                    strokeWidth={1.5}
+                    className="size-4 shrink-0"
                   />
                   {collapsed && !mobile ? null : (
-                    <span className="flex-1 truncate">{item.label}</span>
+                    <>
+                      <span className="flex-1 truncate">{toLabel(item.label)}</span>
+                      {!item.ready ? (
+                        <span
+                          className={cn(
+                            "font-mono lowercase tracking-[0.2em] text-[9px]",
+                            active ? "opacity-60" : "text-fg-faint",
+                          )}
+                        >
+                          soon
+                        </span>
+                      ) : null}
+                    </>
                   )}
-                  {!item.ready && !(collapsed && !mobile) ? (
-                    <span
-                      className={cn(
-                        "ml-2 bracket-text",
-                        active ? "opacity-50" : "text-fg-faint",
-                      )}
-                    >
-                      <span className="opacity-60">[</span>SOON
-                      <span className="opacity-60">]</span>
-                    </span>
-                  ) : null}
                 </Link>
               </li>
             );
@@ -165,7 +158,7 @@ function SidebarBody({
       <div
         className={cn(
           "shrink-0 border-t border-line",
-          collapsed && !mobile ? "px-0 py-2" : "px-4 py-2",
+          collapsed && !mobile ? "px-0 py-3" : "px-6 py-3",
         )}
       >
         {collapsed && !mobile ? (
@@ -173,25 +166,23 @@ function SidebarBody({
             type="button"
             onClick={onToggleCollapse}
             aria-label="Expand sidebar"
-            className="w-full h-8 grid place-items-center text-fg-dim hover:text-fg"
+            className="w-full h-8 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
           >
-            <ChevronRight className="size-4" aria-hidden />
+            <ChevronRight className="size-4" strokeWidth={1.5} aria-hidden />
           </button>
         ) : (
           <div className="flex items-center justify-between">
-            <span className="bracket-text text-fg-faint">
-              <span className="opacity-60">[</span>
-              {commitSha ?? "LOCAL"}
-              <span className="opacity-60">]</span>
+            <span className="font-mono text-[10px] tracking-[0.14em] text-fg-faint lowercase">
+              build {(commitSha ?? "local").toLowerCase()}
             </span>
             {onToggleCollapse ? (
               <button
                 type="button"
                 onClick={onToggleCollapse}
                 aria-label="Collapse sidebar"
-                className="size-8 grid place-items-center text-fg-dim hover:text-fg"
+                className="size-8 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
               >
-                <ChevronLeft className="size-4" aria-hidden />
+                <ChevronLeft className="size-4" strokeWidth={1.5} aria-hidden />
               </button>
             ) : null}
           </div>
@@ -199,4 +190,10 @@ function SidebarBody({
       </div>
     </>
   );
+}
+
+/** Convert "TOUR" / "RELEASES" labels stored in nav-config to sentence case. */
+function toLabel(s: string): string {
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
