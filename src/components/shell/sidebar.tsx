@@ -85,9 +85,9 @@ function SidebarBody({
           href="/tour"
           onClick={onItemClick}
           className="text-fg"
-          aria-label="DVBBS HQ home"
+          aria-label="DVBBS"
         >
-          <Logo size="sm" collapsed={collapsed} />
+          <Logo size="md" collapsed={collapsed} />
         </Link>
         {mobile ? (
           <button
@@ -114,20 +114,20 @@ function SidebarBody({
                   onClick={onItemClick}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex items-center font-sans text-[13px]",
+                    "relative flex items-center",
                     "[transition-duration:80ms]",
                     collapsed && !mobile
                       ? "justify-center px-0 py-2.5"
-                      : "gap-3 px-5 py-2",
+                      : "gap-3 px-5 py-2.5",
                     active
-                      ? "text-fg font-medium"
+                      ? "text-fg"
                       : "text-fg-dim hover:text-fg",
                   )}
                 >
                   {active ? (
                     <span
                       aria-hidden
-                      className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] bg-accent"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[2px] bg-accent"
                     />
                   ) : null}
                   <Icon
@@ -140,8 +140,15 @@ function SidebarBody({
                   />
                   {collapsed && !mobile ? null : (
                     <>
-                      <span className="flex-1 truncate">
-                        {toLabel(item.label)}
+                      <span
+                        className="flex-1 truncate font-display lowercase"
+                        style={{
+                          fontSize: 14,
+                          fontWeight: active ? 600 : 500,
+                          letterSpacing: "-0.01em",
+                        }}
+                      >
+                        {item.label}
                       </span>
                       {!item.ready ? (
                         <span className="font-mono lowercase tracking-[0.18em] text-[9px] text-fg-faint">
@@ -185,8 +192,3 @@ function SidebarBody({
   );
 }
 
-/** Convert nav labels stored in caps to sentence case for the sidebar. */
-function toLabel(s: string): string {
-  if (!s) return s;
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-}

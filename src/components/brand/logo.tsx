@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils/cn";
 
 /**
- * DVBBS HQ wordmark.
+ * DVBBS wordmark.
  *
- * Layout: chevron tick on the left, "DVBBS" set in Geist (display) all caps
- * with tight tracking, "HQ" in Geist Mono small below at +0.2em tracking.
- * Uses currentColor so the mark inverts on hover or active states.
+ * Single line: chevron tick + "DVBBS" set in Geist (display) all caps with
+ * tight tracking. The "HQ" subtitle was dropped per direction; the brand mark
+ * is the artist name.
  */
 export function Logo({
   size = "md",
@@ -16,18 +16,17 @@ export function Logo({
   collapsed?: boolean;
   className?: string;
 }) {
-  const dim = SIZE_PX[size];
   const titlePx = TITLE_PX[size];
-  const subPx = SUB_PX[size];
+  const chevPx = Math.round(titlePx * 0.95);
 
   if (collapsed) {
     return (
       <span
         className={cn("inline-flex items-center justify-center", className)}
-        style={{ height: dim }}
-        aria-label="DVBBS HQ"
+        style={{ height: titlePx + 4 }}
+        aria-label="DVBBS"
       >
-        <Chevron size={dim - 4} />
+        <Chevron size={chevPx} />
       </span>
     );
   }
@@ -35,55 +34,30 @@ export function Logo({
   return (
     <span
       className={cn("inline-flex items-center gap-2.5", className)}
-      style={{ height: dim }}
-      aria-label="DVBBS HQ"
+      style={{ height: titlePx + 4 }}
+      aria-label="DVBBS"
     >
-      <Chevron size={dim - 6} />
-      <span className="flex flex-col leading-none">
-        <span
-          className="font-display"
-          style={{
-            fontSize: titlePx,
-            fontWeight: 700,
-            letterSpacing: "-0.04em",
-            lineHeight: 1,
-          }}
-        >
-          DVBBS
-        </span>
-        <span
-          className="font-mono uppercase mt-1"
-          style={{
-            fontSize: subPx,
-            letterSpacing: "0.24em",
-            color: "var(--color-fg-faint)",
-            lineHeight: 1,
-          }}
-        >
-          HQ
-        </span>
+      <Chevron size={chevPx} />
+      <span
+        className="font-display"
+        style={{
+          fontSize: titlePx,
+          fontWeight: 700,
+          letterSpacing: "-0.04em",
+          lineHeight: 1,
+        }}
+      >
+        DVBBS
       </span>
     </span>
   );
 }
 
-const SIZE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
-  sm: 28,
-  md: 36,
-  lg: 56,
-  xl: 80,
-};
 const TITLE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
-  sm: 16,
-  md: 22,
-  lg: 32,
-  xl: 52,
-};
-const SUB_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
-  sm: 8,
-  md: 9,
-  lg: 11,
-  xl: 14,
+  sm: 22,
+  md: 28,
+  lg: 44,
+  xl: 72,
 };
 
 /** Refined chevron tick used as the brand mark glyph. */
