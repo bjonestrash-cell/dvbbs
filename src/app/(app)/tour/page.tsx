@@ -5,12 +5,15 @@ import { buttonClasses } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { groupByStatus, listShows } from "@/lib/data/shows";
 import { getDashboard } from "@/lib/data/dashboard";
-import { formatCountdownDays, greeting as greetingPhrase } from "@/lib/format";
+import { formatCountdownDays } from "@/lib/format";
+import { AUTH_DISABLED } from "@/lib/auth/mode";
+import { getCurrentMember } from "@/lib/auth/dal";
 import type { ShowStatus } from "@/lib/supabase/types";
 import { ShowFilters } from "./_components/show-filters";
 import { ShowTable } from "./_components/show-table";
 import { ViewToggle } from "./_components/view-toggle";
 import { StatCardGrid, type StatCardItem } from "./_components/stat-card-grid";
+import { TourGreeting } from "./_components/tour-greeting";
 
 export const metadata = { title: "Tour. DVBBS HQ" };
 
@@ -41,35 +44,33 @@ export default async function TourPage({
       ) as ShowStatus[])
     : undefined;
 
-  const [shows, dashboard, statusCounts, statTotals] = await Promise.all([
-    listShows({
-      status: status?.length ? status : undefined,
-      q: sp.q || undefined,
-      from: sp.from || undefined,
-      to: sp.to || undefined,
-    }),
-    getDashboard(),
-    loadStatusCounts(),
-    loadStatTotals(),
-  ]);
+  const [shows, dashboard, statusCounts, statTotals, member] = await Promise.all(
+    [
+      listShows({
+        status: status?.length ? status : undefined,
+        q: sp.q || undefined,
+        from: sp.from || undefined,
+        to: sp.to || undefined,
+      }),
+      getDashboard(),
+      loadStatusCounts(),
+      loadStatTotals(),
+      AUTH_DISABLED ? Promise.resolve(null) : getCurrentMember(),
+    ],
+  );
 
   const groups = groupByStatus(shows);
 
+  const userFirstName =
+    member?.display_name?.split(" ")[0] ||
+    member?.email?.split("@")[0] ||
+    "Alex";
+
   const greetingNode = (
-    <div>
-      <div
-        className="display-title text-fg lowercase"
-        style={{ fontSize: "clamp(22px, 3.5vw, 28px)", fontWeight: 400 }}
-      >
-        {greetingPhrase()},{" "}
-        <span style={{ fontWeight: 700 }}>Demo</span>.
-      </div>
-      <div className="mt-1 font-sans text-fg-dim text-[14px]">
-        {dashboard.attentionCount === 0
-          ? "Nothing on your plate right now."
-          : `${dashboard.attentionCount} ${dashboard.attentionCount === 1 ? "thing wants" : "things want"} your attention.`}
-      </div>
-    </div>
+    <TourGreeting
+      name={userFirstName}
+      attentionCount={dashboard.attentionCount}
+    />
   );
 
   const cards: StatCardItem[] = [

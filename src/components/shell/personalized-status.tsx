@@ -48,7 +48,7 @@ function pad(n: number) {
 }
 
 function toName(name: string): string {
-  if (!name) return "demo";
+  if (!name) return "alex";
   return name.toLowerCase();
 }
 
