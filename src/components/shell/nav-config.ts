@@ -24,7 +24,7 @@ export const NAV: NavItem[] = [
   { href: "/merch", label: "MERCH", icon: Shirt, phase: 3, ready: true },
   { href: "/contacts", label: "CONTACTS", icon: Users, phase: 1, ready: true },
   { href: "/inbox", label: "INBOX", icon: Inbox, phase: 4, ready: false },
-  { href: "/finance", label: "FINANCE", icon: CircleDollarSign, phase: 4, ready: false },
+  { href: "/finance", label: "FINANCE", icon: CircleDollarSign, phase: 4, ready: true },
   { href: "/team", label: "TEAM", icon: ShieldCheck, phase: 1, ready: true },
   { href: "/settings", label: "SETTINGS", icon: Settings, phase: 1, ready: true },
 ];
