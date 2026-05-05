@@ -2,12 +2,14 @@ import * as React from "react";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Editorial page header. Section marker eyebrow, Cormorant Garamond title in
- * sentence case, Inter sans subline. Generous breathing room.
+ * Editorial page header. Lowercase mono eyebrow, big lowercase Fraunces
+ * title, thin accent rule, Inter sans description. The lowercase rendering
+ * is a deliberate confidence move borrowed from underground / DJ branding.
  *
- *   Tour
- *   Pipeline                                                  [actions slot]
- *   Source of truth for every show, lead through settlement.
+ *   tour /
+ *   shows
+ *   ───  (thin warm-coffee accent)
+ *   Every booking. Hold to wire.
  */
 export function PageHeader({
   eyebrow,
@@ -17,10 +19,9 @@ export function PageHeader({
   greeting,
   className,
 }: {
-  /** Section marker rendered as "Tour" above the display title. */
   eyebrow?: string;
   title: string;
-  description?: string;
+  description?: React.ReactNode;
   actions?: React.ReactNode;
   greeting?: React.ReactNode;
   className?: string;
@@ -28,28 +29,39 @@ export function PageHeader({
   return (
     <header className={cn("border-b border-line", className)}>
       {greeting ? (
-        <div className="px-6 md:px-10 pt-8 md:pt-10 pb-1">{greeting}</div>
+        <div className="px-6 md:px-10 pt-10 md:pt-14 pb-1">{greeting}</div>
       ) : null}
       <div
         className={cn(
-          "px-6 md:px-10 pt-8 md:pt-10 pb-10 md:pb-14 flex flex-col gap-3",
-          "sm:flex-row sm:items-end sm:justify-between sm:gap-8",
+          "px-6 md:px-10 pt-10 md:pt-14 pb-12 md:pb-20 flex flex-col gap-4",
+          "sm:flex-row sm:items-end sm:justify-between sm:gap-10",
         )}
       >
-        <div className="min-w-0 flex flex-col gap-2">
-          {eyebrow ? <div className="marker">{eyebrow}</div> : null}
+        <div className="min-w-0 flex flex-col gap-3">
+          {eyebrow ? (
+            <div className="font-mono lowercase tracking-[0.06em] text-[12px] text-fg-faint">
+              {eyebrow.toLowerCase()}
+              <span className="opacity-60"> /</span>
+            </div>
+          ) : null}
           <h1
-            className="display-title text-fg block"
+            className="display-title text-fg lowercase block break-words"
             style={{
-              fontSize: "clamp(36px, 6.5vw, 64px)",
+              fontSize: "clamp(56px, 10vw, 96px)",
+              letterSpacing: "-0.03em",
+              lineHeight: 0.95,
             }}
           >
             {title}
           </h1>
+          <div
+            aria-hidden
+            className="h-px w-16 bg-accent mt-2"
+          />
           {description ? (
-            <p className="font-sans text-fg-dim text-[14px] leading-[1.5] max-w-[480px]">
+            <div className="font-sans text-fg-dim text-[15px] leading-[1.6] max-w-[520px] mt-1">
               {description}
-            </p>
+            </div>
           ) : null}
         </div>
         {actions ? (

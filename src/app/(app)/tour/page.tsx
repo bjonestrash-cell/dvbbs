@@ -58,15 +58,15 @@ export default async function TourPage({
   const greetingNode = (
     <div>
       <div
-        className="display-title text-fg"
-        style={{ fontSize: "clamp(20px, 3vw, 24px)", fontWeight: 300 }}
+        className="display-title text-fg lowercase"
+        style={{ fontSize: "clamp(22px, 3.5vw, 28px)", fontWeight: 300 }}
       >
-        {greetingPhrase()}, Demo.
+        {greetingPhrase()}, <em className="italic">Demo</em>.
       </div>
       <div className="mt-1 font-sans text-fg-dim text-[14px]">
         {dashboard.attentionCount === 0
-          ? "Nothing needs your attention right now."
-          : `${dashboard.attentionCount} ${dashboard.attentionCount === 1 ? "item needs" : "items need"} your attention.`}
+          ? "Nothing on your plate right now."
+          : `${dashboard.attentionCount} ${dashboard.attentionCount === 1 ? "thing wants" : "things want"} your attention.`}
       </div>
     </div>
   );
@@ -108,8 +108,8 @@ export default async function TourPage({
     <>
       <PageHeader
         eyebrow="Tour"
-        title="Pipeline"
-        description="Source of truth for every show, lead through settlement."
+        title="Shows"
+        description="Every booking. Hold to wire."
         greeting={greetingNode}
         actions={
           <div className="flex items-center gap-2">

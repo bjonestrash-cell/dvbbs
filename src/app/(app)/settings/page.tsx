@@ -15,7 +15,7 @@ export default async function SettingsPage() {
       <PageHeader
         eyebrow="Config"
         title="Settings"
-        description="Profile, identity, third-party integrations."
+        description="Profile, tools, integrations."
       />
       <div className="px-6 md:px-10 py-10 grid gap-8 max-w-2xl">
         <Section title="You">

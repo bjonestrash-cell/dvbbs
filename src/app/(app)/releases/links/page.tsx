@@ -16,7 +16,7 @@ export default async function SmartLinksPage() {
       <PageHeader
         eyebrow="Catalog"
         title="Smart links"
-        description="One slug per release, routes to the listener's preferred platform."
+        description="One link, every platform."
         actions={
           <Link
             href="/releases/links/new"

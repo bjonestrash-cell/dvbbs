@@ -16,7 +16,7 @@ export default async function ReleasesPage() {
       <PageHeader
         eyebrow="Catalog"
         title="Releases"
-        description="Track every record from idea to release. Drag a card later to change status."
+        description="Records, idea to release."
         actions={
           <div className="flex items-center gap-2">
             <Link

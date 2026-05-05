@@ -15,7 +15,7 @@ export default async function TeamPage() {
         <PageHeader
           eyebrow="Crew"
           title="Team"
-          description="Hidden in public demo. Sign in to manage members."
+          description="Hidden in public demo. Sign in to manage."
         />
         <div className="px-6 md:px-10 py-10">
           <div className="border border-line bg-surface px-6 py-10">
@@ -43,8 +43,8 @@ export default async function TeamPage() {
         title="Team"
         description={
           me?.role === "principal"
-            ? "Add or remove team members. Principal-only."
-            : "View team. Adding members is principal-only."
+            ? "Add or remove. Principal-only."
+            : "View only. Add is principal-only."
         }
       />
       <div className="px-6 md:px-10 py-10">

@@ -9,7 +9,7 @@ export default function ContactsPage() {
       <PageHeader
         eyebrow="Rolodex"
         title="Contacts"
-        description="Promoters, venues, agents, label, press, crew. One place."
+        description="Promoters, agents, label, crew."
       />
       <div className="px-6 md:px-10 py-10">
         <EmptyState
