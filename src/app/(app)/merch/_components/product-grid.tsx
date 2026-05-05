@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Shirt } from "lucide-react";
 import { StatusBracket, STATUS_TONE } from "@/components/ui/status-bracket";
 import { MERCH_STATUS_LABEL } from "@/lib/data/merch-shared";
 import type { MerchProductWithInventory } from "@/lib/data/merch";
 import { formatMoney } from "@/lib/format";
+import { MerchIcon } from "./merch-icon";
 
 function titleCase(s: string | null | undefined): string {
   if (!s) return "";
@@ -25,7 +25,11 @@ export function ProductGrid({
             href={`/merch/${p.id}`}
             className="block bg-surface border border-line hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms]"
           >
-            <ProductImage url={p.image_url} title={p.name} />
+            <ProductImage
+              url={p.image_url}
+              title={p.name}
+              category={p.category}
+            />
             <div className="p-4">
               <div className="flex items-start justify-between gap-3">
                 <h3 className="font-sans text-[14px] font-medium text-fg line-clamp-2 flex-1">
@@ -73,18 +77,16 @@ export function ProductGrid({
 function ProductImage({
   url,
   title,
+  category,
 }: {
   url: string | null;
   title: string;
+  category: string | null;
 }) {
   if (!url) {
     return (
       <div className="aspect-square grid place-items-center bg-surface-2 border-b border-line">
-        <Shirt
-          className="size-10 text-fg-faint"
-          strokeWidth={1.5}
-          aria-hidden
-        />
+        <MerchIcon name={title} category={category} size={40} />
       </div>
     );
   }

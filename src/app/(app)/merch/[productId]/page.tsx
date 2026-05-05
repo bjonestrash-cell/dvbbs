@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Shirt } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { MerchIcon } from "../_components/merch-icon";
 import { PageHeader } from "@/components/ui/page-header";
 import { buttonClasses } from "@/components/ui/button";
 import {
@@ -81,7 +82,11 @@ export default async function ProductPage({
 
       <div className="px-6 md:px-10 py-8 flex flex-col gap-6">
         <section className="flex flex-col md:flex-row gap-6 md:gap-8">
-          <ProductImage url={product.image_url} title={product.name} />
+          <ProductImage
+            url={product.image_url}
+            title={product.name}
+            category={product.category}
+          />
           <div className="flex-1 flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-3">
               <ProductStatusControl
@@ -176,11 +181,19 @@ export default async function ProductPage({
   );
 }
 
-function ProductImage({ url, title }: { url: string | null; title: string }) {
+function ProductImage({
+  url,
+  title,
+  category,
+}: {
+  url: string | null;
+  title: string;
+  category: string | null;
+}) {
   if (!url) {
     return (
       <div className="w-full md:w-[280px] aspect-square shrink-0 grid place-items-center bg-surface-2 border border-line">
-        <Shirt className="size-12 text-fg-faint" strokeWidth={1.5} aria-hidden />
+        <MerchIcon name={title} category={category} size={56} />
       </div>
     );
   }

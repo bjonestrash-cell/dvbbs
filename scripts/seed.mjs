@@ -35,6 +35,13 @@ function dateAt(daysFromNow) {
   return d.toISOString().slice(0, 10);
 }
 
+function dateTimeAt(daysFromNow, hour = 12, minute = 0) {
+  const d = new Date(today);
+  d.setDate(d.getDate() + daysFromNow);
+  d.setHours(hour, minute, 0, 0);
+  return d.toISOString();
+}
+
 const contacts = [
   {
     type: "promoter",
@@ -484,15 +491,15 @@ async function ensureShow(payload) {
 
   const merchProducts = [
     {
-      name: "DVBBS Logo Tee",
-      sku: "DVBBS-TEE-BLK",
+      name: "Kanary Tee",
+      sku: "KANARY-TEE-BLK",
       category: "Apparel",
       price: 35,
       cost_per_unit: 11.5,
       status: "active",
       is_tour_exclusive: false,
       notes:
-        "Black 100% cotton tee with embroidered chevron logo. Heavyweight 240gsm.",
+        "Black 100% cotton tee with embroidered Kanary mark. Heavyweight 240gsm.",
       variants: [
         { variant: "S", units_on_hand: 15, reorder_threshold: 8 },
         { variant: "M", units_on_hand: 8, reorder_threshold: 12 },
@@ -501,14 +508,14 @@ async function ensureShow(payload) {
       ],
     },
     {
-      name: "Tsunami Hoodie",
-      sku: "DVBBS-HOOD-CRM",
+      name: "Kanary Hoodie",
+      sku: "KANARY-HOOD-CRM",
       category: "Apparel",
       price: 75,
       cost_per_unit: 28.5,
       status: "active",
       is_tour_exclusive: false,
-      notes: "Cream pullover, oversized fit. Tsunami artwork on the back.",
+      notes: "Cream pullover, oversized fit. Kanary wordmark across the back.",
       variants: [
         { variant: "M", units_on_hand: 22, reorder_threshold: 10 },
         { variant: "L", units_on_hand: 18, reorder_threshold: 10 },
@@ -516,41 +523,41 @@ async function ensureShow(payload) {
       ],
     },
     {
-      name: "Roadtrip Snapback",
-      sku: "DVBBS-CAP-BLK",
+      name: "Kanary Cap",
+      sku: "KANARY-CAP-BLK",
       category: "Accessories",
       price: 40,
       cost_per_unit: 9.0,
       status: "active",
       is_tour_exclusive: false,
-      notes: "Black six-panel snapback. Embroidered chevron front.",
+      notes: "Black six-panel snapback. Embroidered Kanary mark on the front.",
       variants: [
         { variant: "OS", units_on_hand: 48, reorder_threshold: 20 },
       ],
     },
     {
-      name: "Tsunami 12 inch Vinyl",
-      sku: "DVBBS-VIN-TSU",
+      name: "Kanary 12\" Vinyl",
+      sku: "KANARY-VIN-01",
       category: "Vinyl",
       price: 25,
       cost_per_unit: 7.0,
       status: "active",
       is_tour_exclusive: false,
       notes:
-        "Limited 1,000-press translucent blue vinyl. Tsunami / Pyramids double A-side.",
+        "Limited 1,000-press translucent blue vinyl. Kanary AAA-side cut.",
       variants: [
         { variant: "OS", units_on_hand: 78, reorder_threshold: 30 },
       ],
     },
     {
-      name: "Tour Crewneck 2026",
-      sku: "DVBBS-CREW-OLV",
+      name: "Kanary Crewneck",
+      sku: "KANARY-CREW-OLV",
       category: "Apparel",
       price: 65,
       cost_per_unit: 22,
       status: "active",
       is_tour_exclusive: false,
-      notes: "Olive heavyweight crewneck with tour route on the back.",
+      notes: "Olive heavyweight crewneck with Kanary tour route on the back.",
       variants: [
         { variant: "M", units_on_hand: 30, reorder_threshold: 15 },
         { variant: "L", units_on_hand: 25, reorder_threshold: 15 },
@@ -559,15 +566,16 @@ async function ensureShow(payload) {
     },
     tomorrowlandShow.data?.id
       ? {
-          name: "Tomorrowland Mainstage Tee",
-          sku: "DVBBS-TML-26",
+          name: "Kanary Mainstage Tee",
+          sku: "KANARY-TML-26",
           category: "Apparel",
           price: 45,
           cost_per_unit: 12.0,
           status: "active",
           is_tour_exclusive: true,
           exclusive_show_id: tomorrowlandShow.data.id,
-          notes: "Limited tour-exclusive tee for Tomorrowland mainstage 2026.",
+          notes:
+            "Limited tour-exclusive Kanary tee for the Tomorrowland mainstage 2026.",
           variants: [
             { variant: "S", units_on_hand: 180, reorder_threshold: 50 },
             { variant: "M", units_on_hand: 240, reorder_threshold: 60 },
@@ -577,14 +585,14 @@ async function ensureShow(payload) {
         }
       : null,
     {
-      name: "Heritage Tote Bag",
-      sku: "DVBBS-TOTE",
+      name: "Kanary Tote",
+      sku: "KANARY-TOTE",
       category: "Accessories",
       price: 22,
       cost_per_unit: 5.5,
       status: "active",
       is_tour_exclusive: false,
-      notes: "Natural canvas tote with screen-printed chevron mark.",
+      notes: "Natural canvas tote with screen-printed Kanary mark.",
       variants: [
         { variant: "OS", units_on_hand: 42, reorder_threshold: 20 },
       ],
@@ -634,12 +642,12 @@ async function ensureShow(payload) {
 
   if (merchOk) {
     // Sample sales to populate /merch/sales
-    const tee = productIds["DVBBS-TEE-BLK"];
-    const hood = productIds["DVBBS-HOOD-CRM"];
-    const cap = productIds["DVBBS-CAP-BLK"];
-    const vinyl = productIds["DVBBS-VIN-TSU"];
-    const crew = productIds["DVBBS-CREW-OLV"];
-    const tote = productIds["DVBBS-TOTE"];
+    const tee = productIds["KANARY-TEE-BLK"];
+    const hood = productIds["KANARY-HOOD-CRM"];
+    const cap = productIds["KANARY-CAP-BLK"];
+    const vinyl = productIds["KANARY-VIN-01"];
+    const crew = productIds["KANARY-CREW-OLV"];
+    const tote = productIds["KANARY-TOTE"];
     const hardSummerId = hardSummerShow.data?.id ?? null;
     const printworksId = printworksShow.data?.id ?? null;
 
@@ -804,6 +812,315 @@ async function ensureShow(payload) {
     }
     if (inserted > 0) console.log(`seeded ${inserted} merch sales`);
   }
+
+  // ----------------------------------------------------------------
+  // Flights. Idempotent on (show_id, departure_airport, arrival_airport,
+  // departure_time::date) to avoid double-seeding.
+  // ----------------------------------------------------------------
+
+  // Look up show ids by bandsintown seed code.
+  const showIdBy = {};
+  for (const code of [
+    "seed-001",
+    "seed-002",
+    "seed-003",
+    "seed-004",
+    "seed-005",
+    "seed-006",
+    "seed-007",
+  ]) {
+    const { data } = await sb
+      .from("shows")
+      .select("id")
+      .eq("bandsintown_id", code)
+      .maybeSingle();
+    if (data?.id) showIdBy[code] = data.id;
+  }
+
+  const PASSENGER = "Chris Chronicles";
+
+  const flights = [
+    // Echostage Washington (+14d)
+    {
+      show_id: showIdBy["seed-001"],
+      passenger_name: PASSENGER,
+      airline: "Delta",
+      flight_number: "DL 1480",
+      confirmation_code: "ABC123",
+      departure_airport: "LAX",
+      arrival_airport: "DCA",
+      departure_time: dateTimeAt(13, 8, 30),
+      arrival_time: dateTimeAt(13, 16, 45),
+      cabin: "business",
+      seat: "2A",
+      cost: 980,
+      currency: "USD",
+      status: "confirmed",
+      notes: "Delta One. Lounge access included.",
+    },
+    {
+      show_id: showIdBy["seed-001"],
+      passenger_name: PASSENGER,
+      airline: "Delta",
+      flight_number: "DL 1893",
+      confirmation_code: "ABC123",
+      departure_airport: "DCA",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(15, 11, 0),
+      arrival_time: dateTimeAt(15, 14, 25),
+      cabin: "business",
+      seat: "3F",
+      cost: 980,
+      currency: "USD",
+      status: "confirmed",
+    },
+    // Hi Ibiza (+45d) via Madrid
+    {
+      show_id: showIdBy["seed-002"],
+      passenger_name: PASSENGER,
+      airline: "Iberia",
+      flight_number: "IB 6172",
+      confirmation_code: "IBZ901",
+      departure_airport: "LAX",
+      arrival_airport: "MAD",
+      departure_time: dateTimeAt(43, 21, 50),
+      arrival_time: dateTimeAt(44, 17, 25),
+      cabin: "business",
+      seat: "4K",
+      cost: 3450,
+      currency: "EUR",
+      status: "booked",
+      notes: "Long haul to MAD, then short hop. Crew of three on the same PNR.",
+    },
+    {
+      show_id: showIdBy["seed-002"],
+      passenger_name: PASSENGER,
+      airline: "Iberia",
+      flight_number: "IB 8754",
+      confirmation_code: "IBZ901",
+      departure_airport: "MAD",
+      arrival_airport: "IBZ",
+      departure_time: dateTimeAt(44, 19, 30),
+      arrival_time: dateTimeAt(44, 20, 35),
+      cabin: "business",
+      seat: "1A",
+      cost: 0,
+      currency: "EUR",
+      status: "booked",
+      notes: "Connection. Same PNR as the LAX leg.",
+    },
+    {
+      show_id: showIdBy["seed-002"],
+      passenger_name: PASSENGER,
+      airline: "Iberia",
+      flight_number: "IB 8761",
+      confirmation_code: "IBZ901",
+      departure_airport: "IBZ",
+      arrival_airport: "MAD",
+      departure_time: dateTimeAt(47, 13, 15),
+      arrival_time: dateTimeAt(47, 14, 25),
+      cabin: "business",
+      seat: "1A",
+      cost: 0,
+      currency: "EUR",
+      status: "booked",
+    },
+    {
+      show_id: showIdBy["seed-002"],
+      passenger_name: PASSENGER,
+      airline: "Iberia",
+      flight_number: "IB 6173",
+      confirmation_code: "IBZ901",
+      departure_airport: "MAD",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(47, 16, 50),
+      arrival_time: dateTimeAt(47, 20, 15),
+      cabin: "business",
+      seat: "4K",
+      cost: 0,
+      currency: "EUR",
+      status: "booked",
+    },
+    // Brooklyn Mirage NYC (+72d)
+    {
+      show_id: showIdBy["seed-003"],
+      passenger_name: PASSENGER,
+      airline: "JetBlue",
+      flight_number: "B6 624",
+      confirmation_code: "JFK202",
+      departure_airport: "LAX",
+      arrival_airport: "JFK",
+      departure_time: dateTimeAt(71, 8, 0),
+      arrival_time: dateTimeAt(71, 16, 25),
+      cabin: "business",
+      seat: "1A",
+      cost: 1240,
+      currency: "USD",
+      status: "booked",
+      notes: "Mint cabin. Awaiting agent sign-off on the offer.",
+    },
+    {
+      show_id: showIdBy["seed-003"],
+      passenger_name: PASSENGER,
+      airline: "JetBlue",
+      flight_number: "B6 423",
+      confirmation_code: "JFK202",
+      departure_airport: "JFK",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(73, 10, 30),
+      arrival_time: dateTimeAt(73, 13, 55),
+      cabin: "business",
+      seat: "2D",
+      cost: 1240,
+      currency: "USD",
+      status: "booked",
+    },
+    // Marquee Vegas (+90d) — short hop
+    {
+      show_id: showIdBy["seed-004"],
+      passenger_name: PASSENGER,
+      airline: "Southwest",
+      flight_number: "WN 2451",
+      departure_airport: "LAX",
+      arrival_airport: "LAS",
+      departure_time: dateTimeAt(90, 11, 15),
+      arrival_time: dateTimeAt(90, 12, 25),
+      cabin: "economy",
+      seat: "5A",
+      cost: 220,
+      currency: "USD",
+      status: "booked",
+      notes: "Same-day in-and-out. Hold pending final confirmation.",
+    },
+    {
+      show_id: showIdBy["seed-004"],
+      passenger_name: PASSENGER,
+      airline: "Southwest",
+      flight_number: "WN 2904",
+      departure_airport: "LAS",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(91, 6, 30),
+      arrival_time: dateTimeAt(91, 7, 45),
+      cabin: "economy",
+      seat: "5A",
+      cost: 220,
+      currency: "USD",
+      status: "booked",
+    },
+    // Tomorrowland Boom (+180d)
+    {
+      show_id: showIdBy["seed-005"],
+      passenger_name: PASSENGER,
+      airline: "Brussels Airlines",
+      flight_number: "SN 502",
+      confirmation_code: "TML2026",
+      departure_airport: "LAX",
+      arrival_airport: "BRU",
+      departure_time: dateTimeAt(178, 19, 0),
+      arrival_time: dateTimeAt(179, 14, 35),
+      cabin: "business",
+      seat: "2A",
+      cost: 4200,
+      currency: "EUR",
+      status: "booked",
+      notes: "Tomorrowland weekend 2 mainstage. Long haul, lounge in BRU.",
+    },
+    {
+      show_id: showIdBy["seed-005"],
+      passenger_name: PASSENGER,
+      airline: "Brussels Airlines",
+      flight_number: "SN 501",
+      confirmation_code: "TML2026",
+      departure_airport: "BRU",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(181, 11, 25),
+      arrival_time: dateTimeAt(181, 14, 5),
+      cabin: "business",
+      seat: "2A",
+      cost: 4200,
+      currency: "EUR",
+      status: "booked",
+    },
+    // Printworks London (-46d) — completed
+    {
+      show_id: showIdBy["seed-007"],
+      passenger_name: PASSENGER,
+      airline: "British Airways",
+      flight_number: "BA 282",
+      confirmation_code: "LHR046",
+      departure_airport: "LAX",
+      arrival_airport: "LHR",
+      departure_time: dateTimeAt(-47, 18, 30),
+      arrival_time: dateTimeAt(-46, 12, 55),
+      cabin: "business",
+      seat: "1K",
+      cost: 5100,
+      currency: "GBP",
+      status: "completed",
+      notes: "Club World. Settlement closed.",
+    },
+    {
+      show_id: showIdBy["seed-007"],
+      passenger_name: PASSENGER,
+      airline: "British Airways",
+      flight_number: "BA 269",
+      confirmation_code: "LHR046",
+      departure_airport: "LHR",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(-45, 14, 50),
+      arrival_time: dateTimeAt(-45, 18, 15),
+      cabin: "business",
+      seat: "1K",
+      cost: 0,
+      currency: "GBP",
+      status: "completed",
+    },
+  ];
+
+  let flightsInserted = 0;
+  let flightsSkipped = 0;
+  for (const f of flights) {
+    if (!f.show_id) {
+      flightsSkipped++;
+      continue;
+    }
+    // Idempotency: check for an existing flight with the same show + route
+    // on the same departure date.
+    const dayStart = f.departure_time.slice(0, 10);
+    const dayEnd = new Date(f.departure_time);
+    dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+    const existing = await sb
+      .from("flights")
+      .select("id")
+      .eq("show_id", f.show_id)
+      .eq("departure_airport", f.departure_airport)
+      .eq("arrival_airport", f.arrival_airport)
+      .gte("departure_time", `${dayStart}T00:00:00Z`)
+      .lt("departure_time", dayEnd.toISOString())
+      .maybeSingle();
+    if (existing.error) {
+      console.warn("skipping flights seed, table not found:", existing.error.message);
+      break;
+    }
+    if (existing.data?.id) {
+      console.log(
+        "skip existing flight",
+        f.departure_airport,
+        "->",
+        f.arrival_airport,
+      );
+      continue;
+    }
+    const { error } = await sb.from("flights").insert(f);
+    if (error) {
+      console.warn("flight insert", error.message);
+      continue;
+    }
+    flightsInserted++;
+  }
+  if (flightsInserted > 0) console.log(`seeded ${flightsInserted} flights`);
+  if (flightsSkipped > 0)
+    console.log(`skipped ${flightsSkipped} flights, missing show ids`);
 
   console.log("done.");
 })().catch((e) => {

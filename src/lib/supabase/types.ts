@@ -240,6 +240,36 @@ export interface Show {
   updated_at: string;
 }
 
+export type FlightCabin = "economy" | "premium" | "business" | "first";
+export type FlightStatus =
+  | "booked"
+  | "confirmed"
+  | "checked_in"
+  | "completed"
+  | "cancelled";
+
+export interface Flight {
+  id: string;
+  show_id: string | null;
+  passenger_name: string;
+  airline: string;
+  flight_number: string | null;
+  confirmation_code: string | null;
+  departure_airport: string;
+  arrival_airport: string;
+  departure_time: string;
+  arrival_time: string;
+  cabin: FlightCabin;
+  seat: string | null;
+  cost: number | null;
+  currency: string | null;
+  status: FlightStatus;
+  ticket_url: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ShowTravel {
   id: string;
   show_id: string;

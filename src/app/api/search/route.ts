@@ -16,6 +16,8 @@ const NAV_HITS: SearchHit[] = [
   { kind: "nav", id: "nav-tour", href: "/tour", title: "Tour, list" },
   { kind: "nav", id: "nav-tour-cal", href: "/tour/calendar", title: "Tour, calendar" },
   { kind: "nav", id: "nav-tour-new", href: "/tour/new", title: "New show" },
+  { kind: "nav", id: "nav-flights", href: "/flights", title: "Flights" },
+  { kind: "nav", id: "nav-flights-new", href: "/flights/new", title: "New flight" },
   { kind: "nav", id: "nav-contacts", href: "/contacts", title: "Contacts" },
   { kind: "nav", id: "nav-team", href: "/team", title: "Team" },
   { kind: "nav", id: "nav-settings", href: "/settings", title: "Settings" },
