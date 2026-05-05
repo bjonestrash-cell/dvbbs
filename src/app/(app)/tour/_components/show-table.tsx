@@ -1,4 +1,26 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  DndContext,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { GripVertical } from "lucide-react";
 import { StatusBracket, STATUS_TONE } from "@/components/ui/status-bracket";
 import {
   formatCapacity,
@@ -6,14 +28,7 @@ import {
   formatMoney,
 } from "@/lib/format";
 import type { Show, ShowStatus } from "@/lib/supabase/types";
-
-function titleCase(s: string | null | undefined): string {
-  if (!s) return "";
-  return s
-    .toLowerCase()
-    .replace(/(^|\s|-)([a-z])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`)
-    .replace(/\bTbd\b/g, "TBD");
-}
+import { cn } from "@/lib/utils/cn";
 
 const STATUS_LABEL: Record<ShowStatus, string> = {
   lead: "Lead",
@@ -25,6 +40,14 @@ const STATUS_LABEL: Record<ShowStatus, string> = {
   cancelled: "Cancelled",
 };
 
+function titleCase(s: string | null | undefined): string {
+  if (!s) return "";
+  return s
+    .toLowerCase()
+    .replace(/(^|\s|-)([a-z])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`)
+    .replace(/\bTbd\b/g, "TBD");
+}
+
 export function ShowTable({
   groups,
   empty,
@@ -32,66 +55,186 @@ export function ShowTable({
   groups: Map<ShowStatus, Show[]>;
   empty: React.ReactNode;
 }) {
-  const allEmpty = Array.from(groups.values()).every((arr) => arr.length === 0);
-  if (allEmpty) return <>{empty}</>;
+  const entries = Array.from(groups.entries()).filter(([, s]) => s.length > 0);
+  if (entries.length === 0) return <>{empty}</>;
 
   return (
-    <div className="divide-y divide-line border-y border-line">
-      {Array.from(groups.entries()).map(([status, shows]) => {
-        if (shows.length === 0) return null;
-        return (
-          <section key={status} className="px-6 md:px-10 py-6">
-            <header className="flex items-baseline gap-2 pb-3 mb-1 border-b border-line">
-              <span className="font-display text-[18px] text-fg">
-                {STATUS_LABEL[status]}
-              </span>
-              <span className="opacity-50 font-mono text-[11px]">·</span>
-              <span className="num font-mono text-[11px] tracking-[0.08em] text-fg-faint">
-                {shows.length.toString().padStart(2, "0")}
-              </span>
-            </header>
-            <ul className="divide-y divide-line">
-              {shows.map((s) => (
-                <li key={s.id}>
-                  <Link
-                    href={`/tour/${s.id}`}
-                    className="grid grid-cols-[80px_1fr_auto] sm:grid-cols-[100px_minmax(0,3fr)_36px_minmax(0,1fr)_minmax(0,1.2fr)_auto] items-center gap-4 py-5 hover:bg-surface-2 [transition-duration:80ms]"
-                  >
-                    <span className="num font-mono text-[12px] text-fg-dim">
-                      {formatDate(s.show_date)}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block truncate font-sans text-[15px] font-medium text-fg">
-                        {titleCase(s.city) || "TBD"}
-                      </span>
-                      <span className="block truncate font-sans text-[13px] text-fg-dim">
-                        {titleCase(s.venue_name) || "Venue TBD"}
-                      </span>
-                    </span>
-                    <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-[0.1em] text-fg-faint">
-                      {(s.country ?? "").toUpperCase()}
-                    </span>
-                    <span className="hidden sm:inline num font-mono text-[12px] text-fg-dim text-right">
-                      {s.capacity ? formatCapacity(s.capacity) : ""}
-                    </span>
-                    <span className="hidden sm:inline num font-mono text-[12px] text-fg-dim text-right">
-                      {formatMoney(
-                        s.fee_confirmed ?? s.fee_offered,
-                        s.currency,
-                      )}
-                    </span>
-                    <span className="flex items-center justify-end shrink-0 min-w-[110px]">
-                      <StatusBracket tone={STATUS_TONE[s.status] ?? "default"}>
-                        {STATUS_LABEL[s.status]}
-                      </StatusBracket>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
+    <div className="px-6 md:px-10 pt-2 pb-10 flex flex-col gap-10">
+      {entries.map(([status, shows]) => (
+        <SortableGroup
+          key={status}
+          status={status}
+          initialShows={shows}
+        />
+      ))}
     </div>
+  );
+}
+
+function SortableGroup({
+  status,
+  initialShows,
+}: {
+  status: ShowStatus;
+  initialShows: Show[];
+}) {
+  const [shows, setShows] = useState<Show[]>(initialShows);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(`dvbbs.tour.showOrder.${status}`);
+      if (raw) {
+        const ids = JSON.parse(raw) as string[];
+        const byId = new Map(initialShows.map((s) => [s.id, s]));
+        const ordered = ids
+          .map((id) => byId.get(id))
+          .filter((s): s is Show => Boolean(s));
+        const remaining = initialShows.filter((s) => !ids.includes(s.id));
+        setShows([...ordered, ...remaining]);
+        return;
+      }
+    } catch {
+      // ignore
+    }
+    setShows(initialShows);
+  }, [status, initialShows]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 6 },
+    }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  function onDragEnd(e: DragEndEvent) {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const oldIdx = shows.findIndex((s) => s.id === active.id);
+    const newIdx = shows.findIndex((s) => s.id === over.id);
+    if (oldIdx < 0 || newIdx < 0) return;
+    const next = arrayMove(shows, oldIdx, newIdx);
+    setShows(next);
+    try {
+      localStorage.setItem(
+        `dvbbs.tour.showOrder.${status}`,
+        JSON.stringify(next.map((s) => s.id)),
+      );
+    } catch {
+      // ignore
+    }
+  }
+
+  return (
+    <section>
+      <header className="flex items-baseline gap-2 pb-4">
+        <h2 className="font-display text-[18px] text-fg" style={{ fontWeight: 500 }}>
+          {STATUS_LABEL[status]}
+        </h2>
+        <span className="opacity-50 font-mono text-[11px]">·</span>
+        <span className="num font-mono text-[11px] tracking-[0.06em] text-fg-faint">
+          {shows.length.toString().padStart(2, "0")}
+        </span>
+      </header>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={onDragEnd}
+      >
+        <SortableContext
+          items={shows.map((s) => s.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <ul className="flex flex-col gap-2">
+            {shows.map((s) => (
+              <SortableShowCard key={s.id} show={s} />
+            ))}
+          </ul>
+        </SortableContext>
+      </DndContext>
+    </section>
+  );
+}
+
+function SortableShowCard({ show }: { show: Show }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: show.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(
+      transform
+        ? { ...transform, y: (transform.y ?? 0) - (isDragging ? 4 : 0) }
+        : null,
+    ),
+    transition,
+    opacity: isDragging ? 0.95 : 1,
+    zIndex: isDragging ? 20 : 1,
+    boxShadow: isDragging
+      ? "0 4px 12px rgba(26,22,18,0.06)"
+      : undefined,
+  };
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "relative bg-surface border border-line group",
+        "hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms]",
+      )}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        aria-label="Reorder show"
+        className={cn(
+          "absolute left-2 top-1/2 -translate-y-1/2 size-6 grid place-items-center text-fg-faint",
+          "opacity-30 group-hover:opacity-100 hover:text-fg-dim [transition-duration:80ms]",
+          "cursor-grab active:cursor-grabbing touch-none",
+        )}
+      >
+        <GripVertical className="size-3.5" strokeWidth={1.5} aria-hidden />
+      </button>
+      <Link
+        href={`/tour/${show.id}`}
+        className="grid grid-cols-[1fr_auto] sm:grid-cols-[100px_minmax(0,3fr)_36px_minmax(0,1fr)_minmax(0,1.2fr)_auto] items-center gap-4 pl-10 pr-4 py-4"
+      >
+        <span className="num font-mono text-[12px] text-fg-dim hidden sm:inline">
+          {formatDate(show.show_date)}
+        </span>
+        <span className="min-w-0">
+          <span className="num font-mono text-[11px] text-fg-faint sm:hidden block">
+            {formatDate(show.show_date)}
+          </span>
+          <span className="block truncate font-sans text-[15px] font-medium text-fg">
+            {titleCase(show.city) || "TBD"}
+          </span>
+          <span className="block truncate font-sans text-[13px] text-fg-dim">
+            {titleCase(show.venue_name) || "Venue TBD"}
+          </span>
+        </span>
+        <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-[0.1em] text-fg-faint">
+          {(show.country ?? "").toUpperCase()}
+        </span>
+        <span className="hidden sm:inline num font-mono text-[12px] text-fg-dim text-right">
+          {show.capacity ? formatCapacity(show.capacity) : ""}
+        </span>
+        <span className="hidden sm:inline num font-mono text-[12px] text-fg-dim text-right">
+          {formatMoney(show.fee_confirmed ?? show.fee_offered, show.currency)}
+        </span>
+        <span className="flex items-center justify-end shrink-0 min-w-[110px]">
+          <StatusBracket tone={STATUS_TONE[show.status] ?? "default"}>
+            {STATUS_LABEL[show.status]}
+          </StatusBracket>
+        </span>
+      </Link>
+    </li>
   );
 }

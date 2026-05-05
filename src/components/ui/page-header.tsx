@@ -33,7 +33,7 @@ export function PageHeader({
       ) : null}
       <div
         className={cn(
-          "px-6 md:px-10 pt-10 md:pt-14 pb-12 md:pb-20 flex flex-col gap-4",
+          "px-6 md:px-10 pt-8 md:pt-10 pb-10 md:pb-14 flex flex-col gap-4",
           "sm:flex-row sm:items-end sm:justify-between sm:gap-10",
         )}
       >
@@ -47,9 +47,9 @@ export function PageHeader({
           <h1
             className="display-title text-fg lowercase block break-words"
             style={{
-              fontSize: "clamp(56px, 10vw, 96px)",
-              letterSpacing: "-0.03em",
-              lineHeight: 0.95,
+              fontSize: "clamp(36px, 5vw, 56px)",
+              letterSpacing: "-0.025em",
+              lineHeight: 1,
             }}
           >
             {title}

@@ -15,7 +15,7 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          "hidden md:flex h-dvh shrink-0 flex-col bg-page border-r border-line",
+          "hidden md:flex h-dvh shrink-0 flex-col bg-surface border-r border-line",
           "transition-[width] [transition-duration:120ms] ease-out",
           collapsed ? "w-[60px]" : "w-[228px]",
         )}
@@ -43,7 +43,7 @@ export function Sidebar() {
             onClick={() => setMobileOpen(false)}
             className="absolute inset-0 bg-inverted/30"
           />
-          <aside className="relative z-10 w-[80%] max-w-[280px] h-dvh bg-page border-r border-line flex flex-col">
+          <aside className="relative z-10 w-[80%] max-w-[280px] h-dvh bg-surface border-r border-line flex flex-col">
             <SidebarBody
               collapsed={false}
               mobile
