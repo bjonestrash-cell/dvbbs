@@ -1,4 +1,30 @@
-import type { AssetType, MarketingChannel } from "@/lib/supabase/types";
+import type {
+  AssetType,
+  MarketingChannel,
+  ReleaseStatus,
+} from "@/lib/supabase/types";
+
+export const RELEASE_STATUS_ORDER: ReleaseStatus[] = [
+  "idea",
+  "in_production",
+  "mixing",
+  "mastered",
+  "delivered",
+  "scheduled",
+  "released",
+  "archived",
+];
+
+export const RELEASE_STATUS_LABEL: Record<ReleaseStatus, string> = {
+  idea: "Idea",
+  in_production: "In production",
+  mixing: "Mixing",
+  mastered: "Mastered",
+  delivered: "Delivered",
+  scheduled: "Scheduled",
+  released: "Released",
+  archived: "Archived",
+};
 
 export const ASSET_TYPE_LABEL: Record<AssetType, string> = {
   master_wav: "Master WAV",

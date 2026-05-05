@@ -2,28 +2,12 @@ import "server-only";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Release, ReleaseStatus } from "@/lib/supabase/types";
+import {
+  RELEASE_STATUS_LABEL,
+  RELEASE_STATUS_ORDER,
+} from "./release-shared";
 
-export const RELEASE_STATUS_ORDER: ReleaseStatus[] = [
-  "idea",
-  "in_production",
-  "mixing",
-  "mastered",
-  "delivered",
-  "scheduled",
-  "released",
-  "archived",
-];
-
-export const RELEASE_STATUS_LABEL: Record<ReleaseStatus, string> = {
-  idea: "Idea",
-  in_production: "In production",
-  mixing: "Mixing",
-  mastered: "Mastered",
-  delivered: "Delivered",
-  scheduled: "Scheduled",
-  released: "Released",
-  archived: "Archived",
-};
+export { RELEASE_STATUS_LABEL, RELEASE_STATUS_ORDER };
 
 export async function listReleases(): Promise<Release[]> {
   const supabase = await createClient();

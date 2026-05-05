@@ -2,14 +2,13 @@ import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { buttonClasses } from "@/components/ui/button";
-import { listReleases, groupByReleaseStatus } from "@/lib/data/releases";
+import { listReleases } from "@/lib/data/releases";
 import { ReleaseBoard } from "./_components/release-board";
 
 export const metadata = { title: "Releases. DVBBS HQ" };
 
 export default async function ReleasesPage() {
   const releases = await listReleases();
-  const groups = groupByReleaseStatus(releases);
 
   return (
     <>
@@ -51,7 +50,7 @@ export default async function ReleasesPage() {
           />
         </div>
       ) : (
-        <ReleaseBoard groups={groups} />
+        <ReleaseBoard releases={releases} />
       )}
     </>
   );
