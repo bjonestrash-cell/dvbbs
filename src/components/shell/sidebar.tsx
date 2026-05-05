@@ -8,23 +8,22 @@ import { Logo } from "@/components/brand/logo";
 import { useSidebar } from "./sidebar-state";
 import { cn } from "@/lib/utils/cn";
 
-export function Sidebar({ commitSha }: { commitSha?: string }) {
+export function Sidebar() {
   const { collapsed, toggleCollapsed, mobileOpen, setMobileOpen } = useSidebar();
 
   return (
     <>
       <aside
         className={cn(
-          "hidden md:flex h-dvh shrink-0 flex-col bg-surface border-r border-line",
+          "hidden md:flex h-dvh shrink-0 flex-col bg-page border-r border-line",
           "transition-[width] [transition-duration:120ms] ease-out",
-          collapsed ? "w-16" : "w-[260px]",
+          collapsed ? "w-[60px]" : "w-[228px]",
         )}
         aria-label="Primary navigation"
       >
         <SidebarBody
           collapsed={collapsed}
           mobile={false}
-          commitSha={commitSha}
           onItemClick={undefined}
           onToggleCollapse={toggleCollapsed}
           onClose={undefined}
@@ -44,11 +43,10 @@ export function Sidebar({ commitSha }: { commitSha?: string }) {
             onClick={() => setMobileOpen(false)}
             className="absolute inset-0 bg-inverted/30"
           />
-          <aside className="relative z-10 w-[80%] max-w-[300px] h-dvh bg-surface border-r border-line flex flex-col">
+          <aside className="relative z-10 w-[80%] max-w-[280px] h-dvh bg-page border-r border-line flex flex-col">
             <SidebarBody
               collapsed={false}
               mobile
-              commitSha={commitSha}
               onItemClick={() => setMobileOpen(false)}
               onToggleCollapse={undefined}
               onClose={() => setMobileOpen(false)}
@@ -63,14 +61,12 @@ export function Sidebar({ commitSha }: { commitSha?: string }) {
 function SidebarBody({
   collapsed,
   mobile,
-  commitSha,
   onItemClick,
   onToggleCollapse,
   onClose,
 }: {
   collapsed: boolean;
   mobile: boolean;
-  commitSha: string | undefined;
   onItemClick: (() => void) | undefined;
   onToggleCollapse: (() => void) | undefined;
   onClose: (() => void) | undefined;
@@ -81,8 +77,8 @@ function SidebarBody({
     <>
       <div
         className={cn(
-          "flex shrink-0 items-center border-b border-line",
-          collapsed ? "justify-center px-0 py-6" : "justify-between px-6 py-6",
+          "flex shrink-0 items-center",
+          collapsed ? "justify-center h-16 px-0" : "justify-between h-16 px-5",
         )}
       >
         <Link
@@ -91,21 +87,21 @@ function SidebarBody({
           className="text-fg"
           aria-label="DVBBS HQ home"
         >
-          <Logo size="md" collapsed={collapsed} />
+          <Logo size="sm" collapsed={collapsed} />
         </Link>
         {mobile ? (
           <button
             type="button"
             onClick={onClose}
             aria-label="Close navigation"
-            className="size-8 grid place-items-center text-fg-dim hover:text-fg [transition-duration:80ms]"
+            className="size-7 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
           >
             <X className="size-4" strokeWidth={1.5} aria-hidden />
           </button>
         ) : null}
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-3">
+      <nav className="flex-1 overflow-y-auto pt-2 pb-3">
         <ul className="flex flex-col">
           {NAV.map((item) => {
             const active =
@@ -118,31 +114,37 @@ function SidebarBody({
                   onClick={onItemClick}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex items-center font-sans text-[13px]",
+                    "relative flex items-center font-sans text-[13px]",
                     "[transition-duration:80ms]",
                     collapsed && !mobile
-                      ? "justify-center px-0 py-3"
-                      : "gap-3 px-6 py-3",
+                      ? "justify-center px-0 py-2.5"
+                      : "gap-3 px-5 py-2",
                     active
-                      ? "bg-inverted text-fg-inverted"
-                      : "text-fg-dim hover:bg-surface-2 hover:text-fg",
+                      ? "text-fg font-medium"
+                      : "text-fg-dim hover:text-fg",
                   )}
                 >
+                  {active ? (
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] bg-accent"
+                    />
+                  ) : null}
                   <Icon
                     aria-hidden
                     strokeWidth={1.5}
-                    className="size-4 shrink-0"
+                    className={cn(
+                      "size-4 shrink-0",
+                      active ? "text-fg" : "text-fg-faint",
+                    )}
                   />
                   {collapsed && !mobile ? null : (
                     <>
-                      <span className="flex-1 truncate">{toLabel(item.label)}</span>
+                      <span className="flex-1 truncate">
+                        {toLabel(item.label)}
+                      </span>
                       {!item.ready ? (
-                        <span
-                          className={cn(
-                            "font-mono lowercase tracking-[0.2em] text-[9px]",
-                            active ? "opacity-60" : "text-fg-faint",
-                          )}
-                        >
+                        <span className="font-mono lowercase tracking-[0.18em] text-[9px] text-fg-faint">
                           soon
                         </span>
                       ) : null}
@@ -155,44 +157,35 @@ function SidebarBody({
         </ul>
       </nav>
 
-      <div
-        className={cn(
-          "shrink-0 border-t border-line",
-          collapsed && !mobile ? "px-0 py-3" : "px-6 py-3",
-        )}
-      >
-        {collapsed && !mobile ? (
+      {!mobile ? (
+        <div
+          className={cn(
+            "shrink-0",
+            collapsed ? "px-0 py-3" : "px-5 py-3 flex justify-end",
+          )}
+        >
           <button
             type="button"
             onClick={onToggleCollapse}
-            aria-label="Expand sidebar"
-            className="w-full h-8 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className={cn(
+              "size-7 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]",
+              collapsed ? "mx-auto" : "",
+            )}
           >
-            <ChevronRight className="size-4" strokeWidth={1.5} aria-hidden />
+            {collapsed ? (
+              <ChevronRight className="size-4" strokeWidth={1.5} aria-hidden />
+            ) : (
+              <ChevronLeft className="size-4" strokeWidth={1.5} aria-hidden />
+            )}
           </button>
-        ) : (
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] tracking-[0.14em] text-fg-faint lowercase">
-              build {(commitSha ?? "local").toLowerCase()}
-            </span>
-            {onToggleCollapse ? (
-              <button
-                type="button"
-                onClick={onToggleCollapse}
-                aria-label="Collapse sidebar"
-                className="size-8 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
-              >
-                <ChevronLeft className="size-4" strokeWidth={1.5} aria-hidden />
-              </button>
-            ) : null}
-          </div>
-        )}
-      </div>
+        </div>
+      ) : null}
     </>
   );
 }
 
-/** Convert "TOUR" / "RELEASES" labels stored in nav-config to sentence case. */
+/** Convert nav labels stored in caps to sentence case for the sidebar. */
 function toLabel(s: string): string {
   if (!s) return s;
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();

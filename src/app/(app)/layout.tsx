@@ -19,7 +19,7 @@ export default async function AppLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-dvh bg-page">
-        <Sidebar commitSha={commitSha} />
+        <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <Header />
           <main className="flex-1">{children}</main>
