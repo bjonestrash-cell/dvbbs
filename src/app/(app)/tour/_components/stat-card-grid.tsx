@@ -132,7 +132,7 @@ function SortableStatCard({
       style={style}
       className={cn(
         "relative bg-surface border border-line p-6 group",
-        "select-none touch-none",
+        "select-none",
       )}
     >
       <div className="flex items-start justify-between">
@@ -145,9 +145,19 @@ function SortableStatCard({
           {...listeners}
           type="button"
           aria-label="Reorder card"
-          className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [transition-duration:80ms] text-fg-faint hover:text-fg-dim cursor-grab active:cursor-grabbing"
+          className={cn(
+            "grid place-items-center text-fg-faint hover:text-fg-dim",
+            "size-9 md:size-6 -m-1.5 md:m-0",
+            // Visible on touch (no hover), fades in on hover for desktop.
+            "opacity-60 md:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [transition-duration:80ms]",
+            "cursor-grab active:cursor-grabbing touch-none",
+          )}
         >
-          <GripVertical className="size-3.5" strokeWidth={1.5} aria-hidden />
+          <GripVertical
+            className="size-4 md:size-3.5"
+            strokeWidth={1.5}
+            aria-hidden
+          />
         </button>
       </div>
       <div className="mt-5 marker">{card.label}</div>
