@@ -3,7 +3,7 @@ import { AUTH_DISABLED } from "@/lib/auth/mode";
 import { getCurrentMember } from "@/lib/auth/dal";
 import { BandsintownSync } from "./_components/bandsintown-sync";
 
-export const metadata = { title: "Settings. DVBBS HQ" };
+export const metadata = { title: "settings" };
 
 export default async function SettingsPage() {
   const me = AUTH_DISABLED ? null : await getCurrentMember();

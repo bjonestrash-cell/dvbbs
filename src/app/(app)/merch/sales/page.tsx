@@ -11,7 +11,7 @@ import { SalesByMonthChart } from "./_components/sales-by-month-chart";
 import { ExportCsvButton } from "./_components/export-csv";
 import { MERCH_SALE_SOURCE_LABEL } from "@/lib/data/merch-shared";
 
-export const metadata = { title: "Merch sales. DVBBS HQ" };
+export const metadata = { title: "sales" };
 
 export default async function MerchSalesPage() {
   const sales = await listAllSales();

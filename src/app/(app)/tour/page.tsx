@@ -15,7 +15,7 @@ import { ViewToggle } from "./_components/view-toggle";
 import { StatCardGrid, type StatCardItem } from "./_components/stat-card-grid";
 import { TourGreeting } from "./_components/tour-greeting";
 
-export const metadata = { title: "Tour. DVBBS HQ" };
+export const metadata = { title: "tour" };
 
 const ALL_STATUSES: ShowStatus[] = [
   "lead",

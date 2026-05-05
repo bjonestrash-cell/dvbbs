@@ -19,7 +19,7 @@ import { ViewToggle } from "../_components/view-toggle";
 import { buttonClasses } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-export const metadata = { title: "Tour calendar. DVBBS HQ" };
+export const metadata = { title: "calendar" };
 
 const STATUS_BAR: Record<ShowStatus, string> = {
   lead: "bg-status-lead",

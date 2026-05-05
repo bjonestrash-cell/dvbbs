@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { listContacts } from "@/lib/data/contacts";
 import { ShowWizard } from "./_components/show-wizard";
 
-export const metadata = { title: "New show. DVBBS HQ" };
+export const metadata = { title: "new show" };
 
 export default async function NewShowPage() {
   const promoters = await listContacts("promoter");

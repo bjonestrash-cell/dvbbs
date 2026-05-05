@@ -14,7 +14,7 @@ import {
 import type { ContactType } from "@/lib/supabase/types";
 import { ContactFilters } from "./_components/contact-filters";
 
-export const metadata = { title: "Contacts. DVBBS HQ" };
+export const metadata = { title: "contacts" };
 
 function titleCase(s: string | null | undefined): string {
   if (!s) return "";

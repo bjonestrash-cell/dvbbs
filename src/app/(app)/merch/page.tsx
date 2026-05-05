@@ -13,7 +13,7 @@ import { InventoryHealth } from "./_components/inventory-health";
 import { MerchFilters } from "./_components/merch-filters";
 import { ProductGrid } from "./_components/product-grid";
 
-export const metadata = { title: "Merch. DVBBS HQ" };
+export const metadata = { title: "merch" };
 
 const ALL_STATUSES: MerchStatus[] = ["draft", "active", "sold_out", "archived"];
 

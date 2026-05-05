@@ -9,7 +9,7 @@ import { FlightStubList } from "./_components/flight-stub-list";
 import { FlightFilters } from "./_components/flight-filters";
 import { TripTimeline } from "./_components/trip-timeline";
 
-export const metadata = { title: "Flights. DVBBS HQ" };
+export const metadata = { title: "flights" };
 
 const ALL_STATUSES: FlightStatus[] = [
   "booked",

@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { listShows } from "@/lib/data/shows";
 import { NewFlightForm } from "./_components/new-flight-form";
 
-export const metadata = { title: "New flight. DVBBS HQ" };
+export const metadata = { title: "new flight" };
 
 export default async function NewFlightPage() {
   const shows = await listShows();

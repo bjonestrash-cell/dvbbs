@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/ui/page-header";
 import { NewContactForm } from "./_components/new-contact-form";
 
-export const metadata = { title: "New contact. DVBBS HQ" };
+export const metadata = { title: "new contact" };
 
 export default function NewContactPage() {
   return (

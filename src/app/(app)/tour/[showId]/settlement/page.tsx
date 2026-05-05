@@ -10,7 +10,7 @@ import { getCurrentMember } from "@/lib/auth/dal";
 import { formatDateLong, formatMoney } from "@/lib/format";
 import { SettlementForm } from "./_components/settlement-form";
 
-export const metadata = { title: "Settlement. DVBBS HQ" };
+export const metadata = { title: "settlement" };
 
 export default async function SettlementPage({
   params,

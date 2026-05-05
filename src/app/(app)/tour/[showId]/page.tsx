@@ -28,9 +28,9 @@ export async function generateMetadata({
 }) {
   const { showId } = await params;
   const show = await getShow(showId);
-  if (!show) return { title: "Show. DVBBS HQ" };
+  if (!show) return { title: "show" };
   return {
-    title: `${show.city ?? "TBD"}, ${show.venue_name ?? "TBD"}. DVBBS HQ`,
+    title: (show.city ?? "show").toLowerCase(),
   };
 }
 

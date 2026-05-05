@@ -23,8 +23,8 @@ export async function generateMetadata({
 }) {
   const { productId } = await params;
   const product = await getProduct(productId);
-  if (!product) return { title: "Product. DVBBS HQ" };
-  return { title: `${product.name}. DVBBS HQ` };
+  if (!product) return { title: "product" };
+  return { title: product.name.toLowerCase() };
 }
 
 function titleCase(s: string | null | undefined): string {

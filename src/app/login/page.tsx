@@ -1,7 +1,7 @@
 import { LoginForm } from "./login-form";
 
 export const metadata = {
-  title: "Sign in. DVBBS HQ",
+  title: "sign in",
 };
 
 export default function LoginPage({

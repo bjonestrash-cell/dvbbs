@@ -6,7 +6,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { listSmartLinks } from "@/lib/data/smart-links";
 import { formatDateCompact } from "@/lib/format";
 
-export const metadata = { title: "Smart links. DVBBS HQ" };
+export const metadata = { title: "smart links" };
 
 export default async function SmartLinksPage() {
   const links = await listSmartLinks();

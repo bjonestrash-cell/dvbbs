@@ -19,8 +19,8 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const link = await getSmartLinkById(id);
-  if (!link) return { title: "Smart link. DVBBS HQ" };
-  return { title: `${link.slug}. DVBBS HQ` };
+  if (!link) return { title: "smart link" };
+  return { title: link.slug.toLowerCase() };
 }
 
 export default async function SmartLinkDetailPage({

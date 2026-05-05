@@ -23,7 +23,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DVBBS HQ",
+  // `template: "%s"` means each page's own title is the entire tab title —
+  // no "Page. DVBBS HQ" suffix. The default kicks in for /, 404, etc.
+  title: {
+    default: "dvbbs",
+    template: "%s",
+  },
   description: "Internal artist operations.",
   robots: { index: false, follow: false },
 };

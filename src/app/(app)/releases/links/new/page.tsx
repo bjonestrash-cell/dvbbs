@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { listReleases } from "@/lib/data/releases";
 import { NewLinkForm } from "./_components/new-link-form";
 
-export const metadata = { title: "New smart link. DVBBS HQ" };
+export const metadata = { title: "new link" };
 
 export default async function NewSmartLinkPage() {
   const releases = await listReleases();

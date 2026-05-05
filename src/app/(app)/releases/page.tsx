@@ -7,7 +7,7 @@ import { ReleaseBoard } from "./_components/release-board";
 import { ReleaseList } from "./_components/release-list";
 import { ReleaseViewToggle } from "./_components/release-view-toggle";
 
-export const metadata = { title: "Releases. DVBBS HQ" };
+export const metadata = { title: "releases" };
 
 export default async function ReleasesPage({
   searchParams,

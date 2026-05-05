@@ -3,7 +3,7 @@ import { getReleaseBySlug } from "@/lib/data/releases";
 import { listMarketing } from "@/lib/data/release-relations";
 import { MarketingList } from "../_components/marketing-list";
 
-export const metadata = { title: "Marketing. DVBBS HQ" };
+export const metadata = { title: "marketing" };
 
 export default async function ReleaseMarketingPage({
   params,

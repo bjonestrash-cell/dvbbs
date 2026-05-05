@@ -6,7 +6,7 @@ import { getFinanceSummary, getRevenueByMonth } from "@/lib/data/finance";
 import { formatDate, formatMoney } from "@/lib/format";
 import { RevenueChart } from "./_components/revenue-chart";
 
-export const metadata = { title: "Finance. DVBBS HQ" };
+export const metadata = { title: "finance" };
 
 function titleCase(s: string | null | undefined): string {
   if (!s) return "";

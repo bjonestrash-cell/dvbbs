@@ -3,7 +3,7 @@ import { getReleaseBySlug } from "@/lib/data/releases";
 import { listAssets } from "@/lib/data/release-relations";
 import { AssetsList } from "../_components/assets-list";
 
-export const metadata = { title: "Assets. DVBBS HQ" };
+export const metadata = { title: "assets" };
 
 export default async function ReleaseAssetsPage({
   params,

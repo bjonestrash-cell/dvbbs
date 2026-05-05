@@ -19,8 +19,8 @@ export async function generateMetadata({
 }) {
   const { contactId } = await params;
   const c = await getContact(contactId);
-  if (!c) return { title: "Contact. DVBBS HQ" };
-  return { title: `${c.name}. DVBBS HQ` };
+  if (!c) return { title: "contact" };
+  return { title: c.name.toLowerCase() };
 }
 
 function titleCase(s: string | null | undefined): string {

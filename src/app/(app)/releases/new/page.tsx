@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/ui/page-header";
 import { NewReleaseForm } from "./_components/new-release-form";
 
-export const metadata = { title: "New release. DVBBS HQ" };
+export const metadata = { title: "new release" };
 
 export default function NewReleasePage() {
   return (

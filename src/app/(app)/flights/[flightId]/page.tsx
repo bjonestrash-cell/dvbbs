@@ -16,9 +16,9 @@ export async function generateMetadata({
 }) {
   const { flightId } = await params;
   const f = await getFlight(flightId);
-  if (!f) return { title: "Flight. DVBBS HQ" };
+  if (!f) return { title: "flight" };
   return {
-    title: `${f.departure_airport} → ${f.arrival_airport}. DVBBS HQ`,
+    title: `${f.departure_airport.toLowerCase()} → ${f.arrival_airport.toLowerCase()}`,
   };
 }
 

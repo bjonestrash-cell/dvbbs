@@ -10,8 +10,8 @@ export async function generateMetadata({
 }) {
   const { releaseSlug } = await params;
   const release = await getReleaseBySlug(releaseSlug);
-  if (!release) return { title: "Release. DVBBS HQ" };
-  return { title: `${release.title}. DVBBS HQ` };
+  if (!release) return { title: "release" };
+  return { title: release.title.toLowerCase() };
 }
 
 export default async function ReleaseOverviewPage({
