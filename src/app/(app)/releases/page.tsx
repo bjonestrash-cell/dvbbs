@@ -4,10 +4,18 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { buttonClasses } from "@/components/ui/button";
 import { listReleases } from "@/lib/data/releases";
 import { ReleaseBoard } from "./_components/release-board";
+import { ReleaseList } from "./_components/release-list";
+import { ReleaseViewToggle } from "./_components/release-view-toggle";
 
 export const metadata = { title: "Releases. DVBBS HQ" };
 
-export default async function ReleasesPage() {
+export default async function ReleasesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
+  const sp = await searchParams;
+  const view = sp.view === "list" ? "list" : "board";
   const releases = await listReleases();
 
   return (
@@ -17,7 +25,8 @@ export default async function ReleasesPage() {
         title="Releases"
         description="Records, idea to release."
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <ReleaseViewToggle />
             <Link
               href="/releases/links"
               className={buttonClasses({ variant: "bracket", size: "sm" })}
@@ -49,6 +58,8 @@ export default async function ReleasesPage() {
             }
           />
         </div>
+      ) : view === "list" ? (
+        <ReleaseList releases={releases} />
       ) : (
         <ReleaseBoard releases={releases} />
       )}
