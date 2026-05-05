@@ -463,6 +463,348 @@ async function ensureShow(payload) {
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Phase 3 Merch seed (table must exist; warns and skips if missing).
+  // ---------------------------------------------------------------------------
+  const tomorrowlandShow = await sb
+    .from("shows")
+    .select("id")
+    .eq("bandsintown_id", "seed-005")
+    .maybeSingle();
+  const hardSummerShow = await sb
+    .from("shows")
+    .select("id")
+    .eq("bandsintown_id", "seed-006")
+    .maybeSingle();
+  const printworksShow = await sb
+    .from("shows")
+    .select("id")
+    .eq("bandsintown_id", "seed-007")
+    .maybeSingle();
+
+  const merchProducts = [
+    {
+      name: "DVBBS Logo Tee",
+      sku: "DVBBS-TEE-BLK",
+      category: "Apparel",
+      price: 35,
+      cost_per_unit: 11.5,
+      status: "active",
+      is_tour_exclusive: false,
+      notes:
+        "Black 100% cotton tee with embroidered chevron logo. Heavyweight 240gsm.",
+      variants: [
+        { variant: "S", units_on_hand: 15, reorder_threshold: 8 },
+        { variant: "M", units_on_hand: 8, reorder_threshold: 12 },
+        { variant: "L", units_on_hand: 5, reorder_threshold: 12 },
+        { variant: "XL", units_on_hand: 3, reorder_threshold: 8 },
+      ],
+    },
+    {
+      name: "Tsunami Hoodie",
+      sku: "DVBBS-HOOD-CRM",
+      category: "Apparel",
+      price: 75,
+      cost_per_unit: 28.5,
+      status: "active",
+      is_tour_exclusive: false,
+      notes: "Cream pullover, oversized fit. Tsunami artwork on the back.",
+      variants: [
+        { variant: "M", units_on_hand: 22, reorder_threshold: 10 },
+        { variant: "L", units_on_hand: 18, reorder_threshold: 10 },
+        { variant: "XL", units_on_hand: 12, reorder_threshold: 8 },
+      ],
+    },
+    {
+      name: "Roadtrip Snapback",
+      sku: "DVBBS-CAP-BLK",
+      category: "Accessories",
+      price: 40,
+      cost_per_unit: 9.0,
+      status: "active",
+      is_tour_exclusive: false,
+      notes: "Black six-panel snapback. Embroidered chevron front.",
+      variants: [
+        { variant: "OS", units_on_hand: 48, reorder_threshold: 20 },
+      ],
+    },
+    {
+      name: "Tsunami 12 inch Vinyl",
+      sku: "DVBBS-VIN-TSU",
+      category: "Vinyl",
+      price: 25,
+      cost_per_unit: 7.0,
+      status: "active",
+      is_tour_exclusive: false,
+      notes:
+        "Limited 1,000-press translucent blue vinyl. Tsunami / Pyramids double A-side.",
+      variants: [
+        { variant: "OS", units_on_hand: 78, reorder_threshold: 30 },
+      ],
+    },
+    {
+      name: "Tour Crewneck 2026",
+      sku: "DVBBS-CREW-OLV",
+      category: "Apparel",
+      price: 65,
+      cost_per_unit: 22,
+      status: "active",
+      is_tour_exclusive: false,
+      notes: "Olive heavyweight crewneck with tour route on the back.",
+      variants: [
+        { variant: "M", units_on_hand: 30, reorder_threshold: 15 },
+        { variant: "L", units_on_hand: 25, reorder_threshold: 15 },
+        { variant: "XL", units_on_hand: 15, reorder_threshold: 8 },
+      ],
+    },
+    tomorrowlandShow.data?.id
+      ? {
+          name: "Tomorrowland Mainstage Tee",
+          sku: "DVBBS-TML-26",
+          category: "Apparel",
+          price: 45,
+          cost_per_unit: 12.0,
+          status: "active",
+          is_tour_exclusive: true,
+          exclusive_show_id: tomorrowlandShow.data.id,
+          notes: "Limited tour-exclusive tee for Tomorrowland mainstage 2026.",
+          variants: [
+            { variant: "S", units_on_hand: 180, reorder_threshold: 50 },
+            { variant: "M", units_on_hand: 240, reorder_threshold: 60 },
+            { variant: "L", units_on_hand: 200, reorder_threshold: 60 },
+            { variant: "XL", units_on_hand: 90, reorder_threshold: 40 },
+          ],
+        }
+      : null,
+    {
+      name: "Heritage Tote Bag",
+      sku: "DVBBS-TOTE",
+      category: "Accessories",
+      price: 22,
+      cost_per_unit: 5.5,
+      status: "active",
+      is_tour_exclusive: false,
+      notes: "Natural canvas tote with screen-printed chevron mark.",
+      variants: [
+        { variant: "OS", units_on_hand: 42, reorder_threshold: 20 },
+      ],
+    },
+  ].filter(Boolean);
+
+  let merchOk = true;
+  const productIds = {};
+  for (const p of merchProducts) {
+    const existing = await sb
+      .from("merch_products")
+      .select("id")
+      .eq("sku", p.sku)
+      .maybeSingle();
+    if (existing.error) {
+      console.warn(
+        "skipping merch seed, table not found:",
+        existing.error.message,
+      );
+      merchOk = false;
+      break;
+    }
+    if (existing.data?.id) {
+      productIds[p.sku] = existing.data.id;
+      console.log("skip existing merch", p.sku);
+      continue;
+    }
+    const { variants, ...productRow } = p;
+    const { data, error } = await sb
+      .from("merch_products")
+      .insert(productRow)
+      .select("id")
+      .single();
+    if (error) {
+      console.error("merch insert failed", p.sku, error.message);
+      continue;
+    }
+    productIds[p.sku] = data.id;
+    console.log("inserted merch", p.sku);
+    for (const v of variants) {
+      const { error: invErr } = await sb
+        .from("merch_inventory")
+        .insert({ product_id: data.id, ...v });
+      if (invErr) console.warn("inventory insert", p.sku, v.variant, invErr.message);
+    }
+  }
+
+  if (merchOk) {
+    // Sample sales to populate /merch/sales
+    const tee = productIds["DVBBS-TEE-BLK"];
+    const hood = productIds["DVBBS-HOOD-CRM"];
+    const cap = productIds["DVBBS-CAP-BLK"];
+    const vinyl = productIds["DVBBS-VIN-TSU"];
+    const crew = productIds["DVBBS-CREW-OLV"];
+    const tote = productIds["DVBBS-TOTE"];
+    const hardSummerId = hardSummerShow.data?.id ?? null;
+    const printworksId = printworksShow.data?.id ?? null;
+
+    const sales = [
+      // Hard Summer LA, ~19 days ago, tour sales
+      tee && {
+        product_id: tee,
+        variant: "M",
+        show_id: hardSummerId,
+        units_sold: 18,
+        gross: 630,
+        source: "tour",
+        sale_date: dateAt(-19),
+      },
+      tee && {
+        product_id: tee,
+        variant: "L",
+        show_id: hardSummerId,
+        units_sold: 12,
+        gross: 420,
+        source: "tour",
+        sale_date: dateAt(-19),
+      },
+      hood && {
+        product_id: hood,
+        variant: "L",
+        show_id: hardSummerId,
+        units_sold: 7,
+        gross: 525,
+        source: "tour",
+        sale_date: dateAt(-19),
+      },
+      cap && {
+        product_id: cap,
+        variant: "OS",
+        show_id: hardSummerId,
+        units_sold: 14,
+        gross: 560,
+        source: "tour",
+        sale_date: dateAt(-19),
+      },
+      // Printworks London, ~46 days ago, tour sales
+      tee && {
+        product_id: tee,
+        variant: "M",
+        show_id: printworksId,
+        units_sold: 10,
+        gross: 350,
+        source: "tour",
+        sale_date: dateAt(-46),
+      },
+      hood && {
+        product_id: hood,
+        variant: "M",
+        show_id: printworksId,
+        units_sold: 5,
+        gross: 375,
+        source: "tour",
+        sale_date: dateAt(-46),
+      },
+      cap && {
+        product_id: cap,
+        variant: "OS",
+        show_id: printworksId,
+        units_sold: 8,
+        gross: 320,
+        source: "tour",
+        sale_date: dateAt(-46),
+      },
+      // Shopify trickle, last 30 days
+      tee && {
+        product_id: tee,
+        variant: "S",
+        units_sold: 6,
+        gross: 210,
+        source: "shopify",
+        sale_date: dateAt(-2),
+      },
+      hood && {
+        product_id: hood,
+        variant: "L",
+        units_sold: 3,
+        gross: 225,
+        source: "shopify",
+        sale_date: dateAt(-7),
+      },
+      vinyl && {
+        product_id: vinyl,
+        variant: "OS",
+        units_sold: 11,
+        gross: 275,
+        source: "shopify",
+        sale_date: dateAt(-12),
+      },
+      crew && {
+        product_id: crew,
+        variant: "L",
+        units_sold: 4,
+        gross: 260,
+        source: "shopify",
+        sale_date: dateAt(-22),
+      },
+      tote && {
+        product_id: tote,
+        variant: "OS",
+        units_sold: 9,
+        gross: 198,
+        source: "shopify",
+        sale_date: dateAt(-30),
+      },
+      // Older trickle for trend
+      tee && {
+        product_id: tee,
+        variant: "M",
+        units_sold: 8,
+        gross: 280,
+        source: "shopify",
+        sale_date: dateAt(-58),
+      },
+      hood && {
+        product_id: hood,
+        variant: "M",
+        units_sold: 4,
+        gross: 300,
+        source: "shopify",
+        sale_date: dateAt(-72),
+      },
+      vinyl && {
+        product_id: vinyl,
+        variant: "OS",
+        units_sold: 6,
+        gross: 150,
+        source: "shopify",
+        sale_date: dateAt(-90),
+      },
+      tee && {
+        product_id: tee,
+        variant: "L",
+        units_sold: 5,
+        gross: 175,
+        source: "shopify",
+        sale_date: dateAt(-110),
+      },
+      crew && {
+        product_id: crew,
+        variant: "M",
+        units_sold: 3,
+        gross: 195,
+        source: "wholesale",
+        sale_date: dateAt(-150),
+      },
+    ].filter(Boolean);
+
+    let inserted = 0;
+    for (const s of sales) {
+      const { error } = await sb.from("merch_sales").insert(s);
+      if (error) {
+        console.warn("merch sale insert", error.message);
+        break;
+      }
+      inserted++;
+    }
+    if (inserted > 0) console.log(`seeded ${inserted} merch sales`);
+  }
+
   console.log("done.");
 })().catch((e) => {
   console.error(e);
