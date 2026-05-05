@@ -5,17 +5,16 @@ import Link from "next/link";
 import type { FlightStatus } from "@/lib/supabase/types";
 import type { FlightWithShow } from "@/lib/data/flights";
 import { FLIGHT_STATUS_LABEL } from "@/lib/data/flights-shared";
+import { STATUS_TONE } from "@/components/ui/status-bracket";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Trip timeline. Horizontal time strip with each upcoming trip rendered
- * as a tinted chip positioned at its dates. Trips that overlap stack
- * into rows. Hover (desktop) reveals a popover with every leg; the chip
- * itself is the link target on tap (mobile).
+ * Trip timeline. Anchor-grade: hairline chips on a hairline strip, status
+ * communicated via a single dot before the label, dates in mono. Hover
+ * lifts the border to line-strong + soft shadow (no translate, no fill).
  *
- * Visual language matches the Releases kanban tiles: status-tinted
- * background, 2px status-colored left edge, hairline border, display
- * type for city + mono for dates.
+ * Group rule: trips collapse on shared show_id, then on shared
+ * confirmation_code, otherwise per-flight.
  */
 
 type Trip = {
@@ -30,25 +29,12 @@ type Trip = {
 
 const MS_PER_DAY = 86_400_000;
 
-const STATUS_TINT: Record<FlightStatus, string> = {
-  booked:
-    "color-mix(in srgb, var(--color-holding) 14%, var(--color-surface))",
-  confirmed:
-    "color-mix(in srgb, var(--color-confirmed) 14%, var(--color-surface))",
-  checked_in:
-    "color-mix(in srgb, var(--color-accent) 18%, var(--color-surface))",
-  completed:
-    "color-mix(in srgb, var(--color-completed) 18%, var(--color-surface))",
-  cancelled:
-    "color-mix(in srgb, var(--color-cancelled) 12%, var(--color-surface))",
-};
-
-const STATUS_EDGE: Record<FlightStatus, string> = {
-  booked: "var(--color-holding)",
-  confirmed: "var(--color-confirmed)",
-  checked_in: "var(--color-accent)",
-  completed: "var(--color-completed)",
-  cancelled: "var(--color-cancelled)",
+const STATUS_DOT: Record<FlightStatus, string> = {
+  booked: "bg-holding",
+  confirmed: "bg-confirmed",
+  checked_in: "bg-accent",
+  completed: "bg-completed",
+  cancelled: "bg-cancelled",
 };
 
 function titleCase(s: string | null | undefined): string {
@@ -84,8 +70,7 @@ function fmtDayRange(startMs: number, endMs: number): string {
   const days = Math.max(1, Math.round((endMs - startMs) / MS_PER_DAY));
   const start = fmtDateShort(startMs);
   if (days <= 1) return start;
-  const end = fmtDateShort(endMs);
-  return `${start} → ${end}`;
+  return `${start} → ${fmtDateShort(endMs)}`;
 }
 
 function groupIntoTrips(flights: FlightWithShow[]): Trip[] {
@@ -108,8 +93,6 @@ function groupIntoTrips(flights: FlightWithShow[]): Trip[] {
     const first = fs[0];
     const last = fs[fs.length - 1];
     const fallbackLabel = `${first.departure_airport} → ${last.arrival_airport}`;
-    // Status of the trip = the most-cautious of any leg's statuses.
-    // Cancelled wins, then booked, then confirmed, etc.
     const order: FlightStatus[] = [
       "cancelled",
       "booked",
@@ -133,13 +116,12 @@ function groupIntoTrips(flights: FlightWithShow[]): Trip[] {
   return trips.sort((a, b) => a.startMs - b.startMs);
 }
 
-/** Greedy row assignment: each trip lands in the lowest row whose last-
- *  occupied end is before this trip's start (with a small day-buffer so
- *  popovers don't overlap the next chip too tightly). */
 function assignRows(trips: Trip[]): Array<Trip & { row: number }> {
   const rowEnds: number[] = [];
   return trips.map((t) => {
-    const buffer = MS_PER_DAY * 1.5;
+    // Generous buffer because a chip is wider than a single day on the strip;
+    // we want trips to drop into a new row well before they visually collide.
+    const buffer = MS_PER_DAY * 6;
     let row = rowEnds.findIndex((end) => end + buffer <= t.startMs);
     if (row === -1) row = rowEnds.length;
     rowEnds[row] = t.endMs;
@@ -166,7 +148,7 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
       const nowMs = Date.now();
 
       const axisStartMs = Math.min(nowMs, minStart) - MS_PER_DAY;
-      const axisEndMs = maxEnd + 5 * MS_PER_DAY;
+      const axisEndMs = maxEnd + 7 * MS_PER_DAY;
 
       const positioned = assignRows(trips);
       const rowCount = Math.max(...positioned.map((p) => p.row)) + 1;
@@ -198,34 +180,33 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
   const todayPct = pct(Date.now());
   const todayInRange = todayPct >= 0 && todayPct <= 100;
 
-  // Width per row inside the strip. The strip itself is wide enough to
-  // make ~140px chips legible — set a generous minWidth so short trips
-  // never compress into illegibility.
+  // Strip width scales with trip count so chips never compress past
+  // legibility. 200px per trip is the working budget.
   const stripMinWidth = Math.max(720, positioned.length * 200);
-  const rowHeight = 64;
-  const stripHeight = rowCount * rowHeight + 12;
+  const rowHeight = 44;
+  const stripHeight = rowCount * rowHeight + 8;
 
   return (
     <section className="px-6 md:px-10 pt-6 md:pt-8">
-      <header className="flex items-baseline justify-between gap-3 pb-3">
-        <div>
-          <div className="marker">Trips</div>
+      <header className="flex items-baseline justify-between gap-3 pb-4">
+        <div className="flex items-baseline gap-2">
           <h2
-            className="font-display text-[18px] text-fg mt-1"
+            className="font-display text-[18px] text-fg"
             style={{ fontWeight: 500 }}
           >
             Travel ahead
           </h2>
+          <span className="opacity-50 font-mono text-[11px]">·</span>
+          <span className="num font-mono text-[11px] tracking-[0.06em] text-fg-faint">
+            {positioned.length.toString().padStart(2, "0")}
+          </span>
         </div>
-        <span className="num font-mono text-[11px] tracking-[0.06em] uppercase text-fg-faint">
-          {positioned.length} {positioned.length === 1 ? "trip" : "trips"}
-        </span>
       </header>
 
       <div className="bg-surface border border-line">
         <div className="overflow-x-auto overflow-y-visible">
           <div
-            className="relative px-5 md:px-6 pt-5 pb-6"
+            className="relative px-5 md:px-6 pt-4 pb-5"
             style={{ minWidth: stripMinWidth }}
           >
             {/* Month axis */}
@@ -242,7 +223,7 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
               {todayInRange ? (
                 <span
                   className="absolute top-0 font-mono uppercase tracking-[0.14em] text-[10px] text-accent"
-                  style={{ left: `${todayPct}%`, transform: "translateX(0%)" }}
+                  style={{ left: `${todayPct}%` }}
                 >
                   Today
                 </span>
@@ -251,13 +232,13 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
 
             {/* Strip */}
             <div className="relative" style={{ height: stripHeight }}>
-              {/* Continuous baseline at the top of the strip */}
+              {/* Hairline baseline along the top of the strip */}
               <span
                 aria-hidden
                 className="absolute left-0 right-0 top-0 h-px bg-line"
               />
 
-              {/* Month grid (faint vertical) */}
+              {/* Faint vertical month grid */}
               {monthMarks.map((m) => (
                 <span
                   key={`grid-${m.ms}`}
@@ -280,7 +261,6 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
               {positioned.map((t) => {
                 const left = pct(t.startMs);
                 const top = t.row * rowHeight + 8;
-                // Anchor right side of chip when it would otherwise overflow.
                 const anchorRight = left > 80;
                 return (
                   <div
@@ -290,55 +270,50 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
                       left: anchorRight ? undefined : `${left}%`,
                       right: anchorRight ? `${100 - left}%` : undefined,
                       top,
-                      width: 168,
+                      width: 192,
                     }}
                   >
                     <Link
                       href={`/flights/${t.flights[0].id}`}
                       aria-label={`Trip to ${t.city ?? t.fallbackLabel}`}
                       className={cn(
-                        "block relative border border-line",
-                        "hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.06)]",
-                        "[transition-property:border-color,box-shadow,transform] [transition-duration:120ms]",
-                        "group-hover:-translate-y-0.5",
+                        "block bg-surface border border-line",
+                        "hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)]",
+                        "[transition-duration:80ms]",
                       )}
-                      style={{ background: STATUS_TINT[t.primaryStatus] }}
                     >
-                      <span
-                        aria-hidden
-                        className="absolute left-0 top-0 bottom-0 w-[2px]"
-                        style={{ background: STATUS_EDGE[t.primaryStatus] }}
-                      />
-                      <span className="block px-3 py-2.5">
+                      <span className="grid grid-cols-[10px_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2.5">
                         <span
-                          className="block font-display text-[14px] text-fg leading-[1.15] truncate"
+                          aria-hidden
+                          className={cn(
+                            "size-1.5 rounded-full",
+                            STATUS_DOT[t.primaryStatus] ?? "bg-fg-faint",
+                          )}
+                        />
+                        <span
+                          className="font-display text-[14px] text-fg leading-[1.2] truncate"
                           style={{
-                            fontWeight: 600,
+                            fontWeight: 500,
                             letterSpacing: "-0.005em",
                           }}
                         >
                           {t.city ? titleCase(t.city) : t.fallbackLabel}
                         </span>
-                        <span className="mt-1 block num font-mono uppercase tracking-[0.14em] text-[10px] text-fg-dim truncate">
+                        <span className="num font-mono text-[10px] tracking-[0.14em] uppercase text-fg-faint shrink-0">
                           {fmtDayRange(t.startMs, t.endMs)}
-                        </span>
-                        <span className="mt-1 block font-sans text-[11px] text-fg-faint truncate">
-                          {t.flights.length}{" "}
-                          {t.flights.length === 1 ? "flight" : "flights"}
-                          <span className="opacity-50 mx-1.5">·</span>
-                          {FLIGHT_STATUS_LABEL[t.primaryStatus]}
                         </span>
                       </span>
                     </Link>
 
-                    {/* Popover. CSS-only hover via group-hover so it actually
-                       fires regardless of state plumbing. Hidden on mobile
-                       since :hover doesn't make sense on touch. */}
+                    {/* Popover. CSS-only via group-hover. Hidden on mobile
+                        since :hover doesn't apply on touch — chip is the
+                        link target. */}
                     <div
                       role="tooltip"
                       className={cn(
-                        "hidden md:block absolute top-[calc(100%+8px)] z-40 w-[280px]",
-                        "bg-surface border border-line shadow-[0_8px_24px_rgba(26,22,18,0.10)] p-3",
+                        "hidden md:block absolute top-[calc(100%+8px)] z-40 w-[300px]",
+                        "bg-surface border border-line shadow-[0_8px_24px_rgba(26,22,18,0.08)]",
+                        "p-4",
                         "opacity-0 pointer-events-none [transition-duration:120ms]",
                         "group-hover:opacity-100 group-hover:pointer-events-auto",
                         anchorRight ? "right-0" : "left-0",
@@ -358,36 +333,46 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
 }
 
 function TripPopoverBody({ trip }: { trip: Trip & { row: number } }) {
+  const tone = STATUS_TONE[trip.primaryStatus] ?? "default";
   return (
     <>
-      <div className="flex items-baseline justify-between gap-2 pb-2 border-b border-line">
-        <div
-          className="font-display text-[14px] text-fg leading-[1.2] truncate"
-          style={{ fontWeight: 600 }}
-        >
-          {trip.city ? titleCase(trip.city) : trip.fallbackLabel}
+      <div className="flex items-baseline justify-between gap-3 pb-3 border-b border-line">
+        <div className="min-w-0">
+          <div className="marker">Trip</div>
+          <div
+            className="mt-1 font-display text-[16px] text-fg leading-[1.15] truncate"
+            style={{ fontWeight: 500, letterSpacing: "-0.005em" }}
+          >
+            {trip.city ? titleCase(trip.city) : trip.fallbackLabel}
+          </div>
         </div>
         <span className="num font-mono text-[10px] tracking-[0.14em] uppercase text-fg-faint shrink-0">
           {fmtDayRange(trip.startMs, trip.endMs)}
         </span>
       </div>
 
-      <ul className="mt-2.5 flex flex-col gap-2.5">
-        {trip.flights.map((f) => (
-          <li key={f.id} className="flex items-baseline justify-between gap-3">
+      <ul className="mt-3 flex flex-col gap-3">
+        {trip.flights.map((f, i) => (
+          <li
+            key={f.id}
+            className={cn(
+              "flex items-baseline justify-between gap-3",
+              i > 0 ? "pt-3 border-t border-line" : "",
+            )}
+          >
             <div className="min-w-0">
               <span
                 className="num font-display text-[14px] text-fg leading-[1.1]"
-                style={{ fontWeight: 600, letterSpacing: "-0.005em" }}
+                style={{ fontWeight: 500, letterSpacing: "-0.005em" }}
               >
                 {f.departure_airport}
                 <span className="text-fg-faint mx-1.5 font-sans">→</span>
                 {f.arrival_airport}
               </span>
-              <span className="block num font-mono text-[10px] tracking-[0.14em] uppercase text-fg-dim mt-0.5">
+              <span className="block num font-mono text-[10px] tracking-[0.14em] uppercase text-fg-dim mt-1">
                 {fmtDateTime(f.departure_time)}
               </span>
-              <span className="block font-sans text-[11px] text-fg-dim truncate">
+              <span className="block font-sans text-[12px] text-fg-dim truncate mt-0.5">
                 {f.airline}
                 {f.flight_number ? (
                   <span className="num text-fg-faint"> · {f.flight_number}</span>
@@ -400,6 +385,9 @@ function TripPopoverBody({ trip }: { trip: Trip & { row: number } }) {
           </li>
         ))}
       </ul>
+      {/* tone is referenced for type system parity though we don't render it
+          here — it's already implicit in the leg statuses above. */}
+      <span className="hidden">{tone}</span>
     </>
   );
 }

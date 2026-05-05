@@ -44,26 +44,9 @@ const TYPE_LABEL: Record<Release["type"], string> = {
   bootleg: "Bootleg",
 };
 
-/** Subtle background tint per status, layered over surface. Picks up the
- *  same status palette used by the StatusBracket dots so a glance at the
- *  board reads chromatically without being noisy. */
-const STATUS_TINT: Record<ReleaseStatus, string> = {
-  idea: "color-mix(in srgb, var(--color-lead) 8%, var(--color-surface))",
-  in_production:
-    "color-mix(in srgb, var(--color-holding) 10%, var(--color-surface))",
-  mixing: "color-mix(in srgb, var(--color-offered) 10%, var(--color-surface))",
-  mastered:
-    "color-mix(in srgb, var(--color-holding) 16%, var(--color-surface))",
-  delivered:
-    "color-mix(in srgb, var(--color-approved) 14%, var(--color-surface))",
-  scheduled:
-    "color-mix(in srgb, var(--color-accent) 14%, var(--color-surface))",
-  released:
-    "color-mix(in srgb, var(--color-accent) 24%, var(--color-surface))",
-  archived:
-    "color-mix(in srgb, var(--color-completed) 14%, var(--color-surface))",
-};
-
+/** Per-status edge color. The single chromatic signal on each tile —
+ *  the background remains `bg-surface` so the board reads as editorial
+ *  rows with a colored marker, not as a watercolor wash. */
 const STATUS_EDGE: Record<ReleaseStatus, string> = {
   idea: "var(--color-lead)",
   in_production: "var(--color-holding)",
@@ -341,19 +324,20 @@ function Column({
 
   return (
     <section className="w-[78vw] max-w-[260px] md:w-60 shrink-0 bg-page flex flex-col snap-start md:snap-align-none">
-      <header className="px-2 pb-2.5">
-        <div className="flex items-baseline gap-1.5">
+      <header className="px-2 pb-3">
+        <div className="flex items-baseline gap-2">
           <span
-            className="inline-block size-1.5 rounded-full"
+            className="inline-block size-1.5 rounded-full translate-y-[-1px]"
             style={{ background: STATUS_EDGE[status] }}
             aria-hidden
           />
           <h2
-            className="font-display text-[15px] text-fg"
-            style={{ fontWeight: 600, letterSpacing: "-0.005em" }}
+            className="font-display text-[16px] text-fg"
+            style={{ fontWeight: 500, letterSpacing: "-0.01em" }}
           >
             {RELEASE_STATUS_LABEL[status]}
           </h2>
+          <span className="opacity-50 font-mono text-[11px]">·</span>
           <span className="num font-mono text-[11px] tracking-[0.06em] text-fg-faint">
             {releases.length.toString().padStart(2, "0")}
           </span>
@@ -481,10 +465,9 @@ function CardSurface({
   return (
     <div
       className={cn(
-        "relative border border-line",
+        "relative bg-surface border border-line",
         "hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms]",
       )}
-      style={{ background: STATUS_TINT[release.status] }}
     >
       <span
         aria-hidden
@@ -506,12 +489,11 @@ function CardPresentation({
   return (
     <div
       className={cn(
-        "w-60 border border-line px-3 py-2.5 pr-7 relative",
+        "w-60 bg-surface border border-line px-3 py-2.5 pr-7 relative",
         dragging
           ? "shadow-[0_8px_24px_rgba(26,22,18,0.10)] rotate-[0.3deg]"
           : "",
       )}
-      style={{ background: STATUS_TINT[release.status] }}
     >
       <span
         aria-hidden
