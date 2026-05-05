@@ -21,6 +21,54 @@ export type ContactType =
 
 export type LegType = "flight" | "train" | "car" | "ferry" | "other";
 
+export type MerchStatus = "draft" | "active" | "sold_out" | "archived";
+
+export type MerchSaleSource = "shopify" | "tour" | "wholesale" | "other";
+
+export interface MerchProduct {
+  id: string;
+  name: string;
+  sku: string | null;
+  category: string | null;
+  price: number | null;
+  cost_per_unit: number | null;
+  shopify_product_id: string | null;
+  image_url: string | null;
+  status: MerchStatus;
+  is_tour_exclusive: boolean;
+  exclusive_show_id: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MerchInventory {
+  id: string;
+  product_id: string;
+  variant: string | null;
+  units_on_hand: number;
+  units_committed: number;
+  reorder_threshold: number | null;
+  vendor_contact_id: string | null;
+  warehouse_location: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MerchSale {
+  id: string;
+  product_id: string | null;
+  variant: string | null;
+  show_id: string | null;
+  units_sold: number;
+  gross: number;
+  source: MerchSaleSource;
+  sale_date: string;
+  notes: string | null;
+  created_at: string;
+}
+
 export type ReleaseType =
   | "single"
   | "ep"

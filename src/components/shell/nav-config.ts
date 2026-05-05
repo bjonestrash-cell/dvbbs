@@ -21,7 +21,7 @@ export type NavItem = {
 export const NAV: NavItem[] = [
   { href: "/tour", label: "TOUR", icon: Calendar, phase: 1, ready: true },
   { href: "/releases", label: "RELEASES", icon: Disc3, phase: 2, ready: true },
-  { href: "/merch", label: "MERCH", icon: Shirt, phase: 3, ready: false },
+  { href: "/merch", label: "MERCH", icon: Shirt, phase: 3, ready: true },
   { href: "/contacts", label: "CONTACTS", icon: Users, phase: 1, ready: true },
   { href: "/inbox", label: "INBOX", icon: Inbox, phase: 4, ready: false },
   { href: "/finance", label: "FINANCE", icon: CircleDollarSign, phase: 4, ready: false },

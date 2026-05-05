@@ -25,6 +25,10 @@ export type Tone =
   | "final"
   | "todo"
   | "done"
+  | "draft"
+  | "active"
+  | "sold_out"
+  | "archived"
   | "default"
   | "accent";
 
@@ -43,6 +47,10 @@ const DOT: Record<Tone, string> = {
   final: "bg-final",
   todo: "bg-todo",
   done: "bg-done",
+  draft: "bg-lead",
+  active: "bg-confirmed",
+  sold_out: "bg-cancelled",
+  archived: "bg-completed",
   default: "bg-fg-faint",
   accent: "bg-accent",
 };
@@ -139,5 +147,9 @@ export const STATUS_TONE: Record<string, Tone> = {
   delivered: "approved",
   scheduled: "approved",
   released: "done",
-  archived: "completed",
+  // Merch statuses
+  draft: "draft",
+  active: "active",
+  sold_out: "sold_out",
+  archived: "archived",
 };
