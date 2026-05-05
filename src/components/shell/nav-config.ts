@@ -5,7 +5,6 @@ import {
   Users,
   Plane,
   CircleDollarSign,
-  ShieldCheck,
   Settings,
 } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
@@ -25,7 +24,6 @@ export const NAV: NavItem[] = [
   { href: "/contacts", label: "CONTACTS", icon: Users, phase: 1, ready: true },
   { href: "/flights", label: "FLIGHTS", icon: Plane, phase: 4, ready: true },
   { href: "/finance", label: "FINANCE", icon: CircleDollarSign, phase: 4, ready: true },
-  { href: "/team", label: "TEAM", icon: ShieldCheck, phase: 1, ready: true },
   { href: "/settings", label: "SETTINGS", icon: Settings, phase: 1, ready: true },
 ];
 

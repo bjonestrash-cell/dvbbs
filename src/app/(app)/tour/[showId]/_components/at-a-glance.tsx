@@ -10,7 +10,7 @@ import {
 } from "@/lib/format";
 
 const fieldClass =
-  "h-9 w-full rounded-md border border-line bg-bg-input px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-9 w-full border border-line bg-surface px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
 
 export function AtAGlance({ show }: { show: Show }) {
   const [editing, setEditing] = useState(false);
@@ -23,7 +23,7 @@ export function AtAGlance({ show }: { show: Show }) {
 
   if (editing) {
     return (
-      <section className="rounded-md border border-line-strong bg-bg-surface p-4 md:p-5">
+      <section className="border border-line-strong bg-surface p-4 md:p-5">
         <header className="mb-3 flex items-center justify-between">
           <div className="marker">at a glance, editing</div>
         </header>
@@ -142,7 +142,7 @@ export function AtAGlance({ show }: { show: Show }) {
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover disabled:opacity-60"
+              className="inline-flex h-9 items-center gap-1.5 bg-accent px-3 text-sm font-medium text-accent-fg [transition-duration:80ms] hover:bg-accent-hover disabled:opacity-60"
             >
               {pending ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -154,7 +154,7 @@ export function AtAGlance({ show }: { show: Show }) {
             <button
               type="button"
               onClick={() => setEditing(false)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm text-fg-muted transition-colors hover:bg-bg-elev"
+              className="inline-flex h-9 items-center gap-1.5 px-3 text-sm text-fg-dim [transition-duration:80ms] hover:bg-surface-2"
             >
               <X className="size-4" aria-hidden />
               Cancel
@@ -166,13 +166,13 @@ export function AtAGlance({ show }: { show: Show }) {
   }
 
   return (
-    <section className="rounded-md border border-line bg-bg-surface p-4 md:p-5">
+    <section className="border border-line bg-surface p-4 md:p-5">
       <header className="mb-3 flex items-center justify-between">
         <div className="marker">at a glance</div>
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-fg-muted transition-colors hover:bg-bg-elev hover:text-fg"
+          className="inline-flex h-7 items-center gap-1.5 px-2 text-xs text-fg-dim [transition-duration:80ms] hover:bg-surface-2 hover:text-fg"
         >
           <Pencil className="size-3" aria-hidden />
           Edit

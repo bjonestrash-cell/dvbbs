@@ -40,7 +40,7 @@ export function BandsintownSync() {
         type="button"
         onClick={run}
         disabled={pending}
-        className="self-start inline-flex h-9 items-center gap-1.5 rounded-md border border-line bg-bg-input px-3 text-sm transition-colors hover:border-line-strong disabled:opacity-50"
+        className="self-start inline-flex h-9 items-center gap-1.5 border border-line bg-surface px-3 text-sm [transition-duration:80ms] hover:border-line-strong disabled:opacity-50"
       >
         {pending ? (
           <Loader2 className="size-4 animate-spin" aria-hidden />

@@ -39,14 +39,14 @@ export function Crew({
         {crew.map((c) => (
           <li
             key={c.id}
-            className="grid grid-cols-[24px_1fr_auto] items-center gap-3 rounded-md border border-line bg-bg-input px-3 py-2 text-sm"
+            className="grid grid-cols-[24px_1fr_auto] items-center gap-3 border border-line bg-surface px-3 py-2 text-sm"
           >
-            <User className="size-4 text-fg-muted" aria-hidden />
+            <User className="size-4 text-fg-dim" aria-hidden />
             <div className="min-w-0 flex flex-wrap items-baseline gap-x-2">
               <span className="text-fg">{c.contact?.name ?? "Unknown"}</span>
-              {c.role ? <span className="text-fg-muted">. {c.role}</span> : null}
+              {c.role ? <span className="text-fg-dim">. {c.role}</span> : null}
               {c.fee ? (
-                <span className="num text-xs text-fg-muted">
+                <span className="num text-xs text-fg-dim">
                   {formatMoney(c.fee, "USD")}
                 </span>
               ) : null}
@@ -72,7 +72,7 @@ export function Crew({
               ].map((opt) => (
                 <label
                   key={opt.v}
-                  className="flex items-center gap-1.5 rounded-md border border-line bg-bg-input px-2.5 py-1 text-xs has-[:checked]:border-line-strong has-[:checked]:bg-bg-elev cursor-pointer"
+                  className="flex items-center gap-1.5 border border-line bg-surface px-2.5 py-1 text-xs has-[:checked]:border-line-strong has-[:checked]:bg-surface-2 cursor-pointer"
                 >
                   <input
                     type="radio"
@@ -146,7 +146,7 @@ export function Crew({
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
+              className="inline-flex h-9 items-center gap-1.5 bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
             >
               {pending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
               Add crew
@@ -154,7 +154,7 @@ export function Crew({
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm text-fg-muted hover:bg-bg-elev"
+              className="inline-flex h-9 items-center gap-1.5 px-3 text-sm text-fg-dim hover:bg-surface-2"
             >
               <X className="size-4" />
               Cancel
@@ -167,7 +167,7 @@ export function Crew({
 }
 
 const fieldClass =
-  "h-9 w-full rounded-md border border-line bg-bg-input px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-9 w-full border border-line bg-surface px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
 
 function Field({
   label,

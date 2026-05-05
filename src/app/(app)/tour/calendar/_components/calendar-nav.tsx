@@ -16,7 +16,7 @@ export function CalendarNav({ month }: { month: string }) {
         href={`?month=${prev}`}
         scroll={false}
         aria-label="Previous month"
-        className="size-8 grid place-items-center rounded-md border border-line bg-bg-surface transition-colors hover:border-line-strong"
+        className="size-8 grid place-items-center border border-line bg-surface [transition-duration:80ms] hover:border-line-strong"
       >
         <ChevronLeft className="size-4" aria-hidden />
       </Link>
@@ -24,14 +24,14 @@ export function CalendarNav({ month }: { month: string }) {
         href={`?month=${next}`}
         scroll={false}
         aria-label="Next month"
-        className="size-8 grid place-items-center rounded-md border border-line bg-bg-surface transition-colors hover:border-line-strong"
+        className="size-8 grid place-items-center border border-line bg-surface [transition-duration:80ms] hover:border-line-strong"
       >
         <ChevronRight className="size-4" aria-hidden />
       </Link>
       <Link
         href={`?month=${today}`}
         scroll={false}
-        className="h-8 inline-flex items-center rounded-md border border-line bg-bg-surface px-2.5 text-xs font-medium uppercase tracking-wide text-fg-muted transition-colors hover:border-line-strong hover:text-fg"
+        className="h-8 inline-flex items-center border border-line bg-surface px-2.5 text-xs font-medium uppercase tracking-wide text-fg-dim [transition-duration:80ms] hover:border-line-strong hover:text-fg"
       >
         Today
       </Link>

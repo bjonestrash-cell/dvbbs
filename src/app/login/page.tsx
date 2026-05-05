@@ -21,23 +21,23 @@ async function LoginScreen({
   const error = sp.error;
 
   return (
-    <div className="grain min-h-dvh bg-bg-base">
+    <div className="grain min-h-dvh bg-page">
       <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6 py-16">
         <div className="mb-12 flex items-center gap-3">
           <ChevronMark className="size-7 text-accent" />
           <div className="font-display text-base tracking-tight">
             <span className="font-semibold">DVBBS</span>
-            <span className="text-fg-muted"> HQ</span>
+            <span className="text-fg-dim"> HQ</span>
           </div>
         </div>
 
         <h1 className="mb-2 text-2xl font-semibold tracking-tight">Sign in</h1>
-        <p className="mb-8 text-sm text-fg-muted">
+        <p className="mb-8 text-sm text-fg-dim">
           Magic link only. Whitelisted emails only.
         </p>
 
         {error ? (
-          <div className="mb-6 rounded-md border border-accent/40 bg-accent/10 px-3 py-2 text-sm text-fg">
+          <div className="mb-6 border border-accent/40 bg-accent/10 px-3 py-2 text-sm text-fg">
             {decodeURIComponent(error)}
           </div>
         ) : null}

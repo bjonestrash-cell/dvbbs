@@ -112,17 +112,17 @@ export function CommandPalette() {
       onKeyDown={onListKey}
     >
       <div
-        className="absolute inset-0 bg-bg-base/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-page/60 backdrop-blur-sm"
         aria-hidden
       />
       <div
         role="dialog"
         aria-label="Command palette"
-        className="relative z-10 w-full max-w-lg rounded-md border border-line-strong bg-bg-surface shadow-2xl"
+        className="relative z-10 w-full max-w-lg border border-line-strong bg-surface shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b border-line px-3">
-          <Search className="size-4 text-fg-muted" aria-hidden />
+          <Search className="size-4 text-fg-dim" aria-hidden />
           <input
             ref={inputRef}
             type="search"
@@ -131,14 +131,14 @@ export function CommandPalette() {
             placeholder="Jump to show, contact, or page..."
             className="h-12 w-full bg-transparent text-sm text-fg placeholder:text-fg-dim outline-none"
           />
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-line px-1.5 py-0.5 text-[10px] text-fg-muted">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-line px-1.5 py-0.5 text-[10px] text-fg-dim">
             esc
           </kbd>
         </div>
 
         <ul className="max-h-[60vh] overflow-y-auto p-1">
           {hits.length === 0 ? (
-            <li className="px-3 py-6 text-sm text-fg-muted text-center">
+            <li className="px-3 py-6 text-sm text-fg-dim text-center">
               {loading ? "Searching" : "No matches."}
             </li>
           ) : (
@@ -151,10 +151,10 @@ export function CommandPalette() {
                     onMouseEnter={() => setActive(i)}
                     onClick={() => go(h)}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-sm px-2 py-2 text-left transition-colors",
+                      "flex w-full items-center gap-3 px-2 py-2 text-left [transition-duration:80ms]",
                       i === active
-                        ? "bg-bg-elev text-fg"
-                        : "text-fg-muted hover:bg-bg-elev hover:text-fg",
+                        ? "bg-surface-2 text-fg"
+                        : "text-fg-dim hover:bg-surface-2 hover:text-fg",
                     )}
                   >
                     <Icon className="size-4 shrink-0" aria-hidden />

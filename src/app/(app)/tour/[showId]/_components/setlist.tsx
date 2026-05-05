@@ -35,16 +35,16 @@ export function Setlist({
         {setlist.map((t, i) => (
           <li
             key={t.id}
-            className="grid grid-cols-[28px_1fr_auto] items-center gap-3 rounded-md border border-line bg-bg-input px-3 py-2 text-sm"
+            className="grid grid-cols-[28px_1fr_auto] items-center gap-3 border border-line bg-surface px-3 py-2 text-sm"
           >
-            <span className="num text-xs text-fg-muted text-right">
+            <span className="num text-xs text-fg-dim text-right">
               {String(t.position ?? i + 1).padStart(2, "0")}
             </span>
             <div className="min-w-0 flex items-center gap-2 flex-wrap">
-              <Music className="size-3.5 text-fg-muted shrink-0" aria-hidden />
+              <Music className="size-3.5 text-fg-dim shrink-0" aria-hidden />
               <span className="text-fg truncate">{t.track_title ?? "."}</span>
               {t.artist ? (
-                <span className="text-fg-muted truncate">. {t.artist}</span>
+                <span className="text-fg-dim truncate">. {t.artist}</span>
               ) : null}
               {t.is_unreleased ? (
                 <span className="marker text-status-holding">id</span>
@@ -54,7 +54,7 @@ export function Setlist({
                   href={t.spotify_url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="inline-flex items-center gap-0.5 text-xs text-fg-muted hover:text-fg"
+                  className="inline-flex items-center gap-0.5 text-xs text-fg-dim hover:text-fg"
                 >
                   spotify <ExternalLink className="size-3" aria-hidden />
                 </a>
@@ -109,7 +109,7 @@ export function Setlist({
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
+              className="inline-flex h-9 items-center gap-1.5 bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
             >
               {pending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
               Add track
@@ -117,7 +117,7 @@ export function Setlist({
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm text-fg-muted hover:bg-bg-elev"
+              className="inline-flex h-9 items-center gap-1.5 px-3 text-sm text-fg-dim hover:bg-surface-2"
             >
               <X className="size-4" />
               Cancel
@@ -130,10 +130,10 @@ export function Setlist({
 }
 
 const fieldClass =
-  "h-9 w-full rounded-md border border-line bg-bg-input px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-9 w-full border border-line bg-surface px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
 
 const textareaClass =
-  "w-full rounded-md border border-line bg-bg-input px-2.5 py-1.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong resize-y";
+  "w-full border border-line bg-surface px-2.5 py-1.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong resize-y";
 
 function Field({
   label,

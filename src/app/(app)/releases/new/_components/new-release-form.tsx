@@ -45,7 +45,7 @@ export function NewReleaseForm() {
             {TYPES.map((t) => (
               <label
                 key={t.value}
-                className="flex items-center gap-1.5 rounded-md border border-line bg-bg-input px-2.5 py-1.5 text-sm has-[:checked]:border-line-strong has-[:checked]:bg-bg-elev cursor-pointer"
+                className="flex items-center gap-1.5 border border-line bg-surface px-2.5 py-1.5 text-sm has-[:checked]:border-line-strong has-[:checked]:bg-surface-2 cursor-pointer"
               >
                 <input
                   type="radio"
@@ -103,13 +103,13 @@ export function NewReleaseForm() {
             name="notes"
             rows={4}
             placeholder="Anything specific. References, BPM, vocal direction..."
-            className="w-full rounded-md border border-line bg-bg-input px-3 py-2 text-sm placeholder:text-fg-dim outline-none focus:border-line-strong resize-y"
+            className="w-full border border-line bg-surface px-3 py-2 text-sm placeholder:text-fg-dim outline-none focus:border-line-strong resize-y"
           />
         </Field>
       </Section>
 
       {state.status === "error" && state.message ? (
-        <div className="rounded-md border border-accent/40 bg-accent/10 px-3 py-2 text-sm">
+        <div className="border border-accent/40 bg-accent/10 px-3 py-2 text-sm">
           {state.message}
         </div>
       ) : null}
@@ -145,7 +145,7 @@ export function NewReleaseForm() {
 }
 
 const fieldClass =
-  "h-10 w-full rounded-md border border-line bg-bg-input px-3 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-10 w-full border border-line bg-surface px-3 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
 
 function Section({
   title,
@@ -157,7 +157,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-md border border-line bg-bg-surface p-4 md:p-5">
+    <section className="border border-line bg-surface p-4 md:p-5">
       <header className="mb-3">
         <div className="marker">{eyebrow}</div>
         <h2 className="text-base font-medium tracking-tight">{title}</h2>

@@ -147,14 +147,14 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
         </Field>
       </div>
 
-      <div className="rounded-md border border-line-strong bg-bg-elev p-4 flex items-center justify-between">
+      <div className="border border-line-strong bg-surface-2 p-4 flex items-center justify-between">
         <div>
           <div className="marker">net to artist</div>
           <div className="num text-2xl font-medium tracking-tight tabular text-fg">
             {formatMoney(net, currency)}
           </div>
         </div>
-        <div className="text-xs text-fg-muted text-right">
+        <div className="text-xs text-fg-dim text-right">
           gross minus expenses, agent, manager
         </div>
       </div>
@@ -192,7 +192,7 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
             type="button"
             onClick={() => fileInput.current?.click()}
             disabled={!canEdit || uploading}
-            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-line bg-bg-input px-3 text-sm transition-colors hover:border-line-strong disabled:opacity-50"
+            className="inline-flex h-9 items-center gap-1.5 border border-line bg-surface px-3 text-sm [transition-duration:80ms] hover:border-line-strong disabled:opacity-50"
           >
             {uploading ? (
               <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -211,7 +211,7 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
           {invoicePath ? (
             <a
               href={`/api/settlement/${showId}/invoice`}
-              className="inline-flex items-center gap-1.5 text-xs text-fg-muted hover:text-fg"
+              className="inline-flex items-center gap-1.5 text-xs text-fg-dim hover:text-fg"
             >
               <FileText className="size-3.5" aria-hidden />
               {invoicePath.split("/").pop()}
@@ -230,7 +230,7 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           disabled={!canEdit}
-          className="w-full rounded-md border border-line bg-bg-input px-3 py-2 text-sm placeholder:text-fg-dim outline-none focus:border-line-strong resize-y"
+          className="w-full border border-line bg-surface px-3 py-2 text-sm placeholder:text-fg-dim outline-none focus:border-line-strong resize-y"
         />
       </Field>
 
@@ -245,7 +245,7 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
         <button
           type="submit"
           disabled={!canEdit || pending}
-          className="inline-flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover disabled:opacity-50"
+          className="inline-flex h-10 items-center gap-1.5 bg-accent px-4 text-sm font-medium text-accent-fg [transition-duration:80ms] hover:bg-accent-hover disabled:opacity-50"
         >
           {pending ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -263,7 +263,7 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
                 await setSettlementLock(showId, !locked);
               })
             }
-            className="inline-flex h-10 items-center gap-1.5 rounded-md border border-line bg-bg-surface px-3 text-sm transition-colors hover:border-line-strong"
+            className="inline-flex h-10 items-center gap-1.5 border border-line bg-surface px-3 text-sm [transition-duration:80ms] hover:border-line-strong"
           >
             {locked ? (
               <>
@@ -278,7 +278,7 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
             )}
           </button>
         ) : locked ? (
-          <span className="inline-flex h-10 items-center gap-1.5 rounded-md border border-line bg-bg-surface px-3 text-xs text-fg-muted">
+          <span className="inline-flex h-10 items-center gap-1.5 border border-line bg-surface px-3 text-xs text-fg-dim">
             <Lock className="size-3.5" aria-hidden />
             Locked, principal only
           </span>
@@ -289,7 +289,7 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
 }
 
 const fieldClass =
-  "h-10 w-full rounded-md border border-line bg-bg-input px-3 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong disabled:opacity-50";
+  "h-10 w-full border border-line bg-surface px-3 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong disabled:opacity-50";
 
 function Field({
   label,

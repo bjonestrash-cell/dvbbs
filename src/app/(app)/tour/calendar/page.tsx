@@ -105,7 +105,7 @@ export default async function TourCalendarPage({
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-px bg-line border border-line rounded-md overflow-hidden">
+        <div className="grid grid-cols-7 gap-px bg-line border border-line overflow-hidden">
           {days.map((d) => {
             const key = format(d, "yyyy-MM-dd");
             const dayShows = byDay.get(key) ?? [];
@@ -159,7 +159,7 @@ export default async function TourCalendarPage({
                     <li key={s.id}>
                       <Link
                         href={`/tour/${s.id}`}
-                        className="block truncate rounded-sm border border-line bg-surface px-1.5 py-0.5 text-[11px] text-fg hover:border-line-strong"
+                        className="block truncate border border-line bg-surface px-1.5 py-0.5 text-[11px] text-fg hover:border-line-strong"
                       >
                         <span
                           className={cn(

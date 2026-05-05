@@ -33,7 +33,7 @@ export function ReleaseStatusPill({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-medium tracking-wide uppercase",
+        "inline-flex items-center border px-1.5 py-0.5 text-[11px] font-medium tracking-wide uppercase",
         styles[status],
         className,
       )}

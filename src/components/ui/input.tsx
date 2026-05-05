@@ -10,7 +10,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         type={type}
         className={cn(
-          "h-10 w-full rounded-md border border-line bg-bg-input px-3 text-sm text-fg placeholder:text-fg-dim outline-none transition-colors focus:border-line-strong",
+          "h-10 w-full border border-line bg-surface px-3 text-sm text-fg placeholder:text-fg-dim outline-none [transition-duration:80ms] focus:border-line-strong",
           className,
         )}
         {...rest}
@@ -27,7 +27,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       <select
         ref={ref}
         className={cn(
-          "h-10 w-full rounded-md border border-line bg-bg-input px-3 pr-8 text-sm text-fg outline-none transition-colors focus:border-line-strong appearance-none",
+          "h-10 w-full border border-line bg-surface px-3 pr-8 text-sm text-fg outline-none [transition-duration:80ms] focus:border-line-strong appearance-none",
           className,
         )}
         {...rest}
@@ -46,7 +46,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <textarea
         ref={ref}
         className={cn(
-          "min-h-20 w-full rounded-md border border-line bg-bg-input px-3 py-2 text-sm text-fg placeholder:text-fg-dim outline-none transition-colors focus:border-line-strong resize-y",
+          "min-h-20 w-full border border-line bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-dim outline-none [transition-duration:80ms] focus:border-line-strong resize-y",
           className,
         )}
         {...rest}

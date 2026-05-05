@@ -69,9 +69,9 @@ export async function ActivityFeed({ showId }: { showId: string }) {
               {formatDistanceToNow(parseISO(r.created_at), { addSuffix: true })}
             </span>
             <span className="text-fg">{who}</span>
-            <span className="text-fg-muted">{label.toLowerCase()}</span>
+            <span className="text-fg-dim">{label.toLowerCase()}</span>
             {summary ? (
-              <span className="text-xs text-fg-muted truncate">. {summary}</span>
+              <span className="text-xs text-fg-dim truncate">. {summary}</span>
             ) : null}
           </li>
         );

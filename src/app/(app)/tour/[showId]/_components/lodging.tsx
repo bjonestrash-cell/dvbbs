@@ -40,22 +40,22 @@ export function Lodging({
         {lodging.map((l) => (
           <li
             key={l.id}
-            className="grid grid-cols-[24px_1fr_auto] items-start gap-3 rounded-md border border-line bg-bg-input px-3 py-2 text-sm"
+            className="grid grid-cols-[24px_1fr_auto] items-start gap-3 border border-line bg-surface px-3 py-2 text-sm"
           >
-            <Bed className="mt-0.5 size-4 text-fg-muted" aria-hidden />
+            <Bed className="mt-0.5 size-4 text-fg-dim" aria-hidden />
             <div className="min-w-0">
               <div className="text-fg">{l.hotel_name}</div>
-              <div className="mt-0.5 num text-xs text-fg-muted flex flex-wrap gap-x-3">
+              <div className="mt-0.5 num text-xs text-fg-dim flex flex-wrap gap-x-3">
                 {l.check_in ? <span>in {fmtDate(l.check_in)}</span> : null}
                 {l.check_out ? <span>out {fmtDate(l.check_out)}</span> : null}
                 {l.confirmation_code ? <span>conf {l.confirmation_code}</span> : null}
                 {l.cost ? <span>{formatMoney(l.cost, "USD")}</span> : null}
               </div>
               {l.address ? (
-                <div className="mt-1 text-xs text-fg-muted">{l.address}</div>
+                <div className="mt-1 text-xs text-fg-dim">{l.address}</div>
               ) : null}
               {l.notes ? (
-                <div className="mt-1 text-xs text-fg-muted">{l.notes}</div>
+                <div className="mt-1 text-xs text-fg-dim">{l.notes}</div>
               ) : null}
             </div>
             <DeleteButton onConfirm={async () => { await removeLodging(showId, l.id); }} />
@@ -102,7 +102,7 @@ export function Lodging({
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
+              className="inline-flex h-9 items-center gap-1.5 bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
             >
               {pending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
               Add hotel
@@ -110,7 +110,7 @@ export function Lodging({
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm text-fg-muted hover:bg-bg-elev"
+              className="inline-flex h-9 items-center gap-1.5 px-3 text-sm text-fg-dim hover:bg-surface-2"
             >
               <X className="size-4" />
               Cancel
@@ -131,10 +131,10 @@ function fmtDate(iso: string): string {
 }
 
 const fieldClass =
-  "h-9 w-full rounded-md border border-line bg-bg-input px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-9 w-full border border-line bg-surface px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
 
 const textareaClass =
-  "w-full rounded-md border border-line bg-bg-input px-2.5 py-1.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong resize-y";
+  "w-full border border-line bg-surface px-2.5 py-1.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong resize-y";
 
 function Field({
   label,

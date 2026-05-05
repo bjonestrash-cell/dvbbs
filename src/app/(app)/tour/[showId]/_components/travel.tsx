@@ -54,14 +54,14 @@ export function Travel({
           return (
             <li
               key={t.id}
-              className="grid grid-cols-[24px_1fr_auto] items-start gap-3 rounded-md border border-line bg-bg-input px-3 py-2 text-sm"
+              className="grid grid-cols-[24px_1fr_auto] items-start gap-3 border border-line bg-surface px-3 py-2 text-sm"
             >
-              <Icon className="mt-0.5 size-4 text-fg-muted" aria-hidden />
+              <Icon className="mt-0.5 size-4 text-fg-dim" aria-hidden />
               <div className="min-w-0">
                 <div className="text-fg">
                   {t.departure_location ?? "?"} <span className="text-fg-dim">to</span> {t.arrival_location ?? "?"}
                 </div>
-                <div className="mt-0.5 num text-xs text-fg-muted flex flex-wrap gap-x-3">
+                <div className="mt-0.5 num text-xs text-fg-dim flex flex-wrap gap-x-3">
                   <span>{t.carrier ?? ""}</span>
                   <span>{fmtTime(t.departure_time)}</span>
                   {t.arrival_time ? <span>arr {fmtTime(t.arrival_time)}</span> : null}
@@ -69,7 +69,7 @@ export function Travel({
                   {t.cost ? <span>{formatMoney(t.cost, "USD")}</span> : null}
                 </div>
                 {t.notes ? (
-                  <div className="mt-1 text-xs text-fg-muted">{t.notes}</div>
+                  <div className="mt-1 text-xs text-fg-dim">{t.notes}</div>
                 ) : null}
               </div>
               <DeleteButton
@@ -141,7 +141,7 @@ export function Travel({
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
+              className="inline-flex h-9 items-center gap-1.5 bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
             >
               {pending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
               Add leg
@@ -149,7 +149,7 @@ export function Travel({
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm text-fg-muted hover:bg-bg-elev"
+              className="inline-flex h-9 items-center gap-1.5 px-3 text-sm text-fg-dim hover:bg-surface-2"
             >
               <X className="size-4" />
               Cancel
@@ -171,10 +171,10 @@ function fmtTime(iso: string | null): string {
 }
 
 const fieldClass =
-  "h-9 w-full rounded-md border border-line bg-bg-input px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-9 w-full border border-line bg-surface px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
 
 const textareaClass =
-  "w-full rounded-md border border-line bg-bg-input px-2.5 py-1.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong resize-y";
+  "w-full border border-line bg-surface px-2.5 py-1.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong resize-y";
 
 function Field({
   label,
@@ -207,7 +207,7 @@ export function Section({
   adding?: boolean;
 }) {
   return (
-    <section className="rounded-md border border-line bg-bg-surface p-4 md:p-5">
+    <section className="border border-line bg-surface p-4 md:p-5">
       <header className="mb-3 flex items-center justify-between">
         <div>
           <div className="marker">{eyebrow}</div>
@@ -217,7 +217,7 @@ export function Section({
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-fg-muted transition-colors hover:bg-bg-elev hover:text-fg"
+            className="inline-flex h-7 items-center gap-1 px-2 text-xs text-fg-dim [transition-duration:80ms] hover:bg-surface-2 hover:text-fg"
           >
             {adding ? (
               <X className="size-3" aria-hidden />
@@ -246,7 +246,7 @@ export function DeleteButton({
         type="button"
         onClick={() => setConfirm(true)}
         aria-label="Remove"
-        className="size-7 grid place-items-center rounded-md text-fg-dim transition-colors hover:bg-bg-elev hover:text-fg"
+        className="size-7 grid place-items-center text-fg-dim [transition-duration:80ms] hover:bg-surface-2 hover:text-fg"
       >
         <X className="size-3.5" aria-hidden />
       </button>
@@ -263,14 +263,14 @@ export function DeleteButton({
             setConfirm(false);
           })
         }
-        className="h-7 rounded-md bg-status-cancelled/20 px-2 text-xs font-medium text-status-cancelled hover:bg-status-cancelled/30"
+        className="h-7 bg-status-cancelled/20 px-2 text-xs font-medium text-status-cancelled hover:bg-status-cancelled/30"
       >
         {pending ? <Loader2 className="size-3 animate-spin" /> : "Remove"}
       </button>
       <button
         type="button"
         onClick={() => setConfirm(false)}
-        className="h-7 rounded-md px-2 text-xs text-fg-muted hover:bg-bg-elev"
+        className="h-7 px-2 text-xs text-fg-dim hover:bg-surface-2"
       >
         Keep
       </button>

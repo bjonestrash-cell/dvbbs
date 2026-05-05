@@ -19,7 +19,7 @@ const NAV_HITS: SearchHit[] = [
   { kind: "nav", id: "nav-flights", href: "/flights", title: "Flights" },
   { kind: "nav", id: "nav-flights-new", href: "/flights/new", title: "New flight" },
   { kind: "nav", id: "nav-contacts", href: "/contacts", title: "Contacts" },
-  { kind: "nav", id: "nav-team", href: "/team", title: "Team" },
+  { kind: "nav", id: "nav-finance", href: "/finance", title: "Finance" },
   { kind: "nav", id: "nav-settings", href: "/settings", title: "Settings" },
 ];
 

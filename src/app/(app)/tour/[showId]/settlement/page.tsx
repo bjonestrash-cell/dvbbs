@@ -77,7 +77,7 @@ export default async function SettlementPage({
 
       <div className="px-4 md:px-6 py-4 max-w-3xl">
         {!canSettle ? (
-          <div className="rounded-md border border-line bg-bg-surface p-4 text-sm text-fg-muted">
+          <div className="border border-line bg-surface p-4 text-sm text-fg-dim">
             Only principal and accountant roles can edit settlement. Your role
             is <span className="marker">{member.role}</span>.
           </div>
@@ -103,30 +103,30 @@ function SettlementSummary({
 }) {
   if (!settlement) {
     return (
-      <div className="rounded-md border border-line bg-bg-surface p-6">
+      <div className="border border-line bg-surface p-6">
         <div className="marker">no settlement yet</div>
-        <p className="mt-2 text-sm text-fg-muted">
+        <p className="mt-2 text-sm text-fg-dim">
           This show has not been reconciled.
         </p>
       </div>
     );
   }
   return (
-    <div className="rounded-md border border-line bg-bg-surface p-4 md:p-5 grid gap-3">
+    <div className="border border-line bg-surface p-4 md:p-5 grid gap-3">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-3 text-sm">
         <KV label="Gross paid" value={formatMoney(settlement.gross_paid, currency)} />
         <KV label="Expenses" value={formatMoney(settlement.expenses_total, currency)} />
         <KV label="Agent commission" value={formatMoney(settlement.agent_commission, currency)} />
         <KV label="Manager commission" value={formatMoney(settlement.manager_commission, currency)} />
       </div>
-      <div className="rounded-md border border-line-strong bg-bg-elev p-3 flex items-center justify-between">
+      <div className="border border-line-strong bg-surface-2 p-3 flex items-center justify-between">
         <div>
           <div className="marker">net to artist</div>
           <div className="num text-xl font-medium tracking-tight tabular text-fg">
             {formatMoney(settlement.net_to_artist, currency)}
           </div>
         </div>
-        <div className="text-xs text-fg-muted">
+        <div className="text-xs text-fg-dim">
           {settlement.paid_in_full ? "Paid in full" : "Outstanding"}
           {settlement.paid_date ? ` . ${settlement.paid_date}` : ""}
         </div>
@@ -134,7 +134,7 @@ function SettlementSummary({
       {settlement.notes ? (
         <div>
           <div className="marker">notes</div>
-          <p className="mt-1 text-sm text-fg-muted whitespace-pre-line">
+          <p className="mt-1 text-sm text-fg-dim whitespace-pre-line">
             {settlement.notes}
           </p>
         </div>

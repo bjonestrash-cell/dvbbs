@@ -16,7 +16,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "angle-cut relative border border-line bg-bg-surface p-3.5",
+        "angle-cut relative border border-line bg-surface p-3.5",
         emphasis && "border-line-strong",
         className,
       )}
@@ -31,7 +31,7 @@ export function StatCard({
         {value}
       </div>
       {hint ? (
-        <div className="mt-1 text-xs text-fg-muted tabular">{hint}</div>
+        <div className="mt-1 text-xs text-fg-dim tabular">{hint}</div>
       ) : null}
     </div>
   );
