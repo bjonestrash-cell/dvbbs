@@ -19,19 +19,19 @@ import {
 import {
   SortableContext,
   arrayMove,
+  rectSortingStrategy,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Disc3, GripVertical } from "lucide-react";
+import { GripVertical } from "lucide-react";
 import {
   RELEASE_STATUS_LABEL,
   RELEASE_STATUS_ORDER,
 } from "@/lib/data/release-shared";
-import { StatusBracket, STATUS_TONE } from "@/components/ui/status-bracket";
+import { FilterBracket } from "@/components/ui/status-bracket";
 import type { Release, ReleaseStatus } from "@/lib/supabase/types";
-import { formatDateCompact, formatYear } from "@/lib/format";
 import { cn } from "@/lib/utils/cn";
 import { setReleaseStatus } from "../_actions/board";
 
@@ -42,6 +42,37 @@ const TYPE_LABEL: Record<Release["type"], string> = {
   remix: "Remix",
   edit: "Edit",
   bootleg: "Bootleg",
+};
+
+/** Subtle background tint per status, layered over surface. Picks up the
+ *  same status palette used by the StatusBracket dots so a glance at the
+ *  board reads chromatically without being noisy. */
+const STATUS_TINT: Record<ReleaseStatus, string> = {
+  idea: "color-mix(in srgb, var(--color-lead) 8%, var(--color-surface))",
+  in_production:
+    "color-mix(in srgb, var(--color-holding) 10%, var(--color-surface))",
+  mixing: "color-mix(in srgb, var(--color-offered) 10%, var(--color-surface))",
+  mastered:
+    "color-mix(in srgb, var(--color-holding) 16%, var(--color-surface))",
+  delivered:
+    "color-mix(in srgb, var(--color-approved) 14%, var(--color-surface))",
+  scheduled:
+    "color-mix(in srgb, var(--color-accent) 14%, var(--color-surface))",
+  released:
+    "color-mix(in srgb, var(--color-accent) 24%, var(--color-surface))",
+  archived:
+    "color-mix(in srgb, var(--color-completed) 14%, var(--color-surface))",
+};
+
+const STATUS_EDGE: Record<ReleaseStatus, string> = {
+  idea: "var(--color-lead)",
+  in_production: "var(--color-holding)",
+  mixing: "var(--color-offered)",
+  mastered: "var(--color-holding)",
+  delivered: "var(--color-approved)",
+  scheduled: "var(--color-accent)",
+  released: "var(--color-accent)",
+  archived: "var(--color-completed)",
 };
 
 const COLUMN_PREFIX = "col:";
@@ -98,22 +129,26 @@ function persistOrder(status: ReleaseStatus, releases: Release[]) {
   }
 }
 
+function sentenceCase(s: string): string {
+  if (!s) return s;
+  return s
+    .toLowerCase()
+    .replace(/(^|\s|\(|-)([a-z])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`);
+}
+
 export function ReleaseBoard({ releases }: { releases: Release[] }) {
   const [columns, setColumns] = useState<Columns>(() =>
     buildInitial(releases),
   );
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<ReleaseStatus | "all">("all");
 
-  // Server-canonical status per release id, updated whenever props change.
-  // Used to detect when a local drop moves a card to a new column so we can
-  // fire setReleaseStatus.
   const serverStatus = useMemo(() => {
     const m = new Map<string, ReleaseStatus>();
     for (const r of releases) m.set(r.id, r.status);
     return m;
   }, [releases]);
 
-  // Reseed from server props when they change (e.g. after revalidate).
   useEffect(() => {
     setColumns(applyStoredOrder(buildInitial(releases)));
   }, [releases]);
@@ -215,13 +250,15 @@ export function ReleaseBoard({ releases }: { releases: Release[] }) {
 
     persistOrder(toStatus, nextList);
 
-    // If the card moved to a different column than its server-canonical
-    // status, commit the new status to the database.
     const original = serverStatus.get(activeIdStr);
     if (original && original !== toStatus) {
       void setReleaseStatus(activeIdStr, toStatus);
     }
   }
+
+  const visibleStatuses =
+    filter === "all" ? RELEASE_STATUS_ORDER : [filter];
+  const focused = filter !== "all";
 
   return (
     <DndContext
@@ -231,25 +268,61 @@ export function ReleaseBoard({ releases }: { releases: Release[] }) {
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
     >
-      <div
-        className="overflow-x-auto px-4 md:px-10 py-6 md:py-8 snap-x snap-mandatory md:snap-none"
-        style={{ scrollPaddingInline: "16px" }}
-      >
-        <div className="flex min-w-max gap-px bg-line">
-          {RELEASE_STATUS_ORDER.map((status) => (
-            <Column
-              key={status}
-              status={status}
-              releases={columns[status]}
-              activeId={activeId}
-            />
-          ))}
-        </div>
+      {/* Filter chips. "All" shows the kanban; tap a status to focus a single
+          column at full width with a multi-column tile grid inside. */}
+      <div className="px-6 md:px-10 pt-2 pb-4 flex flex-nowrap sm:flex-wrap gap-2 -mx-2 sm:mx-0 px-8 sm:px-10 overflow-x-auto sm:overflow-visible [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <FilterBracket
+          active={filter === "all"}
+          count={releases.length}
+          onClick={() => setFilter("all")}
+        >
+          All
+        </FilterBracket>
+        {RELEASE_STATUS_ORDER.map((s) => {
+          const count = columns[s].length;
+          if (count === 0 && filter !== s) return null;
+          return (
+            <FilterBracket
+              key={s}
+              active={filter === s}
+              count={count}
+              onClick={() => setFilter(s)}
+            >
+              {RELEASE_STATUS_LABEL[s]}
+            </FilterBracket>
+          );
+        })}
       </div>
+
+      {focused ? (
+        // Focus mode: one status, multi-column grid of tiles. Drag still
+        // works for reordering inside this column.
+        <div className="px-6 md:px-10 pb-10">
+          <FocusedColumn
+            status={visibleStatuses[0]}
+            releases={columns[visibleStatuses[0]]}
+            activeId={activeId}
+          />
+        </div>
+      ) : (
+        <div
+          className="overflow-x-auto px-4 md:px-10 pb-10 snap-x snap-mandatory md:snap-none"
+          style={{ scrollPaddingInline: "16px" }}
+        >
+          <div className="flex min-w-max gap-px bg-line">
+            {RELEASE_STATUS_ORDER.map((status) => (
+              <Column
+                key={status}
+                status={status}
+                releases={columns[status]}
+                activeId={activeId}
+              />
+            ))}
+          </div>
+        </div>
+      )}
       <DragOverlay dropAnimation={null}>
-        {activeRelease ? (
-          <CardPresentation release={activeRelease} dragging />
-        ) : null}
+        {activeRelease ? <CardPresentation release={activeRelease} dragging /> : null}
       </DragOverlay>
     </DndContext>
   );
@@ -267,16 +340,20 @@ function Column({
   const { setNodeRef, isOver } = useDroppable({ id: statusToColumnId(status) });
 
   return (
-    <section className="w-[78vw] max-w-[300px] md:w-72 shrink-0 bg-page flex flex-col snap-start md:snap-align-none">
-      <header className="px-2 pb-3 mb-1">
+    <section className="w-[78vw] max-w-[260px] md:w-60 shrink-0 bg-page flex flex-col snap-start md:snap-align-none">
+      <header className="px-2 pb-2.5">
         <div className="flex items-baseline gap-1.5">
+          <span
+            className="inline-block size-1.5 rounded-full"
+            style={{ background: STATUS_EDGE[status] }}
+            aria-hidden
+          />
           <h2
-            className="font-display text-[18px] text-fg"
-            style={{ fontWeight: 500 }}
+            className="font-display text-[15px] text-fg"
+            style={{ fontWeight: 600, letterSpacing: "-0.005em" }}
           >
             {RELEASE_STATUS_LABEL[status]}
           </h2>
-          <span className="opacity-50 font-mono text-[11px]">·</span>
           <span className="num font-mono text-[11px] tracking-[0.06em] text-fg-faint">
             {releases.length.toString().padStart(2, "0")}
           </span>
@@ -289,7 +366,7 @@ function Column({
         <ul
           ref={setNodeRef}
           className={cn(
-            "flex flex-col gap-2 min-h-[80px] px-1 pb-2 [transition-duration:80ms]",
+            "flex flex-col gap-1.5 min-h-[80px] px-1 pb-2 [transition-duration:80ms]",
             isOver ? "bg-surface-2/40" : "",
           )}
         >
@@ -297,13 +374,49 @@ function Column({
             <SortableCard key={r.id} release={r} ghost={activeId === r.id} />
           ))}
           {releases.length === 0 ? (
-            <li className="px-1 py-10 text-center font-sans text-[13px] text-fg-faint">
+            <li className="px-1 py-8 text-center font-sans text-[12px] text-fg-faint">
               Nothing here
             </li>
           ) : null}
         </ul>
       </SortableContext>
     </section>
+  );
+}
+
+function FocusedColumn({
+  status,
+  releases,
+  activeId,
+}: {
+  status: ReleaseStatus;
+  releases: Release[];
+  activeId: string | null;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: statusToColumnId(status) });
+
+  return (
+    <SortableContext
+      items={releases.map((r) => r.id)}
+      strategy={rectSortingStrategy}
+    >
+      <ul
+        ref={setNodeRef}
+        className={cn(
+          "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 min-h-[120px] [transition-duration:80ms]",
+          isOver ? "bg-surface-2/40" : "",
+        )}
+      >
+        {releases.map((r) => (
+          <SortableCard key={r.id} release={r} ghost={activeId === r.id} />
+        ))}
+        {releases.length === 0 ? (
+          <li className="col-span-full px-1 py-12 text-center font-sans text-[13px] text-fg-faint">
+            No releases in {RELEASE_STATUS_LABEL[status].toLowerCase()}.
+          </li>
+        ) : null}
+      </ul>
+    </SortableContext>
   );
 }
 
@@ -332,27 +445,54 @@ function SortableCard({
 
   return (
     <li ref={setNodeRef} style={style} className="relative group">
-      <div className="bg-surface border border-line hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms]">
+      <CardSurface release={release}>
         <button
           {...attributes}
           {...listeners}
           type="button"
           aria-label="Reorder release"
           className={cn(
-            "absolute right-1 top-1 z-10 grid place-items-center text-fg-faint",
-            "size-9 md:size-6",
-            // Visible on touch devices, fades in on hover for desktop.
-            "opacity-60 md:opacity-30 group-hover:opacity-100 hover:text-fg-dim [transition-duration:80ms]",
+            "absolute right-0.5 top-0.5 z-10 grid place-items-center text-fg-faint",
+            "size-8 md:size-6",
+            "opacity-50 md:opacity-25 group-hover:opacity-100 hover:text-fg-dim [transition-duration:80ms]",
             "cursor-grab active:cursor-grabbing touch-none",
           )}
         >
-          <GripVertical className="size-4 md:size-3.5" strokeWidth={1.5} aria-hidden />
+          <GripVertical className="size-3.5" strokeWidth={1.5} aria-hidden />
         </button>
-        <Link href={`/releases/${release.slug}`} className="block p-4">
+        <Link
+          href={`/releases/${release.slug}`}
+          className="block px-3 py-2.5 pr-7"
+        >
           <CardBody release={release} />
         </Link>
-      </div>
+      </CardSurface>
     </li>
+  );
+}
+
+function CardSurface({
+  release,
+  children,
+}: {
+  release: Release;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative border border-line",
+        "hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms]",
+      )}
+      style={{ background: STATUS_TINT[release.status] }}
+    >
+      <span
+        aria-hidden
+        className="absolute left-0 top-0 bottom-0 w-[2px]"
+        style={{ background: STATUS_EDGE[release.status] }}
+      />
+      {children}
+    </div>
   );
 }
 
@@ -366,82 +506,48 @@ function CardPresentation({
   return (
     <div
       className={cn(
-        "w-72 bg-surface border border-line p-4",
+        "w-60 border border-line px-3 py-2.5 pr-7 relative",
         dragging
           ? "shadow-[0_8px_24px_rgba(26,22,18,0.10)] rotate-[0.3deg]"
           : "",
       )}
+      style={{ background: STATUS_TINT[release.status] }}
     >
+      <span
+        aria-hidden
+        className="absolute left-0 top-0 bottom-0 w-[2px]"
+        style={{ background: STATUS_EDGE[release.status] }}
+      />
       <CardBody release={release} />
     </div>
   );
 }
 
 function CardBody({ release: r }: { release: Release }) {
+  const collab = r.collaborators?.length ? r.collaborators[0] : null;
   return (
     <>
-      <CoverArt url={r.cover_art_url} title={r.title} />
-      <div className="mt-3">
-        <h3 className="font-display text-[16px] text-fg leading-[1.15] line-clamp-2">
-          {sentenceCase(r.title)}
-        </h3>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-fg-dim">
-          <span className="font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
-            {TYPE_LABEL[r.type]}
-          </span>
-          <span className="opacity-50">·</span>
-          <StatusBracket tone={STATUS_TONE[r.status] ?? "default"}>
-            {RELEASE_STATUS_LABEL[r.status]}
-          </StatusBracket>
-        </div>
-        <div className="mt-1 num font-mono text-[11px] text-fg-dim">
-          {r.release_date
-            ? r.status === "released"
-              ? formatYear(r.release_date)
-              : formatDateCompact(r.release_date)
-            : "Date TBD"}
-        </div>
-        {r.collaborators?.length ? (
-          <div className="mt-1 font-sans text-[12px] text-fg-faint truncate">
-            with {r.collaborators.join(", ")}
-          </div>
+      <h3
+        className="font-display text-[13px] text-fg leading-[1.25] line-clamp-2"
+        style={{ fontWeight: 600, letterSpacing: "-0.005em" }}
+      >
+        {sentenceCase(r.title)}
+      </h3>
+      <div className="mt-1.5 flex items-center gap-2 min-w-0">
+        <span className="font-mono uppercase tracking-[0.14em] text-[9px] text-fg-faint">
+          {TYPE_LABEL[r.type]}
+        </span>
+        {collab ? (
+          <>
+            <span className="opacity-40 text-fg-faint">·</span>
+            <span className="font-sans text-[11px] text-fg-dim truncate">
+              {r.collaborators!.length === 1
+                ? collab
+                : `${collab} +${r.collaborators!.length - 1}`}
+            </span>
+          </>
         ) : null}
       </div>
     </>
   );
-}
-
-function CoverArt({
-  url,
-  title,
-}: {
-  url: string | null;
-  title: string;
-}) {
-  if (!url) {
-    return (
-      <div className="aspect-square grid place-items-center bg-surface-2">
-        <Disc3
-          className="size-8 text-fg-faint"
-          strokeWidth={1.5}
-          aria-hidden
-        />
-      </div>
-    );
-  }
-  // eslint-disable-next-line @next/next/no-img-element
-  return (
-    <img
-      src={url}
-      alt={`${title} cover art`}
-      className="aspect-square w-full object-cover"
-    />
-  );
-}
-
-function sentenceCase(s: string): string {
-  if (!s) return s;
-  return s
-    .toLowerCase()
-    .replace(/(^|\s|\(|-)([a-z])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`);
 }
