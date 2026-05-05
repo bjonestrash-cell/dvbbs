@@ -7,6 +7,7 @@ import { listFlights } from "@/lib/data/flights";
 import type { FlightStatus } from "@/lib/supabase/types";
 import { FlightStubList } from "./_components/flight-stub-list";
 import { FlightFilters } from "./_components/flight-filters";
+import { TripTimeline } from "./_components/trip-timeline";
 
 export const metadata = { title: "Flights. DVBBS HQ" };
 
@@ -107,18 +108,21 @@ export default async function FlightsPage({
           No flights match those filters.
         </div>
       ) : (
-        <div className="flex flex-col gap-10 px-6 md:px-10 pt-2 pb-10">
-          {upcoming.length > 0 ? (
-            <Section title="Upcoming" count={upcoming.length}>
-              <FlightStubList flights={upcoming} />
-            </Section>
-          ) : null}
-          {past.length > 0 ? (
-            <Section title="Past" count={past.length}>
-              <FlightStubList flights={past} muted />
-            </Section>
-          ) : null}
-        </div>
+        <>
+          {upcoming.length > 0 ? <TripTimeline flights={upcoming} /> : null}
+          <div className="flex flex-col gap-10 px-6 md:px-10 pt-6 md:pt-8 pb-10">
+            {upcoming.length > 0 ? (
+              <Section title="Upcoming" count={upcoming.length}>
+                <FlightStubList flights={upcoming} />
+              </Section>
+            ) : null}
+            {past.length > 0 ? (
+              <Section title="Past" count={past.length}>
+                <FlightStubList flights={past} muted />
+              </Section>
+            ) : null}
+          </div>
+        </>
       )}
     </>
   );

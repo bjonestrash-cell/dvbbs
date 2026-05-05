@@ -1075,24 +1075,210 @@ async function ensureShow(payload) {
       currency: "GBP",
       status: "completed",
     },
+
+    // Standalone trips (not tied to a show) — interview / studio / personal
+    // travel. These give the trip-timeline some variety beyond the tour grid.
+
+    // Studio session in Nashville (+22d)
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "American",
+      flight_number: "AA 1276",
+      confirmation_code: "NSH022",
+      departure_airport: "LAX",
+      arrival_airport: "BNA",
+      departure_time: dateTimeAt(22, 7, 15),
+      arrival_time: dateTimeAt(22, 13, 0),
+      cabin: "business",
+      seat: "3A",
+      cost: 760,
+      currency: "USD",
+      status: "confirmed",
+      notes: "Two-day session at Sound Emporium with Jordan Powers.",
+    },
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "American",
+      flight_number: "AA 1488",
+      confirmation_code: "NSH022",
+      departure_airport: "BNA",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(24, 16, 40),
+      arrival_time: dateTimeAt(24, 18, 50),
+      cabin: "business",
+      seat: "3A",
+      cost: 0,
+      currency: "USD",
+      status: "confirmed",
+    },
+    // Berlin writing trip (+58d)
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Lufthansa",
+      flight_number: "LH 457",
+      confirmation_code: "BER058",
+      departure_airport: "LAX",
+      arrival_airport: "MUC",
+      departure_time: dateTimeAt(56, 19, 50),
+      arrival_time: dateTimeAt(57, 16, 25),
+      cabin: "business",
+      seat: "2D",
+      cost: 3800,
+      currency: "EUR",
+      status: "booked",
+      notes: "Writing camp at Riverside Studios.",
+    },
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Lufthansa",
+      flight_number: "LH 2174",
+      confirmation_code: "BER058",
+      departure_airport: "MUC",
+      arrival_airport: "BER",
+      departure_time: dateTimeAt(57, 18, 30),
+      arrival_time: dateTimeAt(57, 19, 35),
+      cabin: "business",
+      seat: "1A",
+      cost: 0,
+      currency: "EUR",
+      status: "booked",
+    },
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Lufthansa",
+      flight_number: "LH 458",
+      confirmation_code: "BER058",
+      departure_airport: "BER",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(63, 11, 0),
+      arrival_time: dateTimeAt(63, 14, 30),
+      cabin: "business",
+      seat: "2D",
+      cost: 0,
+      currency: "EUR",
+      status: "booked",
+    },
+    // Miami label meeting (+8d)
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Delta",
+      flight_number: "DL 2134",
+      confirmation_code: "MIA008",
+      departure_airport: "LAX",
+      arrival_airport: "MIA",
+      departure_time: dateTimeAt(8, 6, 30),
+      arrival_time: dateTimeAt(8, 14, 50),
+      cabin: "premium",
+      seat: "8C",
+      cost: 540,
+      currency: "USD",
+      status: "confirmed",
+      notes: "Quarterly with Big Beat. Same-day return.",
+    },
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Delta",
+      flight_number: "DL 1985",
+      confirmation_code: "MIA008",
+      departure_airport: "MIA",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(8, 19, 15),
+      arrival_time: dateTimeAt(8, 22, 5),
+      cabin: "premium",
+      seat: "8C",
+      cost: 0,
+      currency: "USD",
+      status: "confirmed",
+    },
+    // Mexico City personal weekend (+34d)
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Aeroméxico",
+      flight_number: "AM 645",
+      confirmation_code: "MEX034",
+      departure_airport: "LAX",
+      arrival_airport: "MEX",
+      departure_time: dateTimeAt(34, 9, 0),
+      arrival_time: dateTimeAt(34, 14, 25),
+      cabin: "economy",
+      seat: "12F",
+      cost: 380,
+      currency: "USD",
+      status: "booked",
+      notes: "Long weekend.",
+    },
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Aeroméxico",
+      flight_number: "AM 642",
+      confirmation_code: "MEX034",
+      departure_airport: "MEX",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(37, 14, 30),
+      arrival_time: dateTimeAt(37, 17, 5),
+      cabin: "economy",
+      seat: "12F",
+      cost: 0,
+      currency: "USD",
+      status: "booked",
+    },
+    // NYC press day (+102d)
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Delta",
+      flight_number: "DL 0421",
+      confirmation_code: "NYC102",
+      departure_airport: "LAX",
+      arrival_airport: "JFK",
+      departure_time: dateTimeAt(101, 22, 0),
+      arrival_time: dateTimeAt(102, 6, 25),
+      cabin: "business",
+      seat: "1B",
+      cost: 1800,
+      currency: "USD",
+      status: "booked",
+      notes: "Cover shoot + Zane Lowe taping.",
+    },
+    {
+      show_id: null,
+      passenger_name: PASSENGER,
+      airline: "Delta",
+      flight_number: "DL 0490",
+      confirmation_code: "NYC102",
+      departure_airport: "JFK",
+      arrival_airport: "LAX",
+      departure_time: dateTimeAt(103, 18, 30),
+      arrival_time: dateTimeAt(103, 21, 50),
+      cabin: "business",
+      seat: "1B",
+      cost: 0,
+      currency: "USD",
+      status: "booked",
+    },
   ];
 
   let flightsInserted = 0;
   let flightsSkipped = 0;
   for (const f of flights) {
-    if (!f.show_id) {
-      flightsSkipped++;
-      continue;
-    }
-    // Idempotency: check for an existing flight with the same show + route
-    // on the same departure date.
+    // Idempotency: check for an existing flight with the same route on the
+    // same departure date. Works for both show-attached and standalone
+    // flights since show_id can be null.
     const dayStart = f.departure_time.slice(0, 10);
     const dayEnd = new Date(f.departure_time);
     dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
     const existing = await sb
       .from("flights")
       .select("id")
-      .eq("show_id", f.show_id)
       .eq("departure_airport", f.departure_airport)
       .eq("arrival_airport", f.arrival_airport)
       .gte("departure_time", `${dayStart}T00:00:00Z`)
