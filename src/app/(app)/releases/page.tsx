@@ -5,6 +5,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { listReleases } from "@/lib/data/releases";
 import { ReleaseBoard } from "./_components/release-board";
 import { ReleaseList } from "./_components/release-list";
+import { ReleaseGallery } from "./_components/release-gallery";
 import { ReleaseViewToggle } from "./_components/release-view-toggle";
 
 export const metadata = { title: "Releases. DVBBS HQ" };
@@ -15,7 +16,8 @@ export default async function ReleasesPage({
   searchParams: Promise<{ view?: string }>;
 }) {
   const sp = await searchParams;
-  const view = sp.view === "list" ? "list" : "board";
+  const view: "board" | "list" | "gallery" =
+    sp.view === "list" || sp.view === "gallery" ? sp.view : "board";
   const releases = await listReleases();
 
   return (
@@ -60,6 +62,8 @@ export default async function ReleasesPage({
         </div>
       ) : view === "list" ? (
         <ReleaseList releases={releases} />
+      ) : view === "gallery" ? (
+        <ReleaseGallery releases={releases} />
       ) : (
         <ReleaseBoard releases={releases} />
       )}

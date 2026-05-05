@@ -2,18 +2,21 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Columns3, List as ListIcon } from "lucide-react";
+import { Columns3, LayoutGrid, List as ListIcon } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const VIEWS = [
   { value: "board", label: "Board", Icon: Columns3 },
   { value: "list", label: "List", Icon: ListIcon },
+  { value: "gallery", label: "Gallery", Icon: LayoutGrid },
 ] as const;
 
 export function ReleaseViewToggle() {
   const pathname = usePathname();
   const sp = useSearchParams();
-  const current = sp.get("view") === "list" ? "list" : "board";
+  const raw = sp.get("view");
+  const current: "board" | "list" | "gallery" =
+    raw === "list" || raw === "gallery" ? raw : "board";
 
   function hrefFor(value: string): string {
     const next = new URLSearchParams(sp);
