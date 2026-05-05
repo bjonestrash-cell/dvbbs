@@ -13,9 +13,8 @@ export type SearchHit = {
 };
 
 const NAV_HITS: SearchHit[] = [
-  { kind: "nav", id: "nav-tour", href: "/tour", title: "Tour, pipeline" },
+  { kind: "nav", id: "nav-tour", href: "/tour", title: "Tour, list" },
   { kind: "nav", id: "nav-tour-cal", href: "/tour/calendar", title: "Tour, calendar" },
-  { kind: "nav", id: "nav-tour-map", href: "/tour/map", title: "Tour, map" },
   { kind: "nav", id: "nav-tour-new", href: "/tour/new", title: "New show" },
   { kind: "nav", id: "nav-contacts", href: "/contacts", title: "Contacts" },
   { kind: "nav", id: "nav-team", href: "/team", title: "Team" },

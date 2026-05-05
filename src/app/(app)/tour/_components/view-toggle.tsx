@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils/cn";
 const VIEWS = [
   { href: "/tour", label: "List" },
   { href: "/tour/calendar", label: "Calendar" },
-  { href: "/tour/map", label: "Map" },
 ] as const;
 
 export function ViewToggle() {

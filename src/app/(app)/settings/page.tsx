@@ -8,7 +8,6 @@ export const metadata = { title: "Settings. DVBBS HQ" };
 export default async function SettingsPage() {
   const me = AUTH_DISABLED ? null : await getCurrentMember();
   const hasBandsintown = !!process.env.BANDSINTOWN_API_KEY;
-  const hasMapbox = !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
   return (
     <>
@@ -57,13 +56,6 @@ export default async function SettingsPage() {
           )}
         </Section>
 
-        <Section title="Mapbox">
-          <p className="font-sans text-[13px] text-fg-dim max-w-prose">
-            {hasMapbox
-              ? "Configured. World map renders pins on /tour/map."
-              : "Set NEXT_PUBLIC_MAPBOX_TOKEN to enable the world map."}
-          </p>
-        </Section>
       </div>
     </>
   );
