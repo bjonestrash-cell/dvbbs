@@ -34,7 +34,14 @@ export function EmptyState({
       <ChevronGlyph size={20} className="text-fg-faint" opacity={0.6} />
       <div
         className="display-title text-fg"
-        style={{ fontSize: "clamp(20px, 3vw, 24px)", fontWeight: 300 }}
+        style={{
+          fontSize: "clamp(20px, 3vw, 24px)",
+          // Weight bumped from 300 (ghost-thin on Geist) to 500 to match the
+          // rest of the .display-title usage. Empty states should feel
+          // confident, not apologetic.
+          fontWeight: 500,
+          lineHeight: 1.2,
+        }}
       >
         {title}
       </div>

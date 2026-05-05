@@ -59,17 +59,18 @@ export function BottomNav() {
               >
                 <Icon
                   className={cn(
-                    "size-5",
+                    "size-[22px]",
                     active ? "text-fg" : "text-fg-faint",
                   )}
                   strokeWidth={1.5}
                   aria-hidden
                 />
                 <span
-                  className="font-display lowercase tracking-[-0.01em]"
+                  className="font-display lowercase tracking-[-0.005em]"
                   style={{
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: active ? 600 : 500,
+                    lineHeight: 1.1,
                   }}
                 >
                   {item.label.toLowerCase()}
@@ -91,17 +92,18 @@ export function BottomNav() {
           >
             <MoreHorizontal
               className={cn(
-                "size-5",
+                "size-[22px]",
                 moreActive ? "text-fg" : "text-fg-faint",
               )}
               strokeWidth={1.5}
               aria-hidden
             />
             <span
-              className="font-display lowercase tracking-[-0.01em]"
+              className="font-display lowercase tracking-[-0.005em]"
               style={{
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: moreActive ? 600 : 500,
+                lineHeight: 1.1,
               }}
             >
               more

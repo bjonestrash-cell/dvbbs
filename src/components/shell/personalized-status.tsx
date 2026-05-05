@@ -93,7 +93,10 @@ export function PersonalizedStatus({
 
   return (
     <div className="text-right min-w-0 leading-tight">
-      <div className="font-display lowercase text-[12px] sm:text-[13px] text-fg leading-[1.1] truncate tracking-[-0.01em]">
+      {/* Hierarchy: name (display 14/15) > time+city (mono 10) > on-the-road
+          (mono 10 fainter). The 1.5x size delta between primary and meta
+          gives a clear read order; the prior 13/10 was too tight. */}
+      <div className="font-display lowercase text-[14px] sm:text-[15px] text-fg leading-[1.15] truncate tracking-[-0.005em]">
         {labelDisplay}
       </div>
       <div className="mt-0.5 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-dim truncate">

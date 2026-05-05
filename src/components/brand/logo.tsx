@@ -12,12 +12,13 @@ export function Logo({
   collapsed = false,
   className,
 }: {
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   collapsed?: boolean;
   className?: string;
 }) {
   const titlePx = TITLE_PX[size];
-  const chevPx = Math.round(titlePx * 0.95);
+  // Chevron is slightly smaller than the cap height so it doesn't dominate.
+  const chevPx = Math.round(titlePx * 0.85);
 
   if (collapsed) {
     return (
@@ -33,7 +34,7 @@ export function Logo({
 
   return (
     <span
-      className={cn("inline-flex items-center gap-2.5", className)}
+      className={cn("inline-flex items-center gap-2", className)}
       style={{ height: titlePx + 4 }}
       aria-label="DVBBS"
     >
@@ -43,7 +44,7 @@ export function Logo({
         style={{
           fontSize: titlePx,
           fontWeight: 700,
-          letterSpacing: "-0.04em",
+          letterSpacing: "-0.035em",
           lineHeight: 1,
         }}
       >
@@ -53,11 +54,15 @@ export function Logo({
   );
 }
 
-const TITLE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
-  sm: 22,
-  md: 28,
-  lg: 44,
-  xl: 72,
+// Sized to keep the wordmark in conversation with surrounding type. The
+// sidebar uses "md" = 22px, which sits at ~1.5x of the 15px nav items —
+// a deliberate Apple-grade ratio over the prior 2.0x billboard scale.
+const TITLE_PX: Record<"xs" | "sm" | "md" | "lg" | "xl", number> = {
+  xs: 16,
+  sm: 20,
+  md: 22,
+  lg: 36,
+  xl: 64,
 };
 
 /**

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   CartesianGrid,
   Line,
@@ -12,6 +13,42 @@ import {
 
 type Point = { month: string; gross: number; units: number };
 
+function useChartColors() {
+  const [tick, setTick] = useState({
+    grid: "rgba(26,22,18,0.06)",
+    axis: "rgba(26,22,18,0.35)",
+    tickFill: "rgba(26,22,18,0.55)",
+    cursor: "rgba(26,22,18,0.18)",
+    accent: "#8b6f4e",
+    surface: "#ffffff",
+  });
+
+  useEffect(() => {
+    function read() {
+      const cs = getComputedStyle(document.documentElement);
+      const dark =
+        document.documentElement.getAttribute("data-theme") === "dark";
+      setTick({
+        grid: dark ? "rgba(245,241,234,0.08)" : "rgba(26,22,18,0.06)",
+        axis: dark ? "rgba(245,241,234,0.20)" : "rgba(26,22,18,0.35)",
+        tickFill: dark ? "rgba(245,241,234,0.50)" : "rgba(26,22,18,0.55)",
+        cursor: dark ? "rgba(245,241,234,0.20)" : "rgba(26,22,18,0.18)",
+        accent: cs.getPropertyValue("--color-accent").trim() || "#8b6f4e",
+        surface: cs.getPropertyValue("--color-surface").trim() || "#ffffff",
+      });
+    }
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => obs.disconnect();
+  }, []);
+
+  return tick;
+}
+
 export function SalesByMonthChart({
   data,
   metric,
@@ -19,6 +56,7 @@ export function SalesByMonthChart({
   data: Point[];
   metric: "gross" | "units";
 }) {
+  const c = useChartColors();
   if (data.length === 0) {
     return (
       <p className="font-sans text-[13px] text-fg-faint py-12 text-center">
@@ -34,17 +72,17 @@ export function SalesByMonthChart({
           margin={{ top: 8, right: 12, left: 0, bottom: 4 }}
         >
           <CartesianGrid
-            stroke="rgba(26,22,18,0.06)"
+            stroke={c.grid}
             strokeDasharray="2 4"
             vertical={false}
           />
           <XAxis
             dataKey="month"
-            stroke="rgba(26,22,18,0.35)"
+            stroke={c.axis}
             tick={{
               fontFamily: "var(--font-geist-mono)",
               fontSize: 10,
-              fill: "rgba(26,22,18,0.55)",
+              fill: c.tickFill,
               letterSpacing: "0.04em",
             }}
             tickLine={false}
@@ -75,11 +113,11 @@ export function SalesByMonthChart({
             }}
           />
           <YAxis
-            stroke="rgba(26,22,18,0.35)"
+            stroke={c.axis}
             tick={{
               fontFamily: "var(--font-geist-mono)",
               fontSize: 10,
-              fill: "rgba(26,22,18,0.55)",
+              fill: c.tickFill,
             }}
             tickLine={false}
             axisLine={false}
@@ -91,7 +129,7 @@ export function SalesByMonthChart({
             }
           />
           <Tooltip
-            cursor={{ stroke: "rgba(26,22,18,0.18)", strokeDasharray: "2 2" }}
+            cursor={{ stroke: c.cursor, strokeDasharray: "2 2" }}
             content={({ active, payload }) => {
               if (!active || !payload || payload.length === 0) return null;
               const p = payload[0].payload as Point;
@@ -112,10 +150,10 @@ export function SalesByMonthChart({
           <Line
             type="monotone"
             dataKey={metric}
-            stroke="#8b6f4e"
+            stroke={c.accent}
             strokeWidth={1.25}
-            dot={{ r: 2, fill: "#8b6f4e", stroke: "#8b6f4e" }}
-            activeDot={{ r: 4, fill: "#8b6f4e", stroke: "#fff" }}
+            dot={{ r: 2, fill: c.accent, stroke: c.accent }}
+            activeDot={{ r: 4, fill: c.accent, stroke: c.surface }}
             isAnimationActive={false}
           />
         </LineChart>

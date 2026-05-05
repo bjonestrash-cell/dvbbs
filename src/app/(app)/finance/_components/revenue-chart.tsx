@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -13,7 +14,49 @@ import {
 
 type Point = { month: string; tour: number; merch: number };
 
+/** Recharts evaluates color strings against the SVG, but for stroke/fill it
+ *  expects a resolved value, not a `var(...)`. Read CSS vars from :root once
+ *  per render via getComputedStyle so the chart re-themes when the user
+ *  toggles dark mode. */
+function useChartColors() {
+  const [tick, setTick] = useState({
+    grid: "rgba(26,22,18,0.06)",
+    axis: "rgba(26,22,18,0.35)",
+    tickFill: "rgba(26,22,18,0.55)",
+    tooltipFill: "rgba(26,22,18,0.04)",
+    fg: "#1a1612",
+    accent: "#8b6f4e",
+  });
+
+  useEffect(() => {
+    function read() {
+      const cs = getComputedStyle(document.documentElement);
+      const dark =
+        document.documentElement.getAttribute("data-theme") === "dark";
+      setTick({
+        grid: dark ? "rgba(245,241,234,0.08)" : "rgba(26,22,18,0.06)",
+        axis: dark ? "rgba(245,241,234,0.20)" : "rgba(26,22,18,0.35)",
+        tickFill: dark ? "rgba(245,241,234,0.50)" : "rgba(26,22,18,0.55)",
+        tooltipFill: dark ? "rgba(245,241,234,0.04)" : "rgba(26,22,18,0.04)",
+        fg: cs.getPropertyValue("--color-fg").trim() || "#1a1612",
+        accent: cs.getPropertyValue("--color-accent").trim() || "#8b6f4e",
+      });
+    }
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => obs.disconnect();
+  }, []);
+
+  return tick;
+}
+
 export function RevenueChart({ data }: { data: Point[] }) {
+  const c = useChartColors();
+
   if (data.length === 0) {
     return (
       <p className="font-sans text-[13px] text-fg-faint py-12 text-center">
@@ -31,17 +74,17 @@ export function RevenueChart({ data }: { data: Point[] }) {
           barCategoryGap="30%"
         >
           <CartesianGrid
-            stroke="rgba(26,22,18,0.06)"
+            stroke={c.grid}
             strokeDasharray="2 4"
             vertical={false}
           />
           <XAxis
             dataKey="month"
-            stroke="rgba(26,22,18,0.35)"
+            stroke={c.axis}
             tick={{
               fontFamily: "var(--font-geist-mono)",
               fontSize: 10,
-              fill: "rgba(26,22,18,0.55)",
+              fill: c.tickFill,
               letterSpacing: "0.04em",
             }}
             tickLine={false}
@@ -72,11 +115,11 @@ export function RevenueChart({ data }: { data: Point[] }) {
             }}
           />
           <YAxis
-            stroke="rgba(26,22,18,0.35)"
+            stroke={c.axis}
             tick={{
               fontFamily: "var(--font-geist-mono)",
               fontSize: 10,
-              fill: "rgba(26,22,18,0.55)",
+              fill: c.tickFill,
             }}
             tickLine={false}
             axisLine={false}
@@ -89,7 +132,7 @@ export function RevenueChart({ data }: { data: Point[] }) {
             }}
           />
           <Tooltip
-            cursor={{ fill: "rgba(26,22,18,0.04)" }}
+            cursor={{ fill: c.tooltipFill }}
             content={({ active, payload }) => {
               if (!active || !payload || payload.length === 0) return null;
               const p = payload[0].payload as Point;
@@ -117,20 +160,20 @@ export function RevenueChart({ data }: { data: Point[] }) {
               fontSize: 10,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: "rgba(26,22,18,0.55)",
+              color: c.tickFill,
               paddingBottom: 4,
             }}
           />
           <Bar
             dataKey="tour"
             stackId="a"
-            fill="#1a1612"
+            fill={c.fg}
             isAnimationActive={false}
           />
           <Bar
             dataKey="merch"
             stackId="a"
-            fill="#8b6f4e"
+            fill={c.accent}
             isAnimationActive={false}
           />
         </BarChart>

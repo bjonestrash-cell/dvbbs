@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { NAV } from "./nav-config";
 import { Logo } from "@/components/brand/logo";
 import { useSidebar } from "./sidebar-state";
+import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils/cn";
 
 export function Sidebar() {
@@ -145,15 +146,16 @@ function SidebarBody({
                       <span
                         className="flex-1 truncate font-display lowercase"
                         style={{
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: active ? 600 : 500,
-                          letterSpacing: "-0.01em",
+                          letterSpacing: "-0.005em",
+                          lineHeight: 1.2,
                         }}
                       >
                         {item.label}
                       </span>
                       {!item.ready ? (
-                        <span className="font-mono lowercase tracking-[0.18em] text-[9px] text-fg-faint">
+                        <span className="font-mono lowercase tracking-[0.14em] text-[10px] text-fg-faint">
                           soon
                         </span>
                       ) : null}
@@ -169,18 +171,18 @@ function SidebarBody({
       {!mobile ? (
         <div
           className={cn(
-            "shrink-0",
-            collapsed ? "px-0 py-3" : "px-5 py-3 flex justify-end",
+            "shrink-0 border-t border-line",
+            collapsed
+              ? "px-0 py-3 flex flex-col items-center gap-2"
+              : "px-5 py-3 flex items-center justify-between gap-2",
           )}
         >
+          <ThemeToggle />
           <button
             type="button"
             onClick={onToggleCollapse}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className={cn(
-              "size-7 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]",
-              collapsed ? "mx-auto" : "",
-            )}
+            className="size-7 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
           >
             {collapsed ? (
               <ChevronRight className="size-4" strokeWidth={1.5} aria-hidden />
@@ -189,7 +191,11 @@ function SidebarBody({
             )}
           </button>
         </div>
-      ) : null}
+      ) : (
+        <div className="shrink-0 border-t border-line px-5 py-4 flex items-center justify-start">
+          <ThemeToggle variant="labeled" />
+        </div>
+      )}
     </>
   );
 }
