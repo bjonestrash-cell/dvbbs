@@ -48,9 +48,8 @@ function pad(n: number) {
 }
 
 function toName(name: string): string {
-  if (!name) return "Demo";
-  const lower = name.toLowerCase();
-  return lower.charAt(0).toUpperCase() + lower.slice(1);
+  if (!name) return "demo";
+  return name.toLowerCase();
 }
 
 export function PersonalizedStatus({
@@ -94,7 +93,7 @@ export function PersonalizedStatus({
 
   return (
     <div className="text-right min-w-0 leading-tight">
-      <div className="font-display text-[15px] sm:text-[16px] text-fg leading-[1.1] truncate">
+      <div className="font-display lowercase text-[12px] sm:text-[13px] text-fg leading-[1.1] truncate tracking-[-0.01em]">
         {labelDisplay}
       </div>
       <div className="mt-0.5 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-dim truncate">

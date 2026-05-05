@@ -60,36 +60,29 @@ const TITLE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   xl: 72,
 };
 
-/** Refined chevron tick used as the brand mark glyph. */
+/**
+ * Brand mark: a stack of three downward-pointing chevron wedges.
+ * Filled solid in currentColor, no strokes, sharp corners. Sits as
+ * the glyph next to the DVBBS wordmark and as the favicon.
+ */
 function Chevron({ size }: { size: number }) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 32 32"
-      fill="none"
+      fill="currentColor"
       aria-hidden
       role="presentation"
-      strokeLinecap="square"
     >
-      <path
-        d="M4 12 L16 22 L28 12"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-      />
-      <path
-        d="M4 18 L16 28 L28 18"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-        opacity="0.4"
-      />
+      <polygon points="0,0 16,6 32,0 32,4 16,10 0,4" />
+      <polygon points="0,11 16,17 32,11 32,15 16,21 0,15" />
+      <polygon points="0,22 16,28 32,22 32,26 16,32 0,26" />
     </svg>
   );
 }
 
-/** Standalone chevron for inline use. */
+/** Standalone single-chevron glyph for inline use. */
 export function ChevronGlyph({
   size = 12,
   className,
@@ -104,17 +97,12 @@ export function ChevronGlyph({
       width={size}
       height={size}
       viewBox="0 0 32 32"
-      fill="none"
+      fill="currentColor"
       aria-hidden
       className={className}
       style={{ opacity }}
     >
-      <path
-        d="M4 12 L16 22 L28 12"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-      />
+      <polygon points="0,8 16,18 32,8 32,14 16,24 0,14" />
     </svg>
   );
 }
