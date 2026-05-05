@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { AlertTriangle, Plus } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { buttonClasses } from "@/components/ui/button";
-import { listFlights } from "@/lib/data/flights";
+import { listFlightsWithDiagnostic } from "@/lib/data/flights";
 import type { FlightStatus } from "@/lib/supabase/types";
 import { FlightStubList } from "./_components/flight-stub-list";
 import { FlightFilters } from "./_components/flight-filters";
@@ -31,7 +31,7 @@ export default async function FlightsPage({
         .filter((s) => (ALL_STATUSES as string[]).includes(s)) as FlightStatus[])
     : [];
 
-  const all = await listFlights();
+  const { flights: all, error: dataError } = await listFlightsWithDiagnostic();
   const q = (sp.q ?? "").trim().toLowerCase();
 
   const filtered = all.filter((f) => {
@@ -88,7 +88,39 @@ export default async function FlightsPage({
 
       <FlightFilters counts={counts} total={all.length} />
 
-      {all.length === 0 ? (
+      {dataError ? (
+        <div className="px-6 md:px-10 py-6">
+          <div className="border border-cancelled/40 bg-cancelled/5 px-5 py-4 flex items-start gap-3">
+            <AlertTriangle
+              className="size-4 text-cancelled mt-0.5 shrink-0"
+              strokeWidth={1.5}
+              aria-hidden
+            />
+            <div className="min-w-0">
+              <div className="font-mono uppercase tracking-[0.14em] text-[10px] text-cancelled">
+                Couldn't load flights
+              </div>
+              <p className="mt-1 font-sans text-[13px] text-fg leading-[1.55]">
+                {dataError}
+              </p>
+              <p className="mt-2 font-sans text-[12px] text-fg-dim leading-[1.5]">
+                If you just added the schema, paste{" "}
+                <code className="font-mono text-[11px] text-fg">
+                  sql/flights.sql
+                </code>{" "}
+                in Supabase SQL editor (it&apos;s idempotent — safe to run again),
+                wait ~30 seconds for the schema cache to refresh, then run{" "}
+                <code className="font-mono text-[11px] text-fg">
+                  node scripts/seed.mjs
+                </code>{" "}
+                to populate flights.
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {!dataError && all.length === 0 ? (
         <div className="px-6 md:px-10 py-10">
           <EmptyState
             title="No flights yet."
@@ -103,11 +135,11 @@ export default async function FlightsPage({
             }
           />
         </div>
-      ) : filtered.length === 0 ? (
+      ) : !dataError && filtered.length === 0 ? (
         <div className="px-6 md:px-10 py-10 text-center font-sans text-[13px] text-fg-faint">
           No flights match those filters.
         </div>
-      ) : (
+      ) : dataError ? null : (
         <>
           {upcoming.length > 0 ? <TripTimeline flights={upcoming} /> : null}
           <div className="flex flex-col gap-10 px-6 md:px-10 pt-6 md:pt-8 pb-10">
