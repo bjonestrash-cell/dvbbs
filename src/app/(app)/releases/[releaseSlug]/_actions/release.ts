@@ -106,3 +106,21 @@ export async function updateRelease(
   }
   return { status: "ok", newSlug: v.slug };
 }
+
+/** Delete a release. Cascades any FK relationships per the schema (assets,
+ *  marketing rows, smart links typically reference release_id with ON DELETE
+ *  CASCADE; if not, the DB will surface the constraint error). Principal
+ *  and manager only. */
+export async function deleteRelease(releaseId: string) {
+  await requireRole("principal", "manager");
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("releases")
+    .delete()
+    .eq("id", releaseId);
+  if (error) {
+    return { ok: false as const, message: error.message };
+  }
+  revalidatePath("/releases");
+  redirect("/releases");
+}
