@@ -81,38 +81,43 @@ export default async function PublicSmartLinkPage({
       lang="en"
       className={`${geist.variable} ${inter.variable} ${mono.variable} h-full`}
     >
-      <body className="min-h-dvh bg-surface text-fg flex">
-        <main className="mx-auto flex min-h-dvh w-full max-w-[420px] flex-col items-center justify-center px-6 py-16 text-center">
-          <Logo size="xl" />
+      <body className="min-h-dvh bg-page text-fg flex">
+        <main className="mx-auto flex min-h-dvh w-full max-w-[420px] flex-col items-center justify-center px-6 py-12 sm:py-16 text-center">
+          <Logo size="md" />
 
-          <div className="mt-16 mb-8">
+          <div className="mt-10 sm:mt-14 mb-7">
             <Cover title={title} url={release?.cover_art_url ?? null} />
           </div>
 
           <h1
             className="display-title text-fg"
-            style={{ fontSize: "clamp(32px, 6vw, 40px)", fontWeight: 300 }}
+            style={{
+              fontSize: "clamp(28px, 6vw, 36px)",
+              fontWeight: 500,
+              lineHeight: 1.05,
+              letterSpacing: "-0.025em",
+            }}
           >
             {title}
           </h1>
           {release?.release_date ? (
-            <p className="mt-2 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+            <p className="mt-3 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
               Released {formatDateCompact(release.release_date)}
             </p>
           ) : null}
 
-          <ul className="mt-12 flex w-full flex-col gap-3">
+          <ul className="mt-10 sm:mt-12 flex w-full flex-col gap-2">
             {platforms.map((p) => (
               <li key={p}>
                 <a
                   href={`/link/${slug}/go?p=${encodeURIComponent(p)}`}
-                  className="flex h-14 items-center justify-between border border-line bg-surface px-5 hover:bg-inverted hover:text-fg-inverted hover:border-inverted [transition-duration:80ms]"
+                  className="group flex h-14 items-center justify-between bg-surface border border-line px-5 hover:border-inverted hover:bg-inverted hover:text-fg-inverted [transition-duration:80ms]"
                 >
                   <span className="font-sans text-[15px] font-medium">
                     {PLATFORM_LABEL[p]}
                   </span>
                   <ArrowRight
-                    className="size-4 text-fg-faint group-hover:text-fg-inverted"
+                    className="size-4 text-fg-faint group-hover:text-fg-inverted [transition-duration:80ms]"
                     strokeWidth={1.5}
                     aria-hidden
                   />
@@ -121,8 +126,10 @@ export default async function PublicSmartLinkPage({
             ))}
           </ul>
 
-          <p className="mt-16 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
-            Dvbbs <span className="opacity-50">·</span> dvbbs.com
+          <p className="mt-12 sm:mt-14 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+            DVBBS
+            <span className="opacity-50 mx-1.5">·</span>
+            dvbbs.com
           </p>
         </main>
       </body>
@@ -139,7 +146,7 @@ function Cover({
 }) {
   if (!url) {
     return (
-      <div className="size-[280px] sm:size-[320px] grid place-items-center bg-surface-2 border-b border-line">
+      <div className="size-[260px] sm:size-[300px] grid place-items-center bg-surface border border-line">
         <Disc3 className="size-12 text-fg-faint" strokeWidth={1.5} aria-hidden />
       </div>
     );
@@ -149,7 +156,7 @@ function Cover({
     <img
       src={url}
       alt={`${title} cover art`}
-      className="size-[280px] sm:size-[320px] object-cover border-b border-line"
+      className="size-[260px] sm:size-[300px] object-cover border border-line"
     />
   );
 }

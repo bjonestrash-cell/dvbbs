@@ -60,14 +60,16 @@ export default async function ReleaseLayout({
           </Link>
           <CopySmartLinkButton slug={release.smart_link_slug} />
         </div>
-        <div className="px-6 md:px-10 pb-8 flex flex-col md:flex-row gap-6 md:gap-8 md:items-end">
+        <div className="px-6 md:px-10 pb-7 md:pb-10 flex flex-col md:flex-row gap-5 md:gap-8 md:items-end">
           <CoverArt url={release.cover_art_url} title={release.title} />
           <div className="min-w-0 flex-1">
-            <div className="marker mb-2">Catalog</div>
+            <div className="marker mb-2.5">Catalog</div>
             <h1
               className="display-title text-fg break-words"
               style={{
-                fontSize: "clamp(36px, 6vw, 56px)",
+                fontSize: "clamp(28px, 4.5vw, 44px)",
+                lineHeight: 1.05,
+                letterSpacing: "-0.025em",
               }}
             >
               {sentenceCase(release.title)}
@@ -76,11 +78,11 @@ export default async function ReleaseLayout({
               <span className="font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
                 {TYPE_LABEL[release.type] ?? release.type}
               </span>
-              <span className="text-fg-faint">·</span>
+              <span className="text-fg-faint opacity-60">·</span>
               <StatusBracket tone={STATUS_TONE[release.status] ?? "default"}>
                 {STATUS_LABEL[release.status] ?? release.status}
               </StatusBracket>
-              <span className="text-fg-faint">·</span>
+              <span className="text-fg-faint opacity-60">·</span>
               <span className="num font-mono text-[11px] text-fg-dim">
                 {release.release_date
                   ? formatDateCompact(release.release_date)
@@ -88,7 +90,7 @@ export default async function ReleaseLayout({
               </span>
             </div>
             {release.collaborators?.length ? (
-              <div className="mt-2 font-sans text-[13px] text-fg-faint truncate">
+              <div className="mt-2 font-sans text-[13px] text-fg-dim truncate">
                 with {release.collaborators.join(", ")}
               </div>
             ) : null}
@@ -107,9 +109,9 @@ export default async function ReleaseLayout({
 function CoverArt({ url, title }: { url: string | null; title: string }) {
   if (!url) {
     return (
-      <div className="size-[160px] shrink-0 grid place-items-center bg-surface-2 border-b border-line">
+      <div className="size-[120px] md:size-[160px] shrink-0 grid place-items-center bg-surface-2 border border-line">
         <Disc3
-          className="size-10 text-fg-faint"
+          className="size-9 md:size-10 text-fg-faint"
           strokeWidth={1.5}
           aria-hidden
         />
@@ -121,7 +123,7 @@ function CoverArt({ url, title }: { url: string | null; title: string }) {
     <img
       src={url}
       alt={`${title} cover art`}
-      className="size-[160px] shrink-0 border-b border-line object-cover"
+      className="size-[120px] md:size-[160px] shrink-0 border border-line object-cover"
     />
   );
 }

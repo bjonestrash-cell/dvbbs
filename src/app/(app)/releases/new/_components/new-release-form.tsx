@@ -45,7 +45,7 @@ export function NewReleaseForm() {
             {TYPES.map((t) => (
               <label
                 key={t.value}
-                className="flex items-center gap-1.5 border border-line bg-surface px-2.5 py-1.5 text-sm has-[:checked]:border-line-strong has-[:checked]:bg-surface-2 cursor-pointer"
+                className="inline-flex items-center gap-1.5 border border-line bg-surface px-3 h-10 md:h-9 font-sans text-[13px] has-[:checked]:border-line-strong has-[:checked]:bg-surface-2 cursor-pointer [transition-duration:80ms]"
               >
                 <input
                   type="radio"
@@ -103,15 +103,13 @@ export function NewReleaseForm() {
             name="notes"
             rows={4}
             placeholder="Anything specific. References, BPM, vocal direction..."
-            className="w-full border border-line bg-surface px-3 py-2 text-sm placeholder:text-fg-dim outline-none focus:border-line-strong resize-y"
+            className="w-full border border-line bg-surface px-3 py-2 font-sans text-[13px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong resize-y"
           />
         </Field>
       </Section>
 
       {state.status === "error" && state.message ? (
-        <div className="border border-accent/40 bg-accent/10 px-3 py-2 text-sm">
-          {state.message}
-        </div>
+        <p className="font-sans text-[13px] text-cancelled">{state.message}</p>
       ) : null}
 
       <div className="flex items-center gap-2">
@@ -145,7 +143,7 @@ export function NewReleaseForm() {
 }
 
 const fieldClass =
-  "h-10 w-full border border-line bg-surface px-3 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-10 w-full border border-line bg-surface px-3 font-sans text-[14px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
 
 function Section({
   title,
@@ -157,10 +155,15 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border border-line bg-surface p-4 md:p-5">
-      <header className="mb-3">
+    <section className="border border-line bg-surface p-5 md:p-6">
+      <header className="mb-4">
         <div className="marker">{eyebrow}</div>
-        <h2 className="text-base font-medium tracking-tight">{title}</h2>
+        <h2
+          className="font-display text-[20px] text-fg mt-1"
+          style={{ fontWeight: 500, letterSpacing: "-0.01em" }}
+        >
+          {title}
+        </h2>
       </header>
       <div className="flex flex-col gap-3">{children}</div>
     </section>
@@ -179,13 +182,17 @@ function Field({
   error?: string[];
 }) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="marker">
+    <label className="flex flex-col gap-1.5 min-w-0">
+      <span className="label">
         {label}
         {required ? " *" : ""}
       </span>
       {children}
-      {error?.[0] ? <span className="text-xs text-accent">{error[0]}</span> : null}
+      {error?.[0] ? (
+        <span className="font-sans text-[12px] text-cancelled">
+          {error[0]}
+        </span>
+      ) : null}
     </label>
   );
 }

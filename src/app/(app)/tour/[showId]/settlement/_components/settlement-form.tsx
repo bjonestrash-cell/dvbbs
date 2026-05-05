@@ -22,6 +22,7 @@ import {
 } from "../actions";
 import { createClient } from "@/lib/supabase/browser";
 import { formatMoney } from "@/lib/format";
+import { buttonClasses } from "@/components/ui/button";
 import type { ShowSettlement, AppRole } from "@/lib/supabase/types";
 
 type Props = {
@@ -218,7 +219,7 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
             </a>
           ) : null}
           {uploadError ? (
-            <span className="text-xs text-accent">{uploadError}</span>
+            <span className="font-sans text-[12px] text-cancelled">{uploadError}</span>
           ) : null}
         </div>
       </Field>
@@ -235,22 +236,24 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
       </Field>
 
       {state.status === "error" && state.message ? (
-        <p className="text-sm text-accent">{state.message}</p>
+        <p className="font-sans text-[13px] text-cancelled">{state.message}</p>
       ) : null}
       {state.status === "ok" ? (
-        <p className="text-sm text-status-confirmed">Saved.</p>
+        <p className="font-mono uppercase tracking-[0.06em] text-[10px] text-confirmed">
+          Saved.
+        </p>
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-line">
+      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-line">
         <button
           type="submit"
           disabled={!canEdit || pending}
-          className="inline-flex h-10 items-center gap-1.5 bg-accent px-4 text-sm font-medium text-accent-fg [transition-duration:80ms] hover:bg-accent-hover disabled:opacity-50"
+          className={buttonClasses({ variant: "primary", size: "md" })}
         >
           {pending ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
           ) : (
-            <Check className="size-4" aria-hidden />
+            <Check className="size-4" strokeWidth={1.5} aria-hidden />
           )}
           Save settlement
         </button>
@@ -263,23 +266,23 @@ export function SettlementForm({ showId, showCurrency, settlement, role }: Props
                 await setSettlementLock(showId, !locked);
               })
             }
-            className="inline-flex h-10 items-center gap-1.5 border border-line bg-surface px-3 text-sm [transition-duration:80ms] hover:border-line-strong"
+            className={buttonClasses({ variant: "bracket", size: "md" })}
           >
             {locked ? (
               <>
-                <Unlock className="size-4" aria-hidden />
+                <Unlock className="size-4" strokeWidth={1.5} aria-hidden />
                 Unlock
               </>
             ) : (
               <>
-                <Lock className="size-4" aria-hidden />
+                <Lock className="size-4" strokeWidth={1.5} aria-hidden />
                 Lock
               </>
             )}
           </button>
         ) : locked ? (
-          <span className="inline-flex h-10 items-center gap-1.5 border border-line bg-surface px-3 text-xs text-fg-dim">
-            <Lock className="size-3.5" aria-hidden />
+          <span className="inline-flex h-11 md:h-10 items-center gap-1.5 border border-line bg-surface px-4 font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim">
+            <Lock className="size-3.5" strokeWidth={1.5} aria-hidden />
             Locked, principal only
           </span>
         ) : null}

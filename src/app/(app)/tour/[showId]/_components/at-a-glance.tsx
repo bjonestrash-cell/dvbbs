@@ -135,7 +135,7 @@ export function AtAGlance({ show }: { show: Show }) {
           </Field>
 
           {state.status === "error" && state.message ? (
-            <p className="col-span-full text-xs text-accent">{state.message}</p>
+            <p className="col-span-full font-sans text-[12px] text-cancelled">{state.message}</p>
           ) : null}
 
           <div className="col-span-full flex items-center gap-2 pt-2 border-t border-line">

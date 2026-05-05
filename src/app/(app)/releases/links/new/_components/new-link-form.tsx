@@ -114,9 +114,7 @@ export function NewLinkForm({ releases }: { releases: Release[] }) {
       </Section>
 
       {state.status === "error" && state.message ? (
-        <div className="border border-accent/40 bg-accent/10 px-3 py-2 text-sm">
-          {state.message}
-        </div>
+        <p className="font-sans text-[13px] text-cancelled">{state.message}</p>
       ) : null}
 
       <div className="flex items-center gap-2">
@@ -150,7 +148,7 @@ export function NewLinkForm({ releases }: { releases: Release[] }) {
 }
 
 const fieldClass =
-  "h-10 w-full border border-line bg-surface px-3 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-10 w-full border border-line bg-surface px-3 font-sans text-[14px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
 
 function Section({
   title,
@@ -162,10 +160,15 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border border-line bg-surface p-4 md:p-5">
-      <header className="mb-3">
+    <section className="border border-line bg-surface p-5 md:p-6">
+      <header className="mb-4">
         <div className="marker">{eyebrow}</div>
-        <h2 className="text-base font-medium tracking-tight">{title}</h2>
+        <h2
+          className="font-display text-[20px] text-fg mt-1"
+          style={{ fontWeight: 500, letterSpacing: "-0.01em" }}
+        >
+          {title}
+        </h2>
       </header>
       <div className="flex flex-col gap-3">{children}</div>
     </section>
@@ -184,13 +187,17 @@ function Field({
   error?: string[];
 }) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="marker">
+    <label className="flex flex-col gap-1.5 min-w-0">
+      <span className="label">
         {label}
         {required ? " *" : ""}
       </span>
       {children}
-      {error?.[0] ? <span className="text-xs text-accent">{error[0]}</span> : null}
+      {error?.[0] ? (
+        <span className="font-sans text-[12px] text-cancelled">
+          {error[0]}
+        </span>
+      ) : null}
     </label>
   );
 }

@@ -135,13 +135,13 @@ export function Travel({
             <textarea name="notes" rows={2} className={textareaClass} />
           </Field>
           {state.status === "error" ? (
-            <p className="col-span-full text-xs text-accent">{state.message}</p>
+            <p className="col-span-full font-sans text-[12px] text-cancelled">{state.message}</p>
           ) : null}
           <div className="col-span-full flex items-center gap-2 pt-1">
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-1.5 bg-accent px-3 text-sm font-medium text-accent-fg hover:bg-accent-hover disabled:opacity-60"
+              className="inline-flex h-10 items-center gap-2 bg-inverted text-fg-inverted px-4 font-mono uppercase tracking-[0.06em] text-[12px] font-medium hover:bg-fg disabled:opacity-60"
             >
               {pending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
               Add leg

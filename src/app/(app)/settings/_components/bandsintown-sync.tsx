@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Loader2, RefreshCw, Check, AlertTriangle } from "lucide-react";
+import { buttonClasses } from "@/components/ui/button";
 
 type SyncResult = {
   ok: boolean;
@@ -35,35 +36,35 @@ export function BandsintownSync() {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col items-start gap-2">
       <button
         type="button"
         onClick={run}
         disabled={pending}
-        className="self-start inline-flex h-9 items-center gap-1.5 border border-line bg-surface px-3 text-sm [transition-duration:80ms] hover:border-line-strong disabled:opacity-50"
+        className={buttonClasses({ variant: "bracket", size: "sm" })}
       >
         {pending ? (
-          <Loader2 className="size-4 animate-spin" aria-hidden />
+          <Loader2 className="size-3.5 animate-spin" aria-hidden />
         ) : (
-          <RefreshCw className="size-4" aria-hidden />
+          <RefreshCw className="size-3.5" strokeWidth={1.5} aria-hidden />
         )}
-        {pending ? "Syncing" : "Sync Bandsintown now"}
+        {pending ? "Syncing" : "Sync now"}
       </button>
       {result ? (
         <div
           className={
-            "text-xs flex items-center gap-1.5 " +
-            (result.ok ? "text-status-confirmed" : "text-status-cancelled")
+            "inline-flex items-center gap-1.5 font-mono uppercase tracking-[0.06em] text-[10px] " +
+            (result.ok ? "text-confirmed" : "text-cancelled")
           }
         >
           {result.ok ? (
-            <Check className="size-3.5" aria-hidden />
+            <Check className="size-3.5" strokeWidth={1.5} aria-hidden />
           ) : (
-            <AlertTriangle className="size-3.5" aria-hidden />
+            <AlertTriangle className="size-3.5" strokeWidth={1.5} aria-hidden />
           )}
           {result.ok
-            ? `Inserted ${result.inserted ?? 0} new shows.${result.errors?.length ? ` ${result.errors.length} errors.` : ""}`
-            : `Failed: ${result.reason ?? "unknown"}`}
+            ? `Inserted ${result.inserted ?? 0} new shows${result.errors?.length ? ` · ${result.errors.length} errors` : ""}`
+            : `Failed · ${result.reason ?? "unknown"}`}
         </div>
       ) : null}
     </div>
