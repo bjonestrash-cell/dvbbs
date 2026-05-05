@@ -10,28 +10,31 @@ export function CalendarNav({ month }: { month: string }) {
   const next = format(addMonths(d, 1), "yyyy-MM");
   const today = format(new Date(), "yyyy-MM");
 
+  const baseBtn =
+    "inline-flex items-center justify-center border border-line bg-surface text-fg-dim hover:border-line-strong hover:text-fg [transition-duration:80ms]";
+
   return (
     <div className="flex items-center gap-1.5">
       <Link
         href={`?month=${prev}`}
         scroll={false}
         aria-label="Previous month"
-        className="size-8 grid place-items-center border border-line bg-surface [transition-duration:80ms] hover:border-line-strong"
+        className={`${baseBtn} h-10 md:h-8 w-10 md:w-8`}
       >
-        <ChevronLeft className="size-4" aria-hidden />
+        <ChevronLeft className="size-4" strokeWidth={1.5} aria-hidden />
       </Link>
       <Link
         href={`?month=${next}`}
         scroll={false}
         aria-label="Next month"
-        className="size-8 grid place-items-center border border-line bg-surface [transition-duration:80ms] hover:border-line-strong"
+        className={`${baseBtn} h-10 md:h-8 w-10 md:w-8`}
       >
-        <ChevronRight className="size-4" aria-hidden />
+        <ChevronRight className="size-4" strokeWidth={1.5} aria-hidden />
       </Link>
       <Link
         href={`?month=${today}`}
         scroll={false}
-        className="h-8 inline-flex items-center border border-line bg-surface px-2.5 text-xs font-medium uppercase tracking-wide text-fg-dim [transition-duration:80ms] hover:border-line-strong hover:text-fg"
+        className={`${baseBtn} h-10 md:h-8 px-3 font-mono uppercase tracking-[0.06em] text-[11px]`}
       >
         Today
       </Link>

@@ -53,7 +53,7 @@ export function BottomNav() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-14 flex-col items-center justify-center gap-1 [transition-duration:80ms]",
+                  "flex h-14 flex-col items-center justify-center gap-[5px] [transition-duration:80ms]",
                   active ? "text-fg" : "text-fg-faint hover:text-fg",
                 )}
               >
@@ -86,7 +86,7 @@ export function BottomNav() {
             aria-label="More navigation"
             aria-expanded={mobileOpen}
             className={cn(
-              "flex h-14 w-full flex-col items-center justify-center gap-1 [transition-duration:80ms]",
+              "flex h-14 w-full flex-col items-center justify-center gap-[5px] [transition-duration:80ms]",
               moreActive ? "text-fg" : "text-fg-faint hover:text-fg",
             )}
           >

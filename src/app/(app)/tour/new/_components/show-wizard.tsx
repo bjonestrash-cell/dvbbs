@@ -62,7 +62,7 @@ export function ShowWizard({ promoters }: { promoters: Contact[] }) {
             {STATUSES.map((s) => (
               <label
                 key={s.value}
-                className="flex items-center gap-1.5 border border-line bg-surface px-2.5 py-1.5 text-sm has-[:checked]:border-line-strong has-[:checked]:bg-surface-2 cursor-pointer"
+                className="inline-flex items-center gap-1.5 border border-line bg-surface px-3 h-10 md:h-9 font-sans text-[13px] has-[:checked]:border-line-strong has-[:checked]:bg-surface-2 cursor-pointer [transition-duration:80ms]"
               >
                 <input
                   type="radio"
@@ -88,7 +88,7 @@ export function ShowWizard({ promoters }: { promoters: Contact[] }) {
             ].map((opt) => (
               <label
                 key={opt.v}
-                className="flex items-center gap-1.5 border border-line bg-surface px-2.5 py-1.5 text-sm has-[:checked]:border-line-strong has-[:checked]:bg-surface-2 cursor-pointer"
+                className="inline-flex items-center gap-1.5 border border-line bg-surface px-3 h-10 md:h-9 font-sans text-[13px] has-[:checked]:border-line-strong has-[:checked]:bg-surface-2 cursor-pointer [transition-duration:80ms]"
               >
                 <input
                   type="radio"
@@ -144,12 +144,12 @@ export function ShowWizard({ promoters }: { promoters: Contact[] }) {
             </div>
           ) : null}
           {state.errors?.promoter_contact_id ? (
-            <p className="mt-1 text-xs text-accent">
+            <p className="mt-1 font-sans text-[12px] text-cancelled">
               {state.errors.promoter_contact_id[0]}
             </p>
           ) : null}
           {state.errors?.new_promoter_name ? (
-            <p className="mt-1 text-xs text-accent">
+            <p className="mt-1 font-sans text-[12px] text-cancelled">
               {state.errors.new_promoter_name[0]}
             </p>
           ) : null}
@@ -206,7 +206,7 @@ export function ShowWizard({ promoters }: { promoters: Contact[] }) {
             name="notes"
             placeholder="Anything specific. Rider link, stage plot, key contacts..."
             rows={4}
-            className="w-full border border-line bg-surface px-3 py-2 text-sm placeholder:text-fg-dim outline-none focus:border-line-strong resize-y"
+            className="w-full border border-line bg-surface px-3 py-2 font-sans text-[13px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong resize-y"
           />
         </Field>
       </Section>
@@ -248,7 +248,7 @@ export function ShowWizard({ promoters }: { promoters: Contact[] }) {
 }
 
 const fieldClass =
-  "h-10 w-full border border-line bg-surface px-3 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-10 w-full border border-line bg-surface px-3 font-sans text-[14px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
 
 function Section({
   title,
@@ -260,10 +260,15 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border border-line bg-surface p-4 md:p-5">
-      <header className="mb-3">
+    <section className="border border-line bg-surface p-5 md:p-6">
+      <header className="mb-4">
         <div className="marker">{eyebrow}</div>
-        <h2 className="text-base font-medium tracking-tight">{title}</h2>
+        <h2
+          className="font-display text-[20px] text-fg mt-1"
+          style={{ fontWeight: 500, letterSpacing: "-0.01em" }}
+        >
+          {title}
+        </h2>
       </header>
       <div className="flex flex-col gap-3">{children}</div>
     </section>
@@ -282,13 +287,17 @@ function Field({
   error?: string[];
 }) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="marker">
+    <label className="flex flex-col gap-1.5 min-w-0">
+      <span className="label">
         {label}
         {required ? " *" : ""}
       </span>
       {children}
-      {error?.[0] ? <span className="text-xs text-accent">{error[0]}</span> : null}
+      {error?.[0] ? (
+        <span className="font-sans text-[12px] text-cancelled">
+          {error[0]}
+        </span>
+      ) : null}
     </label>
   );
 }

@@ -107,38 +107,38 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-[14vh] px-4"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-[12dvh] px-4"
       onClick={() => setOpen(false)}
       onKeyDown={onListKey}
     >
       <div
-        className="absolute inset-0 bg-page/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-inverted/40 backdrop-blur-[2px]"
         aria-hidden
       />
       <div
         role="dialog"
         aria-label="Command palette"
-        className="relative z-10 w-full max-w-lg border border-line-strong bg-surface shadow-2xl"
+        className="relative z-10 w-full max-w-lg border border-line bg-surface shadow-[0_24px_60px_rgba(26,22,18,0.18)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 border-b border-line px-3">
-          <Search className="size-4 text-fg-dim" aria-hidden />
+        <div className="flex items-center gap-2.5 border-b border-line px-4">
+          <Search className="size-4 text-fg-faint shrink-0" strokeWidth={1.5} aria-hidden />
           <input
             ref={inputRef}
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Jump to show, contact, or page..."
-            className="h-12 w-full bg-transparent text-sm text-fg placeholder:text-fg-dim outline-none"
+            placeholder="Jump to show, contact, or page"
+            className="h-12 w-full bg-transparent font-sans text-[15px] text-fg placeholder:text-fg-faint outline-none"
           />
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-line px-1.5 py-0.5 text-[10px] text-fg-dim">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 border border-line px-1.5 py-0.5 font-mono text-[10px] tracking-[0.06em] uppercase text-fg-faint">
             esc
           </kbd>
         </div>
 
-        <ul className="max-h-[60vh] overflow-y-auto p-1">
+        <ul className="max-h-[60dvh] overflow-y-auto py-1">
           {hits.length === 0 ? (
-            <li className="px-3 py-6 text-sm text-fg-dim text-center">
+            <li className="px-4 py-8 text-center font-sans text-[13px] text-fg-faint">
               {loading ? "Searching" : "No matches."}
             </li>
           ) : (
@@ -151,22 +151,28 @@ export function CommandPalette() {
                     onMouseEnter={() => setActive(i)}
                     onClick={() => go(h)}
                     className={cn(
-                      "flex w-full items-center gap-3 px-2 py-2 text-left [transition-duration:80ms]",
+                      "flex w-full items-center gap-3 px-4 py-2.5 text-left [transition-duration:80ms]",
                       i === active
                         ? "bg-surface-2 text-fg"
                         : "text-fg-dim hover:bg-surface-2 hover:text-fg",
                     )}
                   >
-                    <Icon className="size-4 shrink-0" aria-hidden />
+                    <Icon
+                      className="size-4 shrink-0 text-fg-faint"
+                      strokeWidth={1.5}
+                      aria-hidden
+                    />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm">{h.title}</span>
+                      <span className="block truncate font-sans text-[14px]">
+                        {h.title}
+                      </span>
                       {h.subtitle ? (
-                        <span className="block truncate text-[11px] text-fg-dim">
+                        <span className="block truncate font-sans text-[12px] text-fg-faint">
                           {h.subtitle}
                         </span>
                       ) : null}
                     </span>
-                    <span className="marker text-fg-dim">
+                    <span className="font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
                       {h.badge ?? KIND_LABEL[h.kind]}
                     </span>
                   </button>
@@ -176,15 +182,16 @@ export function CommandPalette() {
           )}
         </ul>
 
-        <div className="flex items-center justify-between border-t border-line px-3 py-1.5 text-[10px] text-fg-dim">
+        <div className="hidden sm:flex items-center justify-between border-t border-line px-4 py-2 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
           <span>
-            <kbd className="mr-1 rounded border border-line px-1">↑↓</kbd>
+            <kbd className="mr-1.5 border border-line px-1 py-0.5">↑↓</kbd>
             navigate
-            <kbd className="ml-3 mr-1 rounded border border-line px-1">↵</kbd>
+            <kbd className="ml-4 mr-1.5 border border-line px-1 py-0.5">↵</kbd>
             open
           </span>
           <span>
-            <kbd className="rounded border border-line px-1">⌘K</kbd> toggle
+            <kbd className="border border-line px-1 py-0.5">⌘K</kbd>
+            <span className="ml-1.5">toggle</span>
           </span>
         </div>
       </div>

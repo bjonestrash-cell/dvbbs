@@ -71,7 +71,10 @@ export function PageHeader({
           ) : null}
         </div>
         {actions ? (
-          <div className="flex flex-wrap items-center gap-2 self-start sm:shrink-0 sm:self-end sm:flex-nowrap">
+          // Actions stack flush-left under the title block on phones, then
+          // sit inline at the right edge of the title row on sm+. Avoids
+          // the lonely-button row that flex-wrap produced at mid widths.
+          <div className="flex flex-wrap items-center gap-2 self-start sm:shrink-0 sm:self-end">
             {actions}
           </div>
         ) : null}

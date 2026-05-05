@@ -71,12 +71,18 @@ export function StatusBracket({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 font-mono tracking-[0.06em] text-[11px] text-fg-dim",
+        "inline-flex items-center gap-1.5 font-mono tracking-[0.06em] text-[11px] text-fg-dim leading-none",
         strikethrough && "line-through",
         className,
       )}
     >
-      <span aria-hidden className={cn("size-1.5 rounded-full", DOT[tone])} />
+      <span
+        aria-hidden
+        className={cn(
+          "size-1.5 rounded-full shrink-0 translate-y-[0.5px]",
+          DOT[tone],
+        )}
+      />
       <span>{children}</span>
     </span>
   );

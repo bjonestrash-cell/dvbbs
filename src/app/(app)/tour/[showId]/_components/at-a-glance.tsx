@@ -10,7 +10,7 @@ import {
 } from "@/lib/format";
 
 const fieldClass =
-  "h-9 w-full border border-line bg-surface px-2.5 text-sm text-fg placeholder:text-fg-dim outline-none focus:border-line-strong";
+  "h-10 w-full border border-line bg-surface px-3 font-sans text-[14px] text-fg placeholder:text-fg-faint outline-none focus:border-line-strong";
 
 export function AtAGlance({ show }: { show: Show }) {
   const [editing, setEditing] = useState(false);
@@ -142,7 +142,7 @@ export function AtAGlance({ show }: { show: Show }) {
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-1.5 bg-accent px-3 text-sm font-medium text-accent-fg [transition-duration:80ms] hover:bg-accent-hover disabled:opacity-60"
+              className="inline-flex h-10 items-center gap-2 bg-inverted text-fg-inverted px-4 font-mono uppercase tracking-[0.06em] text-[12px] font-medium [transition-duration:80ms] hover:bg-fg disabled:opacity-60"
             >
               {pending ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -154,7 +154,7 @@ export function AtAGlance({ show }: { show: Show }) {
             <button
               type="button"
               onClick={() => setEditing(false)}
-              className="inline-flex h-9 items-center gap-1.5 px-3 text-sm text-fg-dim [transition-duration:80ms] hover:bg-surface-2"
+              className="inline-flex h-10 items-center gap-2 px-4 font-mono uppercase tracking-[0.06em] text-[12px] text-fg-dim [transition-duration:80ms] hover:text-fg hover:bg-surface-2"
             >
               <X className="size-4" aria-hidden />
               Cancel
@@ -172,7 +172,7 @@ export function AtAGlance({ show }: { show: Show }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="inline-flex h-7 items-center gap-1.5 px-2 text-xs text-fg-dim [transition-duration:80ms] hover:bg-surface-2 hover:text-fg"
+          className="inline-flex h-8 items-center gap-1.5 px-2 font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim [transition-duration:80ms] hover:bg-surface-2 hover:text-fg"
         >
           <Pencil className="size-3" aria-hidden />
           Edit

@@ -46,11 +46,11 @@ export function EmptyState({
         {title}
       </div>
       {subline ? (
-        <div className="font-sans text-fg-dim text-[13px] max-w-prose">
+        <div className="font-sans text-fg-dim text-[13px] leading-[1.55] max-w-[44ch]">
           {subline}
         </div>
       ) : null}
-      {action ? <div className="mt-1">{action}</div> : null}
+      {action ? <div className="mt-2">{action}</div> : null}
     </div>
   );
 }

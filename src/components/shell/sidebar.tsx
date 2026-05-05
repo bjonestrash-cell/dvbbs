@@ -130,7 +130,7 @@ function SidebarBody({
                   {active ? (
                     <span
                       aria-hidden
-                      className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[2px] bg-accent"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] bg-accent"
                     />
                   ) : null}
                   <Icon

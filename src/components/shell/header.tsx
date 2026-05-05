@@ -18,9 +18,11 @@ export async function Header() {
 
   // Hamburger removed: phones + tablets use the bottom nav's "More" tab
   // to open the drawer; desktops have the always-visible sidebar.
+  // The header is now status-only on the right; px adjusted so the status
+  // block sits with proper edge inset at every breakpoint.
   return (
-    <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-page/90 px-4 md:px-10 py-3 md:py-4 backdrop-blur supports-[backdrop-filter]:bg-page/75">
-      <div className="ml-auto min-w-0 max-w-[80%]">
+    <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-page/85 px-6 md:px-10 py-3 md:py-4 backdrop-blur supports-[backdrop-filter]:bg-page/70">
+      <div className="ml-auto min-w-0 max-w-full">
         <PersonalizedStatus
           name={rawName}
           nextShow={dashboard.nextShow}
