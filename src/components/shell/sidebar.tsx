@@ -9,6 +9,22 @@ import { useSidebar } from "./sidebar-state";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils/cn";
 
+/**
+ * Desktop sidebar + mobile drawer.
+ *
+ * Width: 240px expanded (was 228 — too tight for the 15px nav labels),
+ * 60px collapsed (icon-only).
+ *
+ * The frame matches the main app header: 56px tall, hairline bottom
+ * border, same horizontal padding as the page header so the brand mark
+ * sits in conversation with the content beneath it.
+ *
+ * Each nav item is a 32px row with a soft surface-2 hover fill and a
+ * persistent surface-2 fill on the active route, plus a 16px accent
+ * rule on the left edge as the high-contrast "you are here" signal.
+ * Linear/Notion-grade.
+ */
+
 export function Sidebar() {
   const { collapsed, toggleCollapsed, mobileOpen, setMobileOpen } = useSidebar();
 
@@ -18,7 +34,7 @@ export function Sidebar() {
         className={cn(
           "hidden md:flex h-dvh shrink-0 flex-col bg-surface border-r border-line",
           "transition-[width] [transition-duration:120ms] ease-out",
-          collapsed ? "w-[60px]" : "w-[228px]",
+          collapsed ? "w-[60px]" : "w-[240px]",
         )}
         aria-label="Primary navigation"
       >
@@ -76,6 +92,9 @@ function SidebarBody({
 
   return (
     <>
+      {/* Brand row. No bottom border — the brand stands as the brand, not
+         a panel header. The vertical rhythm is set by the nav's top
+         padding below. */}
       <div
         className={cn(
           "flex shrink-0 items-center",
@@ -85,7 +104,7 @@ function SidebarBody({
         <Link
           href="/tour"
           onClick={onItemClick}
-          className="text-fg"
+          className="text-fg [transition-duration:80ms] hover:opacity-80"
           aria-label="DVBBS"
         >
           <Logo size="md" collapsed={collapsed} />
@@ -102,8 +121,17 @@ function SidebarBody({
         ) : null}
       </div>
 
-      <nav className="flex-1 overflow-y-auto pt-2 pb-3">
-        <ul className="flex flex-col">
+      {/* Nav. Generous top padding gives the first item breathing room
+         under the brand row; px-2 outer padding indents items from the
+         sidebar edge so the active rule + hover fill have a visible
+         margin instead of butting against the right border. */}
+      <nav
+        className={cn(
+          "flex-1 overflow-y-auto pt-3 pb-3",
+          collapsed && !mobile ? "px-2" : "px-2",
+        )}
+      >
+        <ul className="flex flex-col gap-px">
           {NAV.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(item.href + "/");
@@ -115,29 +143,22 @@ function SidebarBody({
                   onClick={onItemClick}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex items-center",
-                    "[transition-duration:80ms]",
+                    "relative flex items-center [transition-duration:80ms]",
                     collapsed && !mobile
-                      ? "justify-center px-0 py-2.5"
+                      ? "justify-center h-9 px-0"
                       : mobile
-                        ? "gap-3 px-5 py-3.5"
-                        : "gap-3 px-5 py-2.5",
+                        ? "gap-3 h-11 px-3"
+                        : "gap-3 h-9 px-3",
                     active
-                      ? "text-fg"
-                      : "text-fg-dim hover:text-fg",
+                      ? "bg-surface-2 text-fg"
+                      : "text-fg-dim hover:bg-surface-2/60 hover:text-fg",
                   )}
                 >
-                  {active ? (
-                    <span
-                      aria-hidden
-                      className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] bg-accent"
-                    />
-                  ) : null}
                   <Icon
                     aria-hidden
                     strokeWidth={1.5}
                     className={cn(
-                      "size-4 shrink-0",
+                      "size-[17px] shrink-0",
                       active ? "text-fg" : "text-fg-faint",
                     )}
                   />
@@ -146,7 +167,7 @@ function SidebarBody({
                       <span
                         className="flex-1 truncate font-display lowercase"
                         style={{
-                          fontSize: 15,
+                          fontSize: 14.5,
                           fontWeight: active ? 600 : 500,
                           letterSpacing: "-0.005em",
                           lineHeight: 1.2,
@@ -173,8 +194,8 @@ function SidebarBody({
           className={cn(
             "shrink-0 border-t border-line",
             collapsed
-              ? "px-0 py-3 flex flex-col items-center gap-2"
-              : "px-5 py-3 flex items-center justify-between gap-2",
+              ? "px-0 py-2 flex flex-col items-center gap-1"
+              : "px-3 py-2 flex items-center justify-between gap-2",
           )}
         >
           <ThemeToggle />
@@ -182,7 +203,7 @@ function SidebarBody({
             type="button"
             onClick={onToggleCollapse}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="size-7 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
+            className="size-7 grid place-items-center text-fg-faint hover:text-fg hover:bg-surface-2 [transition-duration:80ms]"
           >
             {collapsed ? (
               <ChevronRight className="size-4" strokeWidth={1.5} aria-hidden />
@@ -199,4 +220,3 @@ function SidebarBody({
     </>
   );
 }
-
