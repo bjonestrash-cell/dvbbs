@@ -1,25 +1,22 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
+import { useMemo } from "react";
 import type { FlightStatus } from "@/lib/supabase/types";
 import type { FlightWithShow } from "@/lib/data/flights";
 import { FLIGHT_STATUS_LABEL } from "@/lib/data/flights-shared";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Trip timeline — pixel-correct edition.
+ * Travel ahead — agenda strip.
  *
- * Each chip's width is proportional to the trip duration (with a sensible
- * minimum so a single-day trip is still legible). Positions and row
- * assignment are computed in pixels against an explicit strip width, so
- * chips never visually overlap their neighbors. Two trips 10 days apart
- * are visibly 10 days apart; two trips on the same week share a row only
- * if they fit, otherwise they cascade.
+ * Each trip is its own column, separated by hairline dividers, scrolling
+ * horizontally on overflow. One column per trip, sized identically, in
+ * chronological order — no Gantt-style date scaling, no row stacking, no
+ * collision math. Reads like a split-flap airline departure board.
  *
- * Visual register: hairline rows, status as a single dot before the
- * title, dates in mono right-aligned. No tinted fills, no translate
- * hover. Same family as Tour List rows.
+ * Status communicated as a single dot before the city, never as a fill.
+ * Hover popover (desktop) reveals every leg with date + airline.
  */
 
 type Trip = {
@@ -32,30 +29,7 @@ type Trip = {
   primaryStatus: FlightStatus;
 };
 
-type Placed = Trip & {
-  /** left edge in px from the strip start */
-  leftPx: number;
-  /** chip width in px (>= MIN_CHIP_PX, capped at strip remaining width) */
-  widthPx: number;
-  /** lane index, 0-based */
-  row: number;
-};
-
 const MS_PER_DAY = 86_400_000;
-/** Px per day on the strip. Tight enough for a 6-month outlook to fit
- *  before scrolling, loose enough that nearby trips don't visually
- *  collide. */
-const PX_PER_DAY = 14;
-/** Minimum chip width so single-day trips read cleanly. */
-const MIN_CHIP_PX = 156;
-/** Pixel buffer between chips on the same row. */
-const ROW_GAP_PX = 12;
-/** Lane height in px. Matches our row-card density (~40–44px). */
-const ROW_HEIGHT = 44;
-/** Vertical gap between lanes. */
-const ROW_GAP_V = 8;
-/** Inner horizontal padding of the strip canvas. */
-const STRIP_PAD_X = 24;
 
 const STATUS_DOT: Record<FlightStatus, string> = {
   booked: "bg-holding",
@@ -72,10 +46,17 @@ function titleCase(s: string | null | undefined): string {
     .replace(/(^|\s|-)([a-z])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`);
 }
 
-function fmtDateShort(ms: number): string {
+function fmtWeekday(ms: number): string {
+  return new Date(ms)
+    .toLocaleDateString("en-US", { weekday: "short" })
+    .toUpperCase();
+}
+
+function fmtMonthDay(ms: number): string {
   return new Date(ms)
     .toLocaleDateString("en-US", { month: "short", day: "2-digit" })
-    .replace(",", "");
+    .replace(",", "")
+    .toUpperCase();
 }
 
 function fmtDateTime(iso: string): string {
@@ -91,11 +72,8 @@ function fmtDateTime(iso: string): string {
   return `${date} · ${time}`;
 }
 
-function fmtDayRange(startMs: number, endMs: number): string {
-  const days = Math.max(1, Math.round((endMs - startMs) / MS_PER_DAY));
-  const start = fmtDateShort(startMs);
-  if (days <= 1) return start;
-  return `${start} → ${fmtDateShort(endMs)}`;
+function dayCount(startMs: number, endMs: number): number {
+  return Math.max(1, Math.round((endMs - startMs) / MS_PER_DAY) + 1);
 }
 
 function groupIntoTrips(flights: FlightWithShow[]): Trip[] {
@@ -141,265 +119,130 @@ function groupIntoTrips(flights: FlightWithShow[]): Trip[] {
   return trips.sort((a, b) => a.startMs - b.startMs);
 }
 
-/** Pixel-correct row assignment. Each trip lands in the lowest lane
- *  whose last-occupied pixel + ROW_GAP_PX <= this trip's left edge. */
-function placeTrips(
-  trips: Trip[],
-  axisStartMs: number,
-  pxPerMs: number,
-  innerWidthPx: number,
-): Placed[] {
-  const rowEndsPx: number[] = [];
-  const placed: Placed[] = [];
-
-  for (const t of trips) {
-    const leftPx = (t.startMs - axisStartMs) * pxPerMs;
-    const durPx = (t.endMs - t.startMs) * pxPerMs;
-    const idealWidth = Math.max(MIN_CHIP_PX, durPx);
-    // Don't let the chip overflow the right edge.
-    const maxAllowed = Math.max(MIN_CHIP_PX, innerWidthPx - leftPx);
-    const widthPx = Math.min(idealWidth, maxAllowed);
-
-    let row = rowEndsPx.findIndex(
-      (rightPx) => rightPx + ROW_GAP_PX <= leftPx,
-    );
-    if (row === -1) row = rowEndsPx.length;
-    rowEndsPx[row] = leftPx + widthPx;
-
-    placed.push({ ...t, leftPx, widthPx, row });
-  }
-
-  return placed;
-}
-
 export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
-  const layout = useMemo(() => {
-    const trips = groupIntoTrips(flights);
-    if (trips.length === 0) return null;
-
-    const minStart = trips[0].startMs;
-    const maxEnd = Math.max(...trips.map((t) => t.endMs));
-    const nowMs = Date.now();
-
-    // Buffer the axis: 1 day before the earliest event, 7 days after the
-    // last so the rightmost chip has tail room and "Today" sits inside.
-    const axisStartMs = Math.min(nowMs, minStart) - MS_PER_DAY;
-    const axisEndMs = maxEnd + 7 * MS_PER_DAY;
-
-    const axisDays = Math.ceil((axisEndMs - axisStartMs) / MS_PER_DAY);
-    const innerWidthPx = Math.max(720, axisDays * PX_PER_DAY);
-    const pxPerMs = innerWidthPx / (axisEndMs - axisStartMs);
-
-    const placed = placeTrips(trips, axisStartMs, pxPerMs, innerWidthPx);
-    const rowCount = Math.max(...placed.map((p) => p.row)) + 1;
-
-    // Month marks
-    const monthMarks: Array<{ ms: number; px: number; label: string }> = [];
-    const cursor = new Date(axisStartMs);
-    cursor.setUTCDate(1);
-    cursor.setUTCHours(0, 0, 0, 0);
-    while (cursor.getTime() <= axisEndMs) {
-      if (cursor.getTime() >= axisStartMs) {
-        const px = (cursor.getTime() - axisStartMs) * pxPerMs;
-        monthMarks.push({
-          ms: cursor.getTime(),
-          px,
-          label: cursor.toLocaleDateString("en-US", {
-            month: "short",
-            year: "2-digit",
-          }),
-        });
-      }
-      cursor.setUTCMonth(cursor.getUTCMonth() + 1);
-    }
-
-    const todayPx = (nowMs - axisStartMs) * pxPerMs;
-    const todayInRange = todayPx >= 0 && todayPx <= innerWidthPx;
-
-    return {
-      placed,
-      rowCount,
-      innerWidthPx,
-      monthMarks,
-      todayPx,
-      todayInRange,
-    };
-  }, [flights]);
-
-  if (!layout) return null;
-
-  const stripHeight = layout.rowCount * (ROW_HEIGHT + ROW_GAP_V);
-  // Total scrollable canvas width = inner content + horizontal padding.
-  const canvasWidth = layout.innerWidthPx + STRIP_PAD_X * 2;
+  const trips = useMemo(() => groupIntoTrips(flights), [flights]);
+  if (trips.length === 0) return null;
 
   return (
     <section className="px-6 md:px-10 pt-6 md:pt-8">
-      <header className="flex items-baseline justify-between gap-3 pb-4">
-        <div className="flex items-baseline gap-2">
-          <h2
-            className="font-display text-[18px] text-fg"
-            style={{ fontWeight: 500 }}
-          >
-            Travel ahead
-          </h2>
-          <span className="opacity-50 font-mono text-[11px]">·</span>
-          <span className="num font-mono text-[11px] tracking-[0.06em] text-fg-faint">
-            {layout.placed.length.toString().padStart(2, "0")}
-          </span>
-        </div>
+      <header className="flex items-baseline gap-2 pb-4">
+        <h2
+          className="font-display text-[18px] text-fg"
+          style={{ fontWeight: 500 }}
+        >
+          Travel ahead
+        </h2>
+        <span className="opacity-50 font-mono text-[11px]">·</span>
+        <span className="num font-mono text-[11px] tracking-[0.06em] text-fg-faint">
+          {trips.length.toString().padStart(2, "0")}
+        </span>
       </header>
 
-      <div className="bg-surface border border-line">
-        <div className="overflow-x-auto overflow-y-visible">
-          <div
-            className="relative"
-            style={{
-              width: canvasWidth,
-              minWidth: "100%",
-              paddingTop: 16,
-              paddingBottom: 20,
-            }}
-          >
-            {/* Month axis. Sits just above the strip, with the same
-                horizontal padding as the chip canvas so labels align with
-                their respective month gridlines. */}
-            <div
-              className="relative h-4 select-none"
-              style={{
-                marginLeft: STRIP_PAD_X,
-                marginRight: STRIP_PAD_X,
-                width: layout.innerWidthPx,
-              }}
-            >
-              {layout.monthMarks.map((m) => (
-                <span
-                  key={m.ms}
-                  className="absolute top-0 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint"
-                  style={{ left: m.px }}
-                >
-                  {m.label}
-                </span>
-              ))}
-              {layout.todayInRange ? (
-                <span
-                  className="absolute top-0 font-mono uppercase tracking-[0.14em] text-[10px] text-accent"
-                  style={{ left: layout.todayPx }}
-                >
-                  Today
-                </span>
-              ) : null}
-            </div>
-
-            {/* Strip with the chips, gridlines, today line. */}
-            <div
-              className="relative"
-              style={{
-                marginLeft: STRIP_PAD_X,
-                marginRight: STRIP_PAD_X,
-                marginTop: 12,
-                width: layout.innerWidthPx,
-                height: stripHeight,
-              }}
-            >
-              {/* Hairline baseline */}
-              <span
-                aria-hidden
-                className="absolute left-0 right-0 top-0 h-px bg-line"
-              />
-
-              {/* Vertical month gridlines */}
-              {layout.monthMarks.map((m) => (
-                <span
-                  key={`grid-${m.ms}`}
-                  aria-hidden
-                  className="absolute top-0 bottom-0 w-px bg-line/70"
-                  style={{ left: m.px }}
-                />
-              ))}
-
-              {/* Today line */}
-              {layout.todayInRange ? (
-                <span
-                  aria-hidden
-                  className="absolute top-0 bottom-0 w-px bg-accent/40"
-                  style={{ left: layout.todayPx }}
-                />
-              ) : null}
-
-              {/* Trip chips */}
-              {layout.placed.map((t) => {
-                const top = t.row * (ROW_HEIGHT + ROW_GAP_V) + ROW_GAP_V;
-                const anchorPopoverRight =
-                  t.leftPx + t.widthPx > layout.innerWidthPx - 320;
-                return (
-                  <div
-                    key={t.key}
-                    className="group absolute z-10 hover:z-30"
-                    style={{
-                      left: t.leftPx,
-                      top,
-                      width: t.widthPx,
-                      height: ROW_HEIGHT - ROW_GAP_V,
-                    }}
-                  >
-                    <Link
-                      href={`/flights/${t.flights[0].id}`}
-                      aria-label={`Trip to ${t.city ?? t.fallbackLabel}`}
-                      className={cn(
-                        "block h-full bg-surface border border-line",
-                        "hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)]",
-                        "[transition-duration:80ms]",
-                      )}
-                    >
-                      <span className="grid h-full grid-cols-[8px_minmax(0,1fr)_auto] items-center gap-2.5 px-3">
-                        <span
-                          aria-hidden
-                          className={cn(
-                            "size-1.5 rounded-full",
-                            STATUS_DOT[t.primaryStatus] ?? "bg-fg-faint",
-                          )}
-                        />
-                        <span
-                          className="font-display text-[14px] text-fg leading-[1.2] truncate"
-                          style={{
-                            fontWeight: 500,
-                            letterSpacing: "-0.005em",
-                          }}
-                        >
-                          {t.city ? titleCase(t.city) : t.fallbackLabel}
-                        </span>
-                        <span className="num font-mono text-[10px] tracking-[0.14em] uppercase text-fg-faint shrink-0">
-                          {fmtDayRange(t.startMs, t.endMs)}
-                        </span>
-                      </span>
-                    </Link>
-
-                    {/* Hover popover. CSS-only via group-hover. */}
-                    <div
-                      role="tooltip"
-                      className={cn(
-                        "hidden md:block absolute top-[calc(100%+8px)] z-40 w-[320px]",
-                        "bg-surface border border-line shadow-[0_8px_24px_rgba(26,22,18,0.08)]",
-                        "p-4",
-                        "opacity-0 pointer-events-none [transition-duration:120ms]",
-                        "group-hover:opacity-100 group-hover:pointer-events-auto",
-                        anchorPopoverRight ? "right-0" : "left-0",
-                      )}
-                    >
-                      <TripPopoverBody trip={t} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+      <div className="border border-line bg-surface overflow-x-auto overflow-y-visible">
+        <ul className="grid grid-flow-col auto-cols-[200px] sm:auto-cols-[220px] divide-x divide-line">
+          {trips.map((t, i) => (
+            <TripCell key={t.key} trip={t} columnIndex={i} total={trips.length} />
+          ))}
+        </ul>
       </div>
     </section>
   );
 }
 
-function TripPopoverBody({ trip }: { trip: Placed }) {
+function TripCell({
+  trip: t,
+  columnIndex,
+  total,
+}: {
+  trip: Trip;
+  columnIndex: number;
+  total: number;
+}) {
+  const days = dayCount(t.startMs, t.endMs);
+  // Anchor popover to the right when this trip is in the rightmost ~30% of
+  // the strip so the popover never runs off canvas.
+  const anchorRight = total >= 4 && columnIndex >= total - 2;
+  const legs = t.flights.length;
+
+  return (
+    <li className="group relative">
+      <Link
+        href={`/flights/${t.flights[0].id}`}
+        aria-label={`Trip to ${t.city ?? t.fallbackLabel}`}
+        className={cn(
+          "flex flex-col gap-3 h-full px-4 py-4 bg-surface",
+          "hover:bg-surface-2/40 [transition-duration:80ms]",
+        )}
+      >
+        {/* Date eyebrow */}
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="num font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+            {fmtWeekday(t.startMs)}
+            <span className="opacity-50 mx-1">·</span>
+            {fmtMonthDay(t.startMs)}
+          </span>
+          <span className="num font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+            {days === 1 ? "1d" : `${days}d`}
+          </span>
+        </div>
+
+        {/* City + status dot */}
+        <div className="flex items-center gap-2 min-w-0">
+          <span
+            aria-hidden
+            className={cn(
+              "size-1.5 rounded-full shrink-0",
+              STATUS_DOT[t.primaryStatus] ?? "bg-fg-faint",
+            )}
+          />
+          <h3
+            className="font-display text-[18px] text-fg leading-[1.15] truncate"
+            style={{ fontWeight: 500, letterSpacing: "-0.01em" }}
+          >
+            {t.city ? titleCase(t.city) : t.fallbackLabel}
+          </h3>
+        </div>
+
+        {/* Meta */}
+        <div className="mt-auto flex flex-col gap-0.5">
+          <span className="font-sans text-[12px] text-fg-dim truncate">
+            {legs} {legs === 1 ? "leg" : "legs"}
+            {!t.city ? null : (
+              <>
+                <span className="opacity-50 mx-1.5">·</span>
+                <span className="num font-mono text-fg-faint">
+                  {t.flights[0].departure_airport}
+                  <span className="opacity-50 mx-1">→</span>
+                  {t.flights[t.flights.length - 1].arrival_airport}
+                </span>
+              </>
+            )}
+          </span>
+          <span className="font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+            {FLIGHT_STATUS_LABEL[t.primaryStatus]}
+          </span>
+        </div>
+      </Link>
+
+      {/* Hover popover (desktop only). CSS-only via group-hover. */}
+      <div
+        role="tooltip"
+        className={cn(
+          "hidden md:block absolute top-[calc(100%+8px)] z-40 w-[320px]",
+          "bg-surface border border-line shadow-[0_8px_24px_rgba(26,22,18,0.08)] p-4",
+          "opacity-0 pointer-events-none [transition-duration:120ms]",
+          "group-hover:opacity-100 group-hover:pointer-events-auto",
+          anchorRight ? "right-0" : "left-0",
+        )}
+      >
+        <TripPopoverBody trip={t} />
+      </div>
+    </li>
+  );
+}
+
+function TripPopoverBody({ trip }: { trip: Trip }) {
+  const days = dayCount(trip.startMs, trip.endMs);
   return (
     <>
       <div className="flex items-baseline justify-between gap-3 pb-3 border-b border-line">
@@ -413,11 +256,17 @@ function TripPopoverBody({ trip }: { trip: Placed }) {
           </div>
         </div>
         <span className="num font-mono text-[10px] tracking-[0.14em] uppercase text-fg-faint shrink-0">
-          {fmtDayRange(trip.startMs, trip.endMs)}
+          {fmtMonthDay(trip.startMs)}
+          {days > 1 ? (
+            <>
+              <span className="opacity-50 mx-1">→</span>
+              {fmtMonthDay(trip.endMs)}
+            </>
+          ) : null}
         </span>
       </div>
 
-      <ul className="mt-3 flex flex-col">
+      <ul className="mt-1">
         {trip.flights.map((f, i) => (
           <li
             key={f.id}
