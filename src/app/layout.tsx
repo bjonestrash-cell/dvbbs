@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
-  weight: "variable",
-  axes: ["SOFT"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -35,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${geistMono.variable} h-full`}
+      className={`${geist.variable} ${inter.variable} ${geistMono.variable} h-full`}
     >
       <body className="min-h-full bg-page text-fg">{children}</body>
     </html>

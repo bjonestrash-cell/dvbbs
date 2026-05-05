@@ -59,9 +59,10 @@ export default async function TourPage({
     <div>
       <div
         className="display-title text-fg lowercase"
-        style={{ fontSize: "clamp(22px, 3.5vw, 28px)", fontWeight: 300 }}
+        style={{ fontSize: "clamp(22px, 3.5vw, 28px)", fontWeight: 400 }}
       >
-        {greetingPhrase()}, <em className="italic">Demo</em>.
+        {greetingPhrase()},{" "}
+        <span style={{ fontWeight: 700 }}>Demo</span>.
       </div>
       <div className="mt-1 font-sans text-fg-dim text-[14px]">
         {dashboard.attentionCount === 0

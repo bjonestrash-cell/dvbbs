@@ -72,7 +72,7 @@
 }
 
 @theme inline {
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-geist);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
@@ -105,8 +105,7 @@ html, body {
    ========================================================================= */
 
 .font-display {
-  font-family: var(--font-display), "Fraunces", Georgia, "Times New Roman", serif;
-  font-variation-settings: "SOFT" 50;
+  font-family: var(--font-display), -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
 }
 
 .font-mono {
@@ -151,21 +150,19 @@ html, body {
   line-height: 1;
 }
 
-/* Display titles, modern editorial serif */
+/* Display titles, modern grotesque sans */
 .display-title {
-  font-family: var(--font-display), "Fraunces", Georgia, serif;
-  font-variation-settings: "SOFT" 50;
-  font-weight: 300;
-  letter-spacing: -0.015em;
-  line-height: 1;
+  font-family: var(--font-display), -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
 }
 
 /* Display stats, big tabular numerics */
 .display-stat {
-  font-family: var(--font-display), "Fraunces", Georgia, serif;
-  font-variation-settings: "SOFT" 50;
-  font-weight: 300;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.04em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";

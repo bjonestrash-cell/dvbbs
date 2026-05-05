@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Fraunces, Inter, Geist_Mono } from "next/font/google";
+import { Geist, Inter, Geist_Mono } from "next/font/google";
 import { ArrowRight, Disc3 } from "lucide-react";
 import { getSmartLink, PLATFORM_LABEL } from "@/lib/data/smart-links";
 import { Logo } from "@/components/brand/logo";
@@ -7,11 +7,10 @@ import { formatDateCompact } from "@/lib/format";
 import { getReleaseBySlug } from "@/lib/data/releases";
 import "../../globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
-  weight: "variable",
-  axes: ["SOFT"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 const inter = Inter({
@@ -80,7 +79,7 @@ export default async function PublicSmartLinkPage({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${mono.variable} h-full`}
+      className={`${geist.variable} ${inter.variable} ${mono.variable} h-full`}
     >
       <body className="min-h-dvh bg-surface text-fg flex">
         <main className="mx-auto flex min-h-dvh w-full max-w-[420px] flex-col items-center justify-center px-6 py-16 text-center">

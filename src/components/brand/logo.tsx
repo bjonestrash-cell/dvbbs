@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils/cn";
 
 /**
- * DVBBS HQ wordmark, quiet-luxury treatment.
+ * DVBBS HQ wordmark.
  *
- * Layout: chevron tick mark (small, refined) on the left, Cormorant Garamond
- * "Dvbbs" in tight tracking, with mono "HQ" stacked below at +0.2em tracking.
- * Uses currentColor so the mark inverts cleanly on hover or active states.
+ * Layout: chevron tick on the left, "DVBBS" set in Geist (display) all caps
+ * with tight tracking, "HQ" in Geist Mono small below at +0.2em tracking.
+ * Uses currentColor so the mark inverts on hover or active states.
  */
 export function Logo({
   size = "md",
@@ -44,18 +44,18 @@ export function Logo({
           className="font-display"
           style={{
             fontSize: titlePx,
-            fontWeight: 400,
-            letterSpacing: "-0.03em",
+            fontWeight: 700,
+            letterSpacing: "-0.04em",
             lineHeight: 1,
           }}
         >
-          Dvbbs
+          DVBBS
         </span>
         <span
           className="font-mono uppercase mt-1"
           style={{
             fontSize: subPx,
-            letterSpacing: "0.2em",
+            letterSpacing: "0.24em",
             color: "var(--color-fg-faint)",
             lineHeight: 1,
           }}
@@ -74,10 +74,10 @@ const SIZE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   xl: 80,
 };
 const TITLE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
-  sm: 18,
-  md: 24,
-  lg: 36,
-  xl: 56,
+  sm: 16,
+  md: 22,
+  lg: 32,
+  xl: 52,
 };
 const SUB_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   sm: 8,
