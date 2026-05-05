@@ -195,16 +195,18 @@ function SortableShowCard({ show }: { show: Show }) {
         type="button"
         aria-label="Reorder show"
         className={cn(
-          "absolute left-2 top-1/2 -translate-y-1/2 size-6 grid place-items-center text-fg-faint",
-          "opacity-30 group-hover:opacity-100 hover:text-fg-dim [transition-duration:80ms]",
+          "absolute left-1 top-1/2 -translate-y-1/2 grid place-items-center text-fg-faint",
+          "size-9 md:size-6",
+          // Visible on touch (no hover support), fades in on hover for desktop.
+          "opacity-60 md:opacity-30 group-hover:opacity-100 hover:text-fg-dim [transition-duration:80ms]",
           "cursor-grab active:cursor-grabbing touch-none",
         )}
       >
-        <GripVertical className="size-3.5" strokeWidth={1.5} aria-hidden />
+        <GripVertical className="size-4 md:size-3.5" strokeWidth={1.5} aria-hidden />
       </button>
       <Link
         href={`/tour/${show.id}`}
-        className="grid grid-cols-[1fr_auto] sm:grid-cols-[100px_minmax(0,3fr)_36px_minmax(0,1fr)_minmax(0,1.2fr)_auto] items-center gap-4 pl-10 pr-4 py-4"
+        className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[100px_minmax(0,3fr)_36px_minmax(0,1fr)_minmax(0,1.2fr)_auto] items-center gap-3 sm:gap-4 pl-11 pr-3 py-3 sm:pl-10 sm:pr-4 sm:py-4"
       >
         <span className="num font-mono text-[12px] text-fg-dim hidden sm:inline">
           {formatDate(show.show_date)}
@@ -212,12 +214,27 @@ function SortableShowCard({ show }: { show: Show }) {
         <span className="min-w-0">
           <span className="num font-mono text-[11px] text-fg-faint sm:hidden block">
             {formatDate(show.show_date)}
+            {show.country ? (
+              <span className="ml-2 uppercase tracking-[0.1em] text-fg-faint">
+                {show.country.toUpperCase()}
+              </span>
+            ) : null}
           </span>
           <span className="block truncate font-sans text-[15px] font-medium text-fg">
             {titleCase(show.city) || "TBD"}
           </span>
           <span className="block truncate font-sans text-[13px] text-fg-dim">
             {titleCase(show.venue_name) || "Venue TBD"}
+          </span>
+          <span className="sm:hidden mt-1 num font-mono text-[11px] text-fg-faint flex flex-wrap gap-x-3">
+            {show.capacity ? <span>{formatCapacity(show.capacity)}</span> : null}
+            {(() => {
+              const money = formatMoney(
+                show.fee_confirmed ?? show.fee_offered,
+                show.currency,
+              );
+              return money ? <span>{money}</span> : null;
+            })()}
           </span>
         </span>
         <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-[0.1em] text-fg-faint">
@@ -229,9 +246,12 @@ function SortableShowCard({ show }: { show: Show }) {
         <span className="hidden sm:inline num font-mono text-[12px] text-fg-dim text-right">
           {formatMoney(show.fee_confirmed ?? show.fee_offered, show.currency)}
         </span>
-        <span className="flex items-center justify-end shrink-0 min-w-[110px]">
+        <span className="flex items-center justify-end shrink-0 min-w-[80px] sm:min-w-[110px]">
           <StatusBracket tone={STATUS_TONE[show.status] ?? "default"}>
-            {STATUS_LABEL[show.status]}
+            <span className="hidden sm:inline">{STATUS_LABEL[show.status]}</span>
+            <span className="sm:hidden">
+              {STATUS_LABEL[show.status].slice(0, 4)}
+            </span>
           </StatusBracket>
         </span>
       </Link>

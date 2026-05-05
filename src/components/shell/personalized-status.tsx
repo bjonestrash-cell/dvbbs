@@ -94,15 +94,15 @@ export function PersonalizedStatus({
 
   return (
     <div className="text-right min-w-0 leading-tight">
-      <div className="font-display text-[16px] text-fg leading-[1.1]">
+      <div className="font-display text-[15px] sm:text-[16px] text-fg leading-[1.1] truncate">
         {labelDisplay}
       </div>
-      <div className="mt-0.5 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-dim">
+      <div className="mt-0.5 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-dim truncate">
         <span className="num">{time}</span>
         <span className="opacity-50 mx-1.5">·</span>
         <span>{city}</span>
       </div>
-      <div className="hidden sm:block mt-1 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+      <div className="hidden sm:block mt-1 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint truncate">
         On the road,{" "}
         <span className="num text-fg-dim">{onTheRoadDays}d</span>
         <span className="opacity-50 mx-1.5">·</span>

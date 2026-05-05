@@ -231,7 +231,10 @@ export function ReleaseBoard({ releases }: { releases: Release[] }) {
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
     >
-      <div className="overflow-x-auto px-6 md:px-10 py-8">
+      <div
+        className="overflow-x-auto px-4 md:px-10 py-6 md:py-8 snap-x snap-mandatory md:snap-none"
+        style={{ scrollPaddingInline: "16px" }}
+      >
         <div className="flex min-w-max gap-px bg-line">
           {RELEASE_STATUS_ORDER.map((status) => (
             <Column
@@ -264,7 +267,7 @@ function Column({
   const { setNodeRef, isOver } = useDroppable({ id: statusToColumnId(status) });
 
   return (
-    <section className="w-72 shrink-0 bg-page flex flex-col">
+    <section className="w-[78vw] max-w-[300px] md:w-72 shrink-0 bg-page flex flex-col snap-start md:snap-align-none">
       <header className="px-2 pb-3 mb-1">
         <div className="flex items-baseline gap-1.5">
           <h2
@@ -336,12 +339,14 @@ function SortableCard({
           type="button"
           aria-label="Reorder release"
           className={cn(
-            "absolute right-2 top-2 z-10 size-6 grid place-items-center text-fg-faint",
-            "opacity-30 group-hover:opacity-100 hover:text-fg-dim [transition-duration:80ms]",
+            "absolute right-1 top-1 z-10 grid place-items-center text-fg-faint",
+            "size-9 md:size-6",
+            // Visible on touch devices, fades in on hover for desktop.
+            "opacity-60 md:opacity-30 group-hover:opacity-100 hover:text-fg-dim [transition-duration:80ms]",
             "cursor-grab active:cursor-grabbing touch-none",
           )}
         >
-          <GripVertical className="size-3.5" strokeWidth={1.5} aria-hidden />
+          <GripVertical className="size-4 md:size-3.5" strokeWidth={1.5} aria-hidden />
         </button>
         <Link href={`/releases/${release.slug}`} className="block p-4">
           <CardBody release={release} />

@@ -189,18 +189,26 @@ export default async function MerchSalesPage() {
                 <li
                   key={s.id}
                   className={
-                    "grid grid-cols-[1fr_auto] sm:grid-cols-[100px_1fr_1fr_80px_120px_100px] items-center gap-4 px-5 py-3 " +
+                    "grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[100px_1fr_1fr_80px_120px_100px] items-center gap-x-3 gap-y-1 sm:gap-4 px-5 py-3 " +
                     (i < arr.length - 1 ? "border-b border-line" : "")
                   }
                 >
-                  <span className="num font-mono text-[12px] text-fg-dim">
-                    {formatDateCompact(s.sale_date)}
-                  </span>
-                  <span className="font-sans text-[13px] text-fg truncate">
-                    {s.product_name ?? "—"}
-                    {s.variant ? (
-                      <span className="text-fg-faint"> · {s.variant}</span>
-                    ) : null}
+                  <div className="min-w-0 flex flex-col gap-0.5 sm:contents">
+                    <span className="num font-mono text-[11px] sm:text-[12px] text-fg-dim">
+                      {formatDateCompact(s.sale_date)}
+                    </span>
+                    <span className="font-sans text-[13px] text-fg truncate">
+                      {s.product_name ?? "—"}
+                      {s.variant ? (
+                        <span className="text-fg-faint"> · {s.variant}</span>
+                      ) : null}
+                    </span>
+                    <span className="sm:hidden text-fg-faint font-sans text-[12px] truncate">
+                      {s.show_label ?? ""}
+                    </span>
+                  </div>
+                  <span className="sm:hidden self-start num font-mono text-[12px] text-fg text-right">
+                    {formatMoney(Number(s.gross), "USD")}
                   </span>
                   <span className="hidden sm:inline font-sans text-[12px] text-fg-dim truncate">
                     {s.show_label ?? "—"}

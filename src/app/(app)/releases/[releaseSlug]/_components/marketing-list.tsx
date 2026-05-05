@@ -43,7 +43,7 @@ export function MarketingList({
   return (
     <div className="px-6 md:px-10 py-8">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 flex-wrap overflow-x-auto -mx-2 px-2">
+        <div className="flex items-center gap-2 flex-nowrap sm:flex-wrap overflow-x-auto sm:overflow-visible -mx-2 px-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <FilterBracket
             active={filter === "all"}
             count={tasks.length}
@@ -97,28 +97,40 @@ export function MarketingList({
         {filtered.map((t) => (
           <li
             key={t.id}
-            className="grid grid-cols-[100px_1fr_auto_auto_auto_auto] items-center gap-4 py-4 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
+            className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[100px_1fr_auto_auto_auto_auto] items-center gap-x-3 gap-y-2 sm:gap-4 py-3 sm:py-4 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
           >
-            <span className="font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+            <span className="hidden sm:inline font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
               {CHANNEL_LABEL[t.channel]}
             </span>
-            <span className="min-w-0 truncate font-sans text-[14px] text-fg">
-              {t.task}
-            </span>
-            <span className="num font-mono text-[11px] text-fg-faint hidden sm:inline">
-              {t.scheduled_for ? formatDateCompact(t.scheduled_for) : ""}
-            </span>
-            <MarketingStatusControl
-              taskId={t.id}
-              releaseSlug={releaseSlug}
-              status={t.status}
-            />
-            <Monogram value={null} />
+            <div className="min-w-0 flex flex-col gap-0.5">
+              <span className="sm:hidden font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint">
+                {CHANNEL_LABEL[t.channel]}
+              </span>
+              <span className="truncate font-sans text-[14px] text-fg">
+                {t.task}
+              </span>
+              <span className="num font-mono text-[11px] text-fg-faint sm:hidden">
+                {t.scheduled_for ? formatDateCompact(t.scheduled_for) : ""}
+              </span>
+            </div>
             <DeleteButton
               onConfirm={async () => {
                 await removeMarketing(t.id, releaseSlug);
               }}
             />
+            <span className="num font-mono text-[11px] text-fg-faint hidden sm:inline">
+              {t.scheduled_for ? formatDateCompact(t.scheduled_for) : ""}
+            </span>
+            <span className="col-span-2 sm:col-span-1">
+              <MarketingStatusControl
+                taskId={t.id}
+                releaseSlug={releaseSlug}
+                status={t.status}
+              />
+            </span>
+            <span className="hidden sm:inline">
+              <Monogram value={null} />
+            </span>
           </li>
         ))}
       </ul>

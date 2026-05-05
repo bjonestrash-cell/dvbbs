@@ -16,7 +16,7 @@ export function NewContactForm() {
   const [state, action, pending] = useActionState(newContact, initial);
 
   return (
-    <form action={action} className="flex flex-col gap-5 px-6 md:px-10 py-10 max-w-2xl">
+    <form action={action} className="flex flex-col gap-5 px-6 md:px-10 py-8 md:py-10 max-w-2xl form-bottom-pad md:pb-10">
       <Section title="Identity" eyebrow="step 1">
         <Field label="Type" required>
           <select name="type" defaultValue="promoter" className={fieldClass}>

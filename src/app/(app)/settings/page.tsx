@@ -96,7 +96,7 @@ function Row({
   mono?: boolean;
 }) {
   return (
-    <div className="grid grid-cols-[140px_1fr] gap-4 py-2">
+    <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-1 sm:gap-4 py-2">
       <dt className="label pt-1">{label}</dt>
       <dd
         className={

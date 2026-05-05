@@ -103,7 +103,7 @@ export function FilterBracket({
       type={type}
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border h-8 px-4 font-mono tracking-[0.06em] text-[11px] [transition-duration:80ms]",
+        "inline-flex items-center gap-1.5 rounded-full border h-10 md:h-8 px-4 font-mono tracking-[0.06em] text-[11px] [transition-duration:80ms]",
         active
           ? "bg-inverted text-fg-inverted border-inverted"
           : "bg-transparent border-line text-fg-dim hover:border-line-strong hover:text-fg",

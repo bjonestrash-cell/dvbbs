@@ -27,7 +27,7 @@ export function ShowWizard({ promoters }: { promoters: Contact[] }) {
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form action={action} className="flex flex-col gap-6 px-4 md:px-6 py-6 max-w-3xl">
+    <form action={action} className="flex flex-col gap-6 px-6 md:px-10 py-6 md:py-8 max-w-3xl form-bottom-pad md:pb-8">
       <Section title="Basics" eyebrow="step 1">
         <Field label="Date" required error={state.errors?.show_date}>
           <input

@@ -55,21 +55,23 @@ export default async function SmartLinksPage() {
               {links.map((l) => (
                 <li
                   key={l.id}
-                  className="grid grid-cols-[1fr_1.5fr_120px_140px_120px] items-center gap-4 px-4 py-5 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
+                  className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[1fr_1.5fr_120px_140px_120px] items-center gap-x-4 gap-y-1 px-4 py-4 sm:py-5 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
                 >
-                  <span className="num font-mono text-[13px] text-fg">
-                    /link/{l.slug}
-                  </span>
-                  <span className="font-sans text-[13px] text-fg-dim truncate">
-                    {l.title ?? l.release_title ?? "—"}
-                  </span>
-                  <span className="display-stat text-fg text-right tabular text-[24px]">
+                  <div className="min-w-0 flex flex-col gap-0.5 sm:contents">
+                    <span className="num font-mono text-[13px] text-fg truncate">
+                      /link/{l.slug}
+                    </span>
+                    <span className="font-sans text-[13px] text-fg-dim truncate">
+                      {l.title ?? l.release_title ?? "—"}
+                    </span>
+                  </div>
+                  <span className="display-stat text-fg text-right tabular text-[20px] sm:text-[24px]">
                     {l.click_count}
                   </span>
-                  <span className="num font-mono text-[11px] text-fg-faint text-right">
+                  <span className="num font-mono text-[11px] text-fg-faint text-right hidden sm:inline">
                     {formatDateCompact(l.created_at)}
                   </span>
-                  <span className="text-right">
+                  <span className="col-span-2 sm:col-span-1 sm:text-right">
                     <Link
                       href={`/releases/links/${l.id}`}
                       className="inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim hover:text-fg [transition-duration:80ms]"

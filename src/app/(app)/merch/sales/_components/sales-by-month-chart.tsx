@@ -49,6 +49,30 @@ export function SalesByMonthChart({
             }}
             tickLine={false}
             axisLine={false}
+            interval="preserveStartEnd"
+            minTickGap={28}
+            tickFormatter={(v) => {
+              const m = String(v ?? "");
+              const parts = m.split("-");
+              if (parts.length !== 2) return m;
+              const [y, mm] = parts;
+              const idx = Number(mm) - 1;
+              const months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+              return `${months[idx] ?? mm} ${y.slice(2)}`;
+            }}
           />
           <YAxis
             stroke="rgba(26,22,18,0.35)"

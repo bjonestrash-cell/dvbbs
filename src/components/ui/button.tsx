@@ -21,9 +21,11 @@ const variantClass: Record<Variant, string> = {
     "bg-surface text-cancelled border border-line hover:border-cancelled",
 };
 
+// Sizes scale up to a 44px tap target on phones (iOS HIG / Material) and
+// settle to the original visual scale on md+.
 const sizeClass: Record<Size, string> = {
-  sm: "h-8 px-3 text-[11px] tracking-[0.06em]",
-  md: "h-10 px-4 text-[12px] tracking-[0.06em]",
+  sm: "h-11 md:h-8 px-3 text-[11px] tracking-[0.06em]",
+  md: "h-11 md:h-10 px-4 text-[12px] tracking-[0.06em]",
   lg: "h-12 px-5 text-[13px] tracking-[0.06em]",
 };
 

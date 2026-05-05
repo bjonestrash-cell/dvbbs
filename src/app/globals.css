@@ -29,6 +29,7 @@
   --color-accent-soft: #c9a77a;
   --color-accent-bg: rgba(139, 111, 78, 0.08);
   --color-accent-fg: #f8f6f3;
+  --color-accent-hover: #745c3f;
 
   /* Status, dusty/muted */
   --color-confirmed: #7a8471;
@@ -237,6 +238,37 @@ body::before {
 input, select, textarea {
   font: inherit;
   color: inherit;
+}
+
+/* =============================================================================
+   Mobile, prevent iOS zoom-on-focus by ensuring inputs are at least 16px.
+   This wins out over component-level text-[13px]/text-[14px]/text-sm classes.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* =============================================================================
+   Safe-area helpers, used for sticky CTAs and bottom-nav padding on iOS.
+   ========================================================================= */
+
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top), 0px);
+}
+.h-safe-bottom {
+  height: env(safe-area-inset-bottom, 0px);
+}
+
+/* Forms with a bottom action bar should reserve space so iOS keyboard
+   does not occlude the submit button. */
+.form-bottom-pad {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Legacy bracket-text alias remains so untouched files render acceptable text */

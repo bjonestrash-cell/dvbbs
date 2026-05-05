@@ -16,7 +16,7 @@ export function NewLinkForm({ releases }: { releases: Release[] }) {
   const release = releases.find((r) => r.id === releaseId);
 
   return (
-    <form action={action} className="flex flex-col gap-4 px-4 md:px-6 py-6 max-w-2xl">
+    <form action={action} className="flex flex-col gap-4 px-6 md:px-10 py-6 md:py-8 max-w-2xl form-bottom-pad md:pb-8">
       <Section title="Slug" eyebrow="step 1">
         <Field label="Slug" required error={state.errors?.slug}>
           <input

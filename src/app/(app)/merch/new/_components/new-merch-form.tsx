@@ -52,7 +52,7 @@ export function NewMerchForm({ shows }: { shows: Show[] }) {
   return (
     <form
       action={action}
-      className="flex flex-col gap-5 px-6 md:px-10 py-10 max-w-3xl"
+      className="flex flex-col gap-5 px-6 md:px-10 py-8 md:py-10 max-w-3xl form-bottom-pad md:pb-10"
     >
       <Section title="Product" eyebrow="step 1">
         <Field label="Name" required error={state.errors?.name}>

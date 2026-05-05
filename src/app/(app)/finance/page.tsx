@@ -84,7 +84,7 @@ export default async function FinancePage() {
                   <li
                     key={s.id}
                     className={
-                      "grid grid-cols-[1fr_120px_auto] items-center gap-3 px-5 py-3 hover:bg-surface-2 [transition-duration:80ms] " +
+                      "grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[1fr_120px_auto] items-center gap-x-3 gap-y-1 px-5 py-3 hover:bg-surface-2 [transition-duration:80ms] " +
                       (i < summary.outstandingShows.length - 1
                         ? "border-b border-line"
                         : "")
@@ -92,18 +92,20 @@ export default async function FinancePage() {
                   >
                     <Link
                       href={`/tour/${s.id}/settlement`}
-                      className="min-w-0 truncate font-sans text-[14px] text-fg hover:text-accent [transition-duration:80ms]"
+                      className="min-w-0 font-sans text-[14px] text-fg hover:text-accent [transition-duration:80ms]"
                     >
-                      {titleCase(s.city)}
-                      <span className="text-fg-dim">
-                        {" · "}
-                        {titleCase(s.venue_name)}
+                      <span className="block truncate">
+                        {titleCase(s.city)}
+                        <span className="text-fg-dim">
+                          {" · "}
+                          {titleCase(s.venue_name)}
+                        </span>
                       </span>
-                      <span className="ml-2 num font-mono text-[11px] text-fg-faint">
+                      <span className="num font-mono text-[11px] text-fg-faint">
                         {formatDate(s.show_date)}
                       </span>
                     </Link>
-                    <span className="num font-mono text-[13px] text-fg text-right">
+                    <span className="num font-mono text-[13px] text-fg text-right self-start sm:self-center">
                       {formatMoney(
                         s.fee_confirmed ?? s.fee_offered,
                         s.currency,
@@ -111,7 +113,7 @@ export default async function FinancePage() {
                     </span>
                     <Link
                       href={`/tour/${s.id}/settlement`}
-                      className="inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[10px] text-fg-dim hover:text-fg [transition-duration:80ms]"
+                      className="col-span-2 sm:col-span-1 inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[10px] text-fg-dim hover:text-fg [transition-duration:80ms]"
                     >
                       Reconcile
                       <ArrowRight
@@ -148,7 +150,7 @@ export default async function FinancePage() {
                   <li
                     key={s.id}
                     className={
-                      "grid grid-cols-[1fr_120px_auto] items-center gap-3 px-5 py-3 hover:bg-surface-2 [transition-duration:80ms] " +
+                      "grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[1fr_120px_auto] items-center gap-x-3 gap-y-1 px-5 py-3 hover:bg-surface-2 [transition-duration:80ms] " +
                       (i < summary.recentSettled.length - 1
                         ? "border-b border-line"
                         : "")
@@ -156,20 +158,22 @@ export default async function FinancePage() {
                   >
                     <Link
                       href={`/tour/${s.id}/settlement`}
-                      className="min-w-0 truncate font-sans text-[14px] text-fg hover:text-accent [transition-duration:80ms]"
+                      className="min-w-0 font-sans text-[14px] text-fg hover:text-accent [transition-duration:80ms]"
                     >
-                      {titleCase(s.city)}
-                      <span className="text-fg-dim">
-                        {" · "}
-                        {titleCase(s.venue_name)}
+                      <span className="block truncate">
+                        {titleCase(s.city)}
+                        <span className="text-fg-dim">
+                          {" · "}
+                          {titleCase(s.venue_name)}
+                        </span>
                       </span>
                       {s.settlement?.paid_date ? (
-                        <span className="ml-2 num font-mono text-[11px] text-fg-faint">
+                        <span className="num font-mono text-[11px] text-fg-faint">
                           paid {formatDate(s.settlement.paid_date)}
                         </span>
                       ) : null}
                     </Link>
-                    <span className="num font-mono text-[13px] text-fg text-right">
+                    <span className="num font-mono text-[13px] text-fg text-right self-start sm:self-center">
                       {formatMoney(
                         s.settlement?.net_to_artist,
                         s.currency,
@@ -177,7 +181,7 @@ export default async function FinancePage() {
                     </span>
                     <Link
                       href={`/tour/${s.id}/settlement`}
-                      className="inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[10px] text-fg-dim hover:text-fg [transition-duration:80ms]"
+                      className="col-span-2 sm:col-span-1 inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[10px] text-fg-dim hover:text-fg [transition-duration:80ms]"
                     >
                       View
                       <ArrowRight

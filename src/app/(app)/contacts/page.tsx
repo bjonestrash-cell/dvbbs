@@ -77,15 +77,15 @@ export default async function ContactsPage({
               <li key={c.id}>
                 <Link
                   href={`/contacts/${c.id}`}
-                  className="block bg-surface border border-line p-5 hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms]"
+                  className="block bg-surface border border-line p-5 hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms] overflow-hidden"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className="font-display text-[18px] text-fg leading-tight">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-display text-[18px] text-fg leading-tight truncate">
                         {titleCase(c.name)}
                       </h3>
                       {c.company ? (
-                        <p className="mt-1 font-sans text-[13px] text-fg-dim">
+                        <p className="mt-1 font-sans text-[13px] text-fg-dim truncate">
                           {titleCase(c.company)}
                         </p>
                       ) : null}
@@ -94,11 +94,18 @@ export default async function ContactsPage({
                       {CONTACT_TYPE_LABEL[c.type]}
                     </span>
                   </div>
-                  <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-fg-faint">
-                    {c.email ? <span className="num">{c.email}</span> : null}
-                    {c.phone ? <span className="num">{c.phone}</span> : null}
+                  <div className="mt-4 flex flex-col gap-1 min-w-0 font-mono text-[11px] text-fg-faint">
+                    {c.email ? (
+                      <span className="num truncate">{c.email}</span>
+                    ) : null}
+                    {c.phone ? (
+                      <span className="num truncate">{c.phone}</span>
+                    ) : null}
                     {c.city ? (
-                      <span>{titleCase(c.city)}{c.country ? `, ${c.country.toUpperCase()}` : ""}</span>
+                      <span className="truncate">
+                        {titleCase(c.city)}
+                        {c.country ? `, ${c.country.toUpperCase()}` : ""}
+                      </span>
                     ) : null}
                   </div>
                   <div className="mt-3 inline-flex items-center gap-1 font-mono uppercase tracking-[0.06em] text-[10px] text-fg-dim">

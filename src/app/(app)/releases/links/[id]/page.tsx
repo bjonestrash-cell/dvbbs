@@ -108,7 +108,7 @@ export default async function SmartLinkDetailPage({
                   return (
                     <li
                       key={p.platform}
-                      className="grid grid-cols-[120px_1fr_60px] items-center gap-3"
+                      className="grid grid-cols-[100px_1fr_50px] sm:grid-cols-[120px_1fr_60px] items-center gap-3"
                     >
                       <span className="font-sans text-[13px] text-fg">
                         {PLATFORM_LABEL[p.platform as keyof typeof PLATFORM_LABEL] ??
@@ -178,11 +178,11 @@ export default async function SmartLinkDetailPage({
                   rel="noreferrer noopener"
                   className="flex items-center justify-between border border-line bg-surface px-4 py-3 hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)] [transition-duration:80ms]"
                 >
-                  <span className="font-sans text-[13px] text-fg">
+                  <span className="font-sans text-[13px] text-fg shrink-0">
                     {PLATFORM_LABEL[platform as keyof typeof PLATFORM_LABEL] ??
                       platform}
                   </span>
-                  <span className="font-mono text-[11px] text-fg-faint truncate ml-3 max-w-[60%]">
+                  <span className="font-mono text-[11px] text-fg-faint truncate ml-3 min-w-0 max-w-[60%]">
                     {url}
                   </span>
                 </a>
@@ -204,22 +204,25 @@ export default async function SmartLinkDetailPage({
                 <li
                   key={c.id}
                   className={
-                    "grid grid-cols-[110px_120px_1fr_60px] items-baseline gap-3 py-3 " +
+                    "grid grid-cols-[1fr_auto] sm:grid-cols-[110px_120px_1fr_60px] items-baseline gap-x-3 gap-y-1 py-3 " +
                     (i < recent.length - 1 ? "border-b border-line" : "")
                   }
                 >
                   <span className="num font-mono text-[11px] text-fg-faint">
                     {formatRelative(c.clicked_at)}
                   </span>
+                  <span className="font-mono text-[11px] text-fg-dim text-right sm:hidden">
+                    {c.country ?? ""}
+                  </span>
                   <span className="font-sans text-[12px] text-fg-dim">
                     {PLATFORM_LABEL[c.platform as keyof typeof PLATFORM_LABEL] ??
                       c.platform ??
                       "Unknown"}
                   </span>
-                  <span className="font-mono text-[11px] text-fg-faint truncate">
+                  <span className="font-mono text-[11px] text-fg-faint truncate hidden sm:block">
                     {c.user_agent ?? ""}
                   </span>
-                  <span className="font-mono text-[11px] text-fg-dim text-right">
+                  <span className="font-mono text-[11px] text-fg-dim text-right hidden sm:inline">
                     {c.country ?? ""}
                   </span>
                 </li>

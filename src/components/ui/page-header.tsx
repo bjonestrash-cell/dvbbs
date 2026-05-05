@@ -29,11 +29,11 @@ export function PageHeader({
   return (
     <header className={cn("border-b border-line", className)}>
       {greeting ? (
-        <div className="px-6 md:px-10 pt-10 md:pt-14 pb-1">{greeting}</div>
+        <div className="px-6 md:px-10 pt-6 md:pt-14 pb-1">{greeting}</div>
       ) : null}
       <div
         className={cn(
-          "px-6 md:px-10 pt-8 md:pt-10 pb-10 md:pb-14 flex flex-col gap-4",
+          "px-6 md:px-10 pt-6 md:pt-10 pb-6 md:pb-14 flex flex-col gap-4",
           "sm:flex-row sm:items-end sm:justify-between sm:gap-10",
         )}
       >
@@ -47,7 +47,7 @@ export function PageHeader({
           <h1
             className="display-title text-fg lowercase block break-words"
             style={{
-              fontSize: "clamp(36px, 5vw, 56px)",
+              fontSize: "clamp(32px, 5vw, 56px)",
               letterSpacing: "-0.025em",
               lineHeight: 1,
             }}
@@ -59,13 +59,13 @@ export function PageHeader({
             className="h-px w-16 bg-accent mt-2"
           />
           {description ? (
-            <div className="font-sans text-fg-dim text-[15px] leading-[1.6] max-w-[520px] mt-1">
+            <div className="font-sans text-fg-dim text-[14px] md:text-[15px] leading-[1.55] md:leading-[1.6] max-w-[520px] mt-1">
               {description}
             </div>
           ) : null}
         </div>
         {actions ? (
-          <div className="flex shrink-0 items-center gap-2 self-start sm:self-end">
+          <div className="flex flex-wrap items-center gap-2 self-start sm:shrink-0 sm:self-end sm:flex-nowrap">
             {actions}
           </div>
         ) : null}

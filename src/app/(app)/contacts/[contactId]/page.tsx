@@ -129,33 +129,42 @@ export default async function ContactPage({
                 <li
                   key={s.id}
                   className={
-                    "grid grid-cols-[100px_1fr_auto] items-center gap-3 px-5 py-3 hover:bg-surface-2 [transition-duration:80ms] " +
+                    "grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[100px_1fr_auto] items-center gap-x-3 gap-y-1 px-5 py-3 hover:bg-surface-2 [transition-duration:80ms] " +
                     (i < shows.length - 1 ? "border-b border-line" : "")
                   }
                 >
-                  <span className="num font-mono text-[12px] text-fg-dim">
+                  <span className="num font-mono text-[11px] sm:text-[12px] text-fg-dim sm:order-none">
                     {formatDate(s.show_date)}
+                  </span>
+                  <span className="sm:order-3 self-start">
+                    <StatusBracket tone={STATUS_TONE[s.status] ?? "default"}>
+                      {STATUS_LABEL[s.status] ?? s.status}
+                    </StatusBracket>
                   </span>
                   <Link
                     href={`/tour/${s.id}`}
-                    className="min-w-0 truncate font-sans text-[14px] text-fg hover:text-accent [transition-duration:80ms]"
+                    className="col-span-2 sm:col-span-1 sm:order-2 min-w-0 font-sans text-[14px] text-fg hover:text-accent [transition-duration:80ms]"
                   >
-                    {titleCase(s.city)}
-                    <span className="text-fg-dim"> · {titleCase(s.venue_name)}</span>
-                    {s.fee_confirmed || s.fee_offered ? (
-                      <span className="ml-2 num font-mono text-[11px] text-fg-faint">
-                        {formatMoney(s.fee_confirmed ?? s.fee_offered, s.currency)}
+                    <span className="block truncate">
+                      {titleCase(s.city)}
+                      <span className="text-fg-dim">
+                        {" · "}
+                        {titleCase(s.venue_name)}
                       </span>
-                    ) : null}
-                    {s.capacity ? (
-                      <span className="ml-2 num font-mono text-[11px] text-fg-faint">
-                        {formatCapacity(s.capacity)}
+                    </span>
+                    {(s.fee_confirmed || s.fee_offered || s.capacity) && (
+                      <span className="mt-0.5 flex flex-wrap gap-x-3 num font-mono text-[11px] text-fg-faint">
+                        {s.fee_confirmed || s.fee_offered ? (
+                          <span>
+                            {formatMoney(s.fee_confirmed ?? s.fee_offered, s.currency)}
+                          </span>
+                        ) : null}
+                        {s.capacity ? (
+                          <span>{formatCapacity(s.capacity)}</span>
+                        ) : null}
                       </span>
-                    ) : null}
+                    )}
                   </Link>
-                  <StatusBracket tone={STATUS_TONE[s.status] ?? "default"}>
-                    {STATUS_LABEL[s.status] ?? s.status}
-                  </StatusBracket>
                 </li>
               ))}
             </ul>
@@ -180,7 +189,7 @@ function Row({
   return (
     <div
       className={
-        "grid grid-cols-[120px_1fr] gap-4 px-5 py-3 " +
+        "grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-1 sm:gap-4 px-5 py-3 " +
         (last ? "" : "border-b border-line")
       }
     >

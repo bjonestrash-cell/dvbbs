@@ -53,7 +53,7 @@ export default async function ReleaseOverviewPage({
   ];
 
   return (
-    <div className="px-6 md:px-10 py-10 grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-16">
+    <div className="px-6 md:px-10 py-8 md:py-10 grid gap-8 md:gap-16 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <section>
         <header className="mb-6">
           <div className="marker">Details</div>
@@ -63,7 +63,7 @@ export default async function ReleaseOverviewPage({
             <div
               key={f.label}
               className={
-                "py-3 grid grid-cols-[160px_1fr] gap-4 " +
+                "py-3 grid grid-cols-1 gap-1 sm:grid-cols-[160px_1fr] sm:gap-4 " +
                 (i < fields.length - 1 ? "border-b border-line" : "")
               }
             >

@@ -80,7 +80,7 @@ export function AssetsList({
         {assets.map((a) => (
           <li
             key={a.id}
-            className="grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 py-4 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
+            className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[1fr_auto_auto_auto_auto] items-center gap-x-3 gap-y-2 sm:gap-4 py-3 sm:py-4 border-b border-line hover:bg-surface-2 [transition-duration:80ms]"
           >
             <div className="min-w-0 flex flex-col gap-0.5">
               <span className="font-sans text-[14px] text-fg truncate">
@@ -91,11 +91,19 @@ export function AssetsList({
                   {a.notes}
                 </span>
               ) : null}
+              <span className="num font-mono text-[11px] text-fg-faint sm:hidden mt-1">
+                {a.due_date ? `Due ${formatDateCompact(a.due_date)}` : ""}
+              </span>
             </div>
+            <DeleteButton
+              onConfirm={async () => {
+                await removeAsset(a.id, releaseSlug);
+              }}
+            />
             <span className="num font-mono text-[11px] text-fg-faint hidden sm:inline">
               {a.due_date ? `Due ${formatDateCompact(a.due_date)}` : ""}
             </span>
-            <span>
+            <span className="col-span-2 sm:col-span-1 -mt-1 sm:mt-0">
               {a.file_url ? (
                 <a
                   href={a.file_url}
@@ -112,16 +120,13 @@ export function AssetsList({
                 </span>
               )}
             </span>
-            <AssetStatusControl
-              assetId={a.id}
-              releaseSlug={releaseSlug}
-              status={a.status}
-            />
-            <DeleteButton
-              onConfirm={async () => {
-                await removeAsset(a.id, releaseSlug);
-              }}
-            />
+            <span className="col-span-2 sm:col-span-1">
+              <AssetStatusControl
+                assetId={a.id}
+                releaseSlug={releaseSlug}
+                status={a.status}
+              />
+            </span>
           </li>
         ))}
       </ul>

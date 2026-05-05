@@ -47,9 +47,9 @@ export default async function TeamPage() {
             : "View only. Add is principal-only."
         }
       />
-      <div className="px-6 md:px-10 py-10">
+      <div className="px-6 md:px-10 py-8 md:py-10">
         <div className="border-y border-line">
-          <div className="grid grid-cols-[1fr_1.5fr_120px_120px] items-center gap-4 px-4 py-3 border-b border-line">
+          <div className="hidden sm:grid grid-cols-[1fr_1.5fr_120px_120px] items-center gap-4 px-4 py-3 border-b border-line">
             <span className="label">Name</span>
             <span className="label">Email</span>
             <span className="label">Role</span>
@@ -58,18 +58,18 @@ export default async function TeamPage() {
           {(members ?? []).map((m) => (
             <div
               key={m.id}
-              className="grid grid-cols-[1fr_1.5fr_120px_120px] items-center gap-4 px-4 py-4 border-b border-line"
+              className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[1fr_1.5fr_120px_120px] items-baseline sm:items-center gap-x-3 gap-y-1 sm:gap-4 px-4 py-4 border-b border-line"
             >
-              <span className="font-sans text-[14px] text-fg">
+              <span className="font-sans text-[14px] text-fg truncate">
                 {m.display_name ?? "—"}
               </span>
-              <span className="font-sans text-[13px] text-fg-dim truncate">
-                {m.email}
-              </span>
-              <span className="font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim">
+              <span className="font-mono uppercase tracking-[0.06em] text-[11px] text-fg-dim sm:order-3">
                 {m.role}
               </span>
-              <span className="num font-mono text-[11px] text-fg-faint">
+              <span className="font-sans text-[13px] text-fg-dim truncate col-span-2 sm:col-span-1 sm:order-2 -mt-1 sm:mt-0">
+                {m.email}
+              </span>
+              <span className="num font-mono text-[11px] text-fg-faint hidden sm:inline">
                 {formatDateCompact(m.created_at)}
               </span>
             </div>

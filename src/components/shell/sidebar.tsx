@@ -41,7 +41,7 @@ export function Sidebar() {
             type="button"
             aria-label="Close navigation"
             onClick={() => setMobileOpen(false)}
-            className="absolute inset-0 bg-inverted/30"
+            className="absolute inset-0 bg-inverted/45 backdrop-blur-[2px] [transition-duration:120ms]"
           />
           <aside className="relative z-10 w-[80%] max-w-[280px] h-dvh bg-surface border-r border-line flex flex-col">
             <SidebarBody
@@ -94,9 +94,9 @@ function SidebarBody({
             type="button"
             onClick={onClose}
             aria-label="Close navigation"
-            className="size-7 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
+            className="size-11 -mr-3 grid place-items-center text-fg-faint hover:text-fg [transition-duration:80ms]"
           >
-            <X className="size-4" strokeWidth={1.5} aria-hidden />
+            <X className="size-5" strokeWidth={1.5} aria-hidden />
           </button>
         ) : null}
       </div>
@@ -118,7 +118,9 @@ function SidebarBody({
                     "[transition-duration:80ms]",
                     collapsed && !mobile
                       ? "justify-center px-0 py-2.5"
-                      : "gap-3 px-5 py-2.5",
+                      : mobile
+                        ? "gap-3 px-5 py-3.5"
+                        : "gap-3 px-5 py-2.5",
                     active
                       ? "text-fg"
                       : "text-fg-dim hover:text-fg",

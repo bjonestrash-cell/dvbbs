@@ -190,22 +190,31 @@ function InventoryRow({
         (isLast ? "" : "border-b border-line")
       }
     >
-      <span className="font-sans text-[13px] text-fg truncate">
+      <span className="min-w-0 font-sans text-[13px] text-fg truncate">
         {row.variant ?? "Default"}
         {row.notes ? (
           <span className="block font-sans text-[11px] text-fg-faint truncate">
             {row.notes}
           </span>
         ) : null}
+        <span className="sm:hidden mt-1 flex flex-wrap gap-x-3 gap-y-0.5 num font-mono text-[11px] text-fg-faint">
+          {typeof row.reorder_threshold === "number" ? (
+            <span>Reorder at {row.reorder_threshold}</span>
+          ) : null}
+          {row.warehouse_location ? (
+            <span className="truncate max-w-[180px]">{row.warehouse_location}</span>
+          ) : null}
+        </span>
       </span>
       <span className="text-right">
         <input
           type="number"
+          inputMode="numeric"
           min={0}
           value={units}
           onChange={(e) => setUnits(Number(e.target.value))}
           onBlur={(e) => commit(Number(e.target.value))}
-          className="num font-mono text-[13px] text-fg text-right w-20 border border-line bg-surface px-2 h-8 outline-none focus:border-line-strong"
+          className="num font-mono text-[13px] text-fg text-right w-20 border border-line bg-surface px-2 h-9 sm:h-8 outline-none focus:border-line-strong"
         />
         {pending ? (
           <Loader2
@@ -253,7 +262,7 @@ function InventoryRow({
             type="button"
             onClick={() => setConfirmDelete(true)}
             aria-label="Remove variant"
-            className="size-6 grid place-items-center text-fg-faint hover:text-fg-dim [transition-duration:80ms]"
+            className="size-9 sm:size-6 grid place-items-center text-fg-faint hover:text-fg-dim [transition-duration:80ms]"
           >
             <X className="size-3" strokeWidth={1.5} aria-hidden />
           </button>

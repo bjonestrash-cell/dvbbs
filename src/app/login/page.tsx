@@ -44,7 +44,7 @@ async function LoginScreen({
 
         <LoginForm />
 
-        <div className="chevron-rule mt-12" aria-hidden />
+        <div className="mt-12 h-px w-16 bg-accent" aria-hidden />
         <p className="mt-6 text-xs text-fg-dim">
           Internal tool. Do not share.
         </p>

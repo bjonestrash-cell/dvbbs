@@ -23,11 +23,11 @@ export function RevenueChart({ data }: { data: Point[] }) {
   }
 
   return (
-    <div className="h-[260px]">
+    <div className="h-[220px] md:h-[260px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
-          margin={{ top: 8, right: 12, left: 0, bottom: 4 }}
+          margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
           barCategoryGap="30%"
         >
           <CartesianGrid
@@ -46,6 +46,30 @@ export function RevenueChart({ data }: { data: Point[] }) {
             }}
             tickLine={false}
             axisLine={false}
+            interval="preserveStartEnd"
+            minTickGap={28}
+            tickFormatter={(v) => {
+              const m = String(v ?? "");
+              const parts = m.split("-");
+              if (parts.length !== 2) return m;
+              const [y, mm] = parts;
+              const idx = Number(mm) - 1;
+              const months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+              return `${months[idx] ?? mm} ${y.slice(2)}`;
+            }}
           />
           <YAxis
             stroke="rgba(26,22,18,0.35)"
@@ -56,8 +80,13 @@ export function RevenueChart({ data }: { data: Point[] }) {
             }}
             tickLine={false}
             axisLine={false}
-            width={60}
-            tickFormatter={(v) => `$${(v as number).toLocaleString()}`}
+            width={48}
+            tickFormatter={(v) => {
+              const n = v as number;
+              if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}m`;
+              if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}k`;
+              return `$${n}`;
+            }}
           />
           <Tooltip
             cursor={{ fill: "rgba(26,22,18,0.04)" }}
@@ -80,12 +109,16 @@ export function RevenueChart({ data }: { data: Point[] }) {
             }}
           />
           <Legend
+            verticalAlign="top"
+            align="right"
+            iconSize={8}
             wrapperStyle={{
               fontFamily: "var(--font-geist-mono)",
               fontSize: 10,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
               color: "rgba(26,22,18,0.55)",
+              paddingBottom: 4,
             }}
           />
           <Bar

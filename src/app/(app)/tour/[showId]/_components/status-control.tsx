@@ -47,7 +47,7 @@ export function StatusControl({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 h-8 hover:border-line-strong [transition-duration:80ms]"
+          className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 h-10 md:h-8 hover:border-line-strong [transition-duration:80ms]"
         >
           <StatusBracket tone={STATUS_TONE[optimistic] ?? "default"}>
             {ALL.find((x) => x.value === optimistic)?.label ?? optimistic}
@@ -65,7 +65,7 @@ export function StatusControl({
         {open ? (
           <div
             role="menu"
-            className="absolute z-30 mt-1 w-48 border border-line bg-surface shadow-[0_4px_12px_rgba(26,22,18,0.06)]"
+            className="absolute left-0 sm:left-auto sm:right-0 z-30 mt-1 w-48 border border-line bg-surface shadow-[0_4px_12px_rgba(26,22,18,0.06)]"
             onMouseLeave={() => setOpen(false)}
           >
             <ul>
@@ -74,7 +74,7 @@ export function StatusControl({
                   <button
                     type="button"
                     onClick={() => pick(s.value)}
-                    className="flex w-full items-center px-3 py-2 hover:bg-surface-2 [transition-duration:80ms]"
+                    className="flex w-full items-center px-3 py-3 sm:py-2 hover:bg-surface-2 [transition-duration:80ms]"
                   >
                     <StatusBracket tone={STATUS_TONE[s.value] ?? "default"}>
                       {s.label}

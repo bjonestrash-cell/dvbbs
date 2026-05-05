@@ -78,24 +78,33 @@ export function SalesSection({
             <li
               key={s.id}
               className={
-                "grid grid-cols-[1fr_auto] sm:grid-cols-[100px_1fr_100px_120px_120px_36px] items-center gap-4 px-5 py-3 hover:bg-surface-2 [transition-duration:80ms] " +
+                "grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[100px_1fr_100px_120px_120px_36px] items-center gap-x-3 gap-y-1 sm:gap-4 px-5 py-3 hover:bg-surface-2 [transition-duration:80ms] " +
                 (i < sales.length - 1 ? "border-b border-line" : "")
               }
             >
-              <span className="num font-mono text-[12px] text-fg-dim">
-                {formatDateCompact(s.sale_date)}
-              </span>
-              <span className="font-sans text-[13px] text-fg truncate">
-                {s.variant ?? "Default"}
-                {s.show_id
-                  ? ` · ${shows.find((sh) => sh.id === s.show_id)?.city ?? "Show"}`
-                  : ""}
-                {s.notes ? (
-                  <span className="block font-sans text-[11px] text-fg-faint truncate">
-                    {s.notes}
+              <div className="min-w-0 flex flex-col gap-0.5 sm:contents">
+                <span className="num font-mono text-[11px] sm:text-[12px] text-fg-dim">
+                  {formatDateCompact(s.sale_date)}
+                </span>
+                <span className="font-sans text-[13px] text-fg truncate">
+                  {s.variant ?? "Default"}
+                  {s.show_id
+                    ? ` · ${shows.find((sh) => sh.id === s.show_id)?.city ?? "Show"}`
+                    : ""}
+                  {s.notes ? (
+                    <span className="block font-sans text-[11px] text-fg-faint truncate">
+                      {s.notes}
+                    </span>
+                  ) : null}
+                </span>
+                <span className="sm:hidden mt-0.5 num font-mono text-[11px] text-fg-dim flex flex-wrap gap-x-3">
+                  <span>{s.units_sold} units</span>
+                  <span className="text-fg">{formatMoney(Number(s.gross), "USD")}</span>
+                  <span className="text-fg-faint uppercase tracking-[0.06em]">
+                    {MERCH_SALE_SOURCE_LABEL[s.source]}
                   </span>
-                ) : null}
-              </span>
+                </span>
+              </div>
               <span className="hidden sm:inline num font-mono text-[12px] text-fg-dim text-right">
                 {s.units_sold}
               </span>
@@ -105,7 +114,7 @@ export function SalesSection({
               <span className="hidden sm:inline font-mono uppercase tracking-[0.06em] text-[10px] text-fg-faint">
                 {MERCH_SALE_SOURCE_LABEL[s.source]}
               </span>
-              <span className="text-right">
+              <span className="text-right self-start sm:self-center">
                 <button
                   type="button"
                   onClick={() =>
@@ -115,9 +124,9 @@ export function SalesSection({
                   }
                   disabled={pending}
                   aria-label="Remove sale"
-                  className="size-6 grid place-items-center text-fg-faint hover:text-fg-dim [transition-duration:80ms]"
+                  className="size-9 sm:size-6 grid place-items-center text-fg-faint hover:text-fg-dim [transition-duration:80ms]"
                 >
-                  <X className="size-3" strokeWidth={1.5} aria-hidden />
+                  <X className="size-4 sm:size-3" strokeWidth={1.5} aria-hidden />
                 </button>
               </span>
             </li>

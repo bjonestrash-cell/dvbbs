@@ -84,13 +84,22 @@ export default async function TourCalendarPage({
       />
 
       <div className="px-4 md:px-6 py-4">
-        <div className="hidden md:grid grid-cols-7 gap-px text-xs text-fg-muted bg-line">
-          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+        <div className="grid grid-cols-7 gap-px text-xs text-fg-faint bg-line">
+          {[
+            ["Mon", "M"],
+            ["Tue", "T"],
+            ["Wed", "W"],
+            ["Thu", "T"],
+            ["Fri", "F"],
+            ["Sat", "S"],
+            ["Sun", "S"],
+          ].map(([full, abbr]) => (
             <div
-              key={d}
-              className="bg-bg-base px-2 py-1.5 marker text-fg-muted"
+              key={full}
+              className="bg-page px-2 py-1.5 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint text-center md:text-left"
             >
-              {d}
+              <span className="hidden md:inline">{full}</span>
+              <span className="md:hidden">{abbr}</span>
             </div>
           ))}
         </div>
@@ -106,15 +115,15 @@ export default async function TourCalendarPage({
               <div
                 key={key}
                 className={cn(
-                  "min-h-20 md:min-h-28 bg-bg-surface p-1.5 flex flex-col gap-1",
-                  !inMonth && "bg-bg-base/60",
+                  "min-h-[64px] md:min-h-28 bg-surface p-1 md:p-1.5 flex flex-col gap-1",
+                  !inMonth && "bg-page/60",
                   isToday && "ring-1 ring-accent ring-inset",
                 )}
               >
                 <div
                   className={cn(
                     "flex items-center justify-between text-[11px] num",
-                    inMonth ? "text-fg-muted" : "text-fg-dim",
+                    inMonth ? "text-fg-dim" : "text-fg-faint",
                     isToday && "text-accent",
                   )}
                 >
@@ -123,15 +132,39 @@ export default async function TourCalendarPage({
                     <span className="text-fg-dim">{dayShows.length}</span>
                   ) : null}
                 </div>
-                <ul className="flex flex-col gap-0.5">
+                {/* Mobile: status dots only (one per show), tap to open. */}
+                <ul className="md:hidden flex flex-wrap gap-0.5 mt-0.5">
+                  {dayShows.slice(0, 6).map((s) => (
+                    <li key={s.id}>
+                      <Link
+                        href={`/tour/${s.id}`}
+                        className="block size-2 rounded-full"
+                        aria-label={s.city ?? s.venue_name ?? "Show"}
+                      >
+                        <span
+                          className={cn(
+                            "block size-2 rounded-full",
+                            STATUS_BAR[s.status],
+                          )}
+                          aria-hidden
+                        />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                {/* Desktop: titled chips. */}
+                <ul className="hidden md:flex flex-col gap-0.5">
                   {dayShows.slice(0, 3).map((s) => (
                     <li key={s.id}>
                       <Link
                         href={`/tour/${s.id}`}
-                        className="block truncate rounded-sm border border-line bg-bg-input px-1.5 py-0.5 text-[11px] text-fg hover:border-line-strong"
+                        className="block truncate rounded-sm border border-line bg-surface px-1.5 py-0.5 text-[11px] text-fg hover:border-line-strong"
                       >
                         <span
-                          className={cn("inline-block size-1.5 rounded-full mr-1.5 align-middle", STATUS_BAR[s.status])}
+                          className={cn(
+                            "inline-block size-1.5 rounded-full mr-1.5 align-middle",
+                            STATUS_BAR[s.status],
+                          )}
                           aria-hidden
                         />
                         {s.city ?? s.venue_name ?? "TBD"}
