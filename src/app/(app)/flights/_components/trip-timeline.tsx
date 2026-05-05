@@ -5,16 +5,21 @@ import Link from "next/link";
 import type { FlightStatus } from "@/lib/supabase/types";
 import type { FlightWithShow } from "@/lib/data/flights";
 import { FLIGHT_STATUS_LABEL } from "@/lib/data/flights-shared";
-import { STATUS_TONE } from "@/components/ui/status-bracket";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Trip timeline. Anchor-grade: hairline chips on a hairline strip, status
- * communicated via a single dot before the label, dates in mono. Hover
- * lifts the border to line-strong + soft shadow (no translate, no fill).
+ * Trip timeline — pixel-correct edition.
  *
- * Group rule: trips collapse on shared show_id, then on shared
- * confirmation_code, otherwise per-flight.
+ * Each chip's width is proportional to the trip duration (with a sensible
+ * minimum so a single-day trip is still legible). Positions and row
+ * assignment are computed in pixels against an explicit strip width, so
+ * chips never visually overlap their neighbors. Two trips 10 days apart
+ * are visibly 10 days apart; two trips on the same week share a row only
+ * if they fit, otherwise they cascade.
+ *
+ * Visual register: hairline rows, status as a single dot before the
+ * title, dates in mono right-aligned. No tinted fills, no translate
+ * hover. Same family as Tour List rows.
  */
 
 type Trip = {
@@ -27,7 +32,30 @@ type Trip = {
   primaryStatus: FlightStatus;
 };
 
+type Placed = Trip & {
+  /** left edge in px from the strip start */
+  leftPx: number;
+  /** chip width in px (>= MIN_CHIP_PX, capped at strip remaining width) */
+  widthPx: number;
+  /** lane index, 0-based */
+  row: number;
+};
+
 const MS_PER_DAY = 86_400_000;
+/** Px per day on the strip. Tight enough for a 6-month outlook to fit
+ *  before scrolling, loose enough that nearby trips don't visually
+ *  collide. */
+const PX_PER_DAY = 14;
+/** Minimum chip width so single-day trips read cleanly. */
+const MIN_CHIP_PX = 156;
+/** Pixel buffer between chips on the same row. */
+const ROW_GAP_PX = 12;
+/** Lane height in px. Matches our row-card density (~40–44px). */
+const ROW_HEIGHT = 44;
+/** Vertical gap between lanes. */
+const ROW_GAP_V = 8;
+/** Inner horizontal padding of the strip canvas. */
+const STRIP_PAD_X = 24;
 
 const STATUS_DOT: Record<FlightStatus, string> = {
   booked: "bg-holding",
@@ -46,10 +74,7 @@ function titleCase(s: string | null | undefined): string {
 
 function fmtDateShort(ms: number): string {
   return new Date(ms)
-    .toLocaleDateString("en-US", {
-      month: "short",
-      day: "2-digit",
-    })
+    .toLocaleDateString("en-US", { month: "short", day: "2-digit" })
     .replace(",", "");
 }
 
@@ -116,75 +141,96 @@ function groupIntoTrips(flights: FlightWithShow[]): Trip[] {
   return trips.sort((a, b) => a.startMs - b.startMs);
 }
 
-function assignRows(trips: Trip[]): Array<Trip & { row: number }> {
-  const rowEnds: number[] = [];
-  return trips.map((t) => {
-    // Generous buffer because a chip is wider than a single day on the strip;
-    // we want trips to drop into a new row well before they visually collide.
-    const buffer = MS_PER_DAY * 6;
-    let row = rowEnds.findIndex((end) => end + buffer <= t.startMs);
-    if (row === -1) row = rowEnds.length;
-    rowEnds[row] = t.endMs;
-    return { ...t, row };
-  });
+/** Pixel-correct row assignment. Each trip lands in the lowest lane
+ *  whose last-occupied pixel + ROW_GAP_PX <= this trip's left edge. */
+function placeTrips(
+  trips: Trip[],
+  axisStartMs: number,
+  pxPerMs: number,
+  innerWidthPx: number,
+): Placed[] {
+  const rowEndsPx: number[] = [];
+  const placed: Placed[] = [];
+
+  for (const t of trips) {
+    const leftPx = (t.startMs - axisStartMs) * pxPerMs;
+    const durPx = (t.endMs - t.startMs) * pxPerMs;
+    const idealWidth = Math.max(MIN_CHIP_PX, durPx);
+    // Don't let the chip overflow the right edge.
+    const maxAllowed = Math.max(MIN_CHIP_PX, innerWidthPx - leftPx);
+    const widthPx = Math.min(idealWidth, maxAllowed);
+
+    let row = rowEndsPx.findIndex(
+      (rightPx) => rightPx + ROW_GAP_PX <= leftPx,
+    );
+    if (row === -1) row = rowEndsPx.length;
+    rowEndsPx[row] = leftPx + widthPx;
+
+    placed.push({ ...t, leftPx, widthPx, row });
+  }
+
+  return placed;
 }
 
 export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
-  const { positioned, rowCount, axisStartMs, axisEndMs, monthMarks } =
-    useMemo(() => {
-      const trips = groupIntoTrips(flights);
-      if (trips.length === 0) {
-        return {
-          positioned: [],
-          rowCount: 0,
-          axisStartMs: 0,
-          axisEndMs: 0,
-          monthMarks: [] as Array<{ ms: number; label: string }>,
-        };
+  const layout = useMemo(() => {
+    const trips = groupIntoTrips(flights);
+    if (trips.length === 0) return null;
+
+    const minStart = trips[0].startMs;
+    const maxEnd = Math.max(...trips.map((t) => t.endMs));
+    const nowMs = Date.now();
+
+    // Buffer the axis: 1 day before the earliest event, 7 days after the
+    // last so the rightmost chip has tail room and "Today" sits inside.
+    const axisStartMs = Math.min(nowMs, minStart) - MS_PER_DAY;
+    const axisEndMs = maxEnd + 7 * MS_PER_DAY;
+
+    const axisDays = Math.ceil((axisEndMs - axisStartMs) / MS_PER_DAY);
+    const innerWidthPx = Math.max(720, axisDays * PX_PER_DAY);
+    const pxPerMs = innerWidthPx / (axisEndMs - axisStartMs);
+
+    const placed = placeTrips(trips, axisStartMs, pxPerMs, innerWidthPx);
+    const rowCount = Math.max(...placed.map((p) => p.row)) + 1;
+
+    // Month marks
+    const monthMarks: Array<{ ms: number; px: number; label: string }> = [];
+    const cursor = new Date(axisStartMs);
+    cursor.setUTCDate(1);
+    cursor.setUTCHours(0, 0, 0, 0);
+    while (cursor.getTime() <= axisEndMs) {
+      if (cursor.getTime() >= axisStartMs) {
+        const px = (cursor.getTime() - axisStartMs) * pxPerMs;
+        monthMarks.push({
+          ms: cursor.getTime(),
+          px,
+          label: cursor.toLocaleDateString("en-US", {
+            month: "short",
+            year: "2-digit",
+          }),
+        });
       }
+      cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+    }
 
-      const minStart = trips[0].startMs;
-      const maxEnd = Math.max(...trips.map((t) => t.endMs));
-      const nowMs = Date.now();
+    const todayPx = (nowMs - axisStartMs) * pxPerMs;
+    const todayInRange = todayPx >= 0 && todayPx <= innerWidthPx;
 
-      const axisStartMs = Math.min(nowMs, minStart) - MS_PER_DAY;
-      const axisEndMs = maxEnd + 7 * MS_PER_DAY;
+    return {
+      placed,
+      rowCount,
+      innerWidthPx,
+      monthMarks,
+      todayPx,
+      todayInRange,
+    };
+  }, [flights]);
 
-      const positioned = assignRows(trips);
-      const rowCount = Math.max(...positioned.map((p) => p.row)) + 1;
+  if (!layout) return null;
 
-      const monthMarks: Array<{ ms: number; label: string }> = [];
-      const cursor = new Date(axisStartMs);
-      cursor.setUTCDate(1);
-      cursor.setUTCHours(0, 0, 0, 0);
-      while (cursor.getTime() <= axisEndMs) {
-        if (cursor.getTime() >= axisStartMs) {
-          monthMarks.push({
-            ms: cursor.getTime(),
-            label: cursor.toLocaleDateString("en-US", {
-              month: "short",
-              year: "2-digit",
-            }),
-          });
-        }
-        cursor.setUTCMonth(cursor.getUTCMonth() + 1);
-      }
-
-      return { positioned, rowCount, axisStartMs, axisEndMs, monthMarks };
-    }, [flights]);
-
-  if (positioned.length === 0) return null;
-
-  const axisSpan = axisEndMs - axisStartMs;
-  const pct = (ms: number) => ((ms - axisStartMs) / axisSpan) * 100;
-  const todayPct = pct(Date.now());
-  const todayInRange = todayPct >= 0 && todayPct <= 100;
-
-  // Strip width scales with trip count so chips never compress past
-  // legibility. 200px per trip is the working budget.
-  const stripMinWidth = Math.max(720, positioned.length * 200);
-  const rowHeight = 44;
-  const stripHeight = rowCount * rowHeight + 8;
+  const stripHeight = layout.rowCount * (ROW_HEIGHT + ROW_GAP_V);
+  // Total scrollable canvas width = inner content + horizontal padding.
+  const canvasWidth = layout.innerWidthPx + STRIP_PAD_X * 2;
 
   return (
     <section className="px-6 md:px-10 pt-6 md:pt-8">
@@ -198,7 +244,7 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
           </h2>
           <span className="opacity-50 font-mono text-[11px]">·</span>
           <span className="num font-mono text-[11px] tracking-[0.06em] text-fg-faint">
-            {positioned.length.toString().padStart(2, "0")}
+            {layout.placed.length.toString().padStart(2, "0")}
           </span>
         </div>
       </header>
@@ -206,83 +252,106 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
       <div className="bg-surface border border-line">
         <div className="overflow-x-auto overflow-y-visible">
           <div
-            className="relative px-5 md:px-6 pt-4 pb-5"
-            style={{ minWidth: stripMinWidth }}
+            className="relative"
+            style={{
+              width: canvasWidth,
+              minWidth: "100%",
+              paddingTop: 16,
+              paddingBottom: 20,
+            }}
           >
-            {/* Month axis */}
-            <div className="relative h-4 mb-3 select-none">
-              {monthMarks.map((m) => (
+            {/* Month axis. Sits just above the strip, with the same
+                horizontal padding as the chip canvas so labels align with
+                their respective month gridlines. */}
+            <div
+              className="relative h-4 select-none"
+              style={{
+                marginLeft: STRIP_PAD_X,
+                marginRight: STRIP_PAD_X,
+                width: layout.innerWidthPx,
+              }}
+            >
+              {layout.monthMarks.map((m) => (
                 <span
                   key={m.ms}
                   className="absolute top-0 font-mono uppercase tracking-[0.14em] text-[10px] text-fg-faint"
-                  style={{ left: `${pct(m.ms)}%` }}
+                  style={{ left: m.px }}
                 >
                   {m.label}
                 </span>
               ))}
-              {todayInRange ? (
+              {layout.todayInRange ? (
                 <span
                   className="absolute top-0 font-mono uppercase tracking-[0.14em] text-[10px] text-accent"
-                  style={{ left: `${todayPct}%` }}
+                  style={{ left: layout.todayPx }}
                 >
                   Today
                 </span>
               ) : null}
             </div>
 
-            {/* Strip */}
-            <div className="relative" style={{ height: stripHeight }}>
-              {/* Hairline baseline along the top of the strip */}
+            {/* Strip with the chips, gridlines, today line. */}
+            <div
+              className="relative"
+              style={{
+                marginLeft: STRIP_PAD_X,
+                marginRight: STRIP_PAD_X,
+                marginTop: 12,
+                width: layout.innerWidthPx,
+                height: stripHeight,
+              }}
+            >
+              {/* Hairline baseline */}
               <span
                 aria-hidden
                 className="absolute left-0 right-0 top-0 h-px bg-line"
               />
 
-              {/* Faint vertical month grid */}
-              {monthMarks.map((m) => (
+              {/* Vertical month gridlines */}
+              {layout.monthMarks.map((m) => (
                 <span
                   key={`grid-${m.ms}`}
                   aria-hidden
                   className="absolute top-0 bottom-0 w-px bg-line/70"
-                  style={{ left: `${pct(m.ms)}%` }}
+                  style={{ left: m.px }}
                 />
               ))}
 
               {/* Today line */}
-              {todayInRange ? (
+              {layout.todayInRange ? (
                 <span
                   aria-hidden
                   className="absolute top-0 bottom-0 w-px bg-accent/40"
-                  style={{ left: `${todayPct}%` }}
+                  style={{ left: layout.todayPx }}
                 />
               ) : null}
 
               {/* Trip chips */}
-              {positioned.map((t) => {
-                const left = pct(t.startMs);
-                const top = t.row * rowHeight + 8;
-                const anchorRight = left > 80;
+              {layout.placed.map((t) => {
+                const top = t.row * (ROW_HEIGHT + ROW_GAP_V) + ROW_GAP_V;
+                const anchorPopoverRight =
+                  t.leftPx + t.widthPx > layout.innerWidthPx - 320;
                 return (
                   <div
                     key={t.key}
                     className="group absolute z-10 hover:z-30"
                     style={{
-                      left: anchorRight ? undefined : `${left}%`,
-                      right: anchorRight ? `${100 - left}%` : undefined,
+                      left: t.leftPx,
                       top,
-                      width: 192,
+                      width: t.widthPx,
+                      height: ROW_HEIGHT - ROW_GAP_V,
                     }}
                   >
                     <Link
                       href={`/flights/${t.flights[0].id}`}
                       aria-label={`Trip to ${t.city ?? t.fallbackLabel}`}
                       className={cn(
-                        "block bg-surface border border-line",
+                        "block h-full bg-surface border border-line",
                         "hover:border-line-strong hover:shadow-[0_4px_12px_rgba(26,22,18,0.04)]",
                         "[transition-duration:80ms]",
                       )}
                     >
-                      <span className="grid grid-cols-[10px_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2.5">
+                      <span className="grid h-full grid-cols-[8px_minmax(0,1fr)_auto] items-center gap-2.5 px-3">
                         <span
                           aria-hidden
                           className={cn(
@@ -305,18 +374,16 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
                       </span>
                     </Link>
 
-                    {/* Popover. CSS-only via group-hover. Hidden on mobile
-                        since :hover doesn't apply on touch — chip is the
-                        link target. */}
+                    {/* Hover popover. CSS-only via group-hover. */}
                     <div
                       role="tooltip"
                       className={cn(
-                        "hidden md:block absolute top-[calc(100%+8px)] z-40 w-[300px]",
+                        "hidden md:block absolute top-[calc(100%+8px)] z-40 w-[320px]",
                         "bg-surface border border-line shadow-[0_8px_24px_rgba(26,22,18,0.08)]",
                         "p-4",
                         "opacity-0 pointer-events-none [transition-duration:120ms]",
                         "group-hover:opacity-100 group-hover:pointer-events-auto",
-                        anchorRight ? "right-0" : "left-0",
+                        anchorPopoverRight ? "right-0" : "left-0",
                       )}
                     >
                       <TripPopoverBody trip={t} />
@@ -332,8 +399,7 @@ export function TripTimeline({ flights }: { flights: FlightWithShow[] }) {
   );
 }
 
-function TripPopoverBody({ trip }: { trip: Trip & { row: number } }) {
-  const tone = STATUS_TONE[trip.primaryStatus] ?? "default";
+function TripPopoverBody({ trip }: { trip: Placed }) {
   return (
     <>
       <div className="flex items-baseline justify-between gap-3 pb-3 border-b border-line">
@@ -351,13 +417,13 @@ function TripPopoverBody({ trip }: { trip: Trip & { row: number } }) {
         </span>
       </div>
 
-      <ul className="mt-3 flex flex-col gap-3">
+      <ul className="mt-3 flex flex-col">
         {trip.flights.map((f, i) => (
           <li
             key={f.id}
             className={cn(
-              "flex items-baseline justify-between gap-3",
-              i > 0 ? "pt-3 border-t border-line" : "",
+              "flex items-baseline justify-between gap-3 py-3",
+              i > 0 ? "border-t border-line" : "",
             )}
           >
             <div className="min-w-0">
@@ -385,9 +451,6 @@ function TripPopoverBody({ trip }: { trip: Trip & { row: number } }) {
           </li>
         ))}
       </ul>
-      {/* tone is referenced for type system parity though we don't render it
-          here — it's already implicit in the leg statuses above. */}
-      <span className="hidden">{tone}</span>
     </>
   );
 }
