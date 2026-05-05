@@ -6,6 +6,7 @@ import { listShows } from "@/lib/data/shows";
 import type { Show } from "@/lib/supabase/types";
 import { ViewToggle } from "../_components/view-toggle";
 import { RoutingList } from "./_components/routing-list";
+import { TourMap } from "./_components/tour-map";
 
 export const metadata = { title: "Tour map. DVBBS HQ" };
 
@@ -16,13 +17,13 @@ export default async function TourMapPage() {
     ["confirmed", "contracted", "holding", "offered"].includes(s.status),
   );
   const flags = computeRoutingFlags(upcoming);
-  const hasMapbox = !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
   return (
     <>
       <PageHeader
-        eyebrow="tour map"
-        title="World routing"
+        eyebrow="Tour"
+        title="Map"
         description="Pins for upcoming shows, tight routing flagged."
         actions={
           <div className="flex items-center gap-2">
@@ -32,42 +33,51 @@ export default async function TourMapPage() {
               className={buttonClasses({ variant: "primary", size: "sm" })}
             >
               <Plus className="size-4" aria-hidden />
-              New
+              New show
             </Link>
           </div>
         }
       />
 
-      <div className="px-4 md:px-6 py-4 grid gap-4">
-        {!hasMapbox ? (
-          <div className="rounded-md border border-line bg-bg-surface p-4">
-            <div className="marker">map</div>
-            <h2 className="mt-1 text-base font-medium flex items-center gap-2">
-              <MapIcon className="size-4 text-fg-muted" aria-hidden />
-              Map needs Mapbox token
-            </h2>
-            <p className="mt-2 max-w-prose text-sm text-fg-muted">
-              Add NEXT_PUBLIC_MAPBOX_TOKEN to .env.local and Netlify to enable
-              the world map. Until then, the routing list below is the live
-              picture.
-            </p>
-          </div>
-        ) : null}
-
-        <section className="rounded-md border border-line bg-bg-surface p-4 md:p-5">
-          <header className="mb-3 flex items-center justify-between">
-            <div>
-              <div className="marker">routing</div>
-              <div className="text-sm text-fg">
-                Upcoming shows ordered by date
-              </div>
+      <div className="px-6 md:px-10 pt-6 md:pt-8">
+        {mapboxToken ? (
+          <TourMap shows={upcoming} token={mapboxToken} />
+        ) : (
+          <div className="border border-line bg-surface px-5 py-8 grid place-items-center">
+            <div className="max-w-[480px] text-center">
+              <MapIcon
+                className="size-6 text-fg-faint mx-auto"
+                strokeWidth={1.5}
+                aria-hidden
+              />
+              <div className="mt-3 marker">Map needs a Mapbox token</div>
+              <p className="mt-2 font-sans text-[13px] text-fg-dim leading-[1.6]">
+                Add{" "}
+                <code className="font-mono text-[12px] text-fg">
+                  NEXT_PUBLIC_MAPBOX_TOKEN
+                </code>{" "}
+                to <code className="font-mono text-[12px] text-fg">.env.local</code>{" "}
+                and Netlify to enable the world map.
+              </p>
             </div>
-            <span className="num text-xs text-fg-muted">
-              {upcoming.length} on the board, {flags.size} flagged
-            </span>
-          </header>
-          <RoutingList shows={upcoming} flags={flags} />
-        </section>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-8 md:mt-10">
+        <div className="px-6 md:px-10 pb-2 flex items-baseline justify-between gap-3">
+          <div>
+            <div className="marker">Routing</div>
+            <h2 className="font-display text-[18px] text-fg mt-1">
+              Upcoming shows
+            </h2>
+          </div>
+          <span className="num font-mono text-[11px] text-fg-faint">
+            {upcoming.length} on the board
+            {flags.size ? ` · ${flags.size} flagged` : ""}
+          </span>
+        </div>
+        <RoutingList shows={upcoming} flags={flags} />
       </div>
     </>
   );

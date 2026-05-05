@@ -109,7 +109,7 @@ export default async function TourPage({
     <>
       <PageHeader
         eyebrow="Tour"
-        title="Shows"
+        title="List"
         description="Every booking. Hold to wire."
         greeting={greetingNode}
         actions={

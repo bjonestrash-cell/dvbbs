@@ -66,8 +66,9 @@ export default async function TourCalendarPage({
   return (
     <>
       <PageHeader
-        eyebrow="tour calendar"
-        title={format(monthDate, "LLLL yyyy")}
+        eyebrow="Tour"
+        title="Calendar"
+        description={format(monthDate, "LLLL yyyy")}
         actions={
           <div className="flex items-center gap-2">
             <ViewToggle />
@@ -77,13 +78,13 @@ export default async function TourCalendarPage({
               className={buttonClasses({ variant: "primary", size: "sm" })}
             >
               <Plus className="size-4" aria-hidden />
-              New
+              New show
             </Link>
           </div>
         }
       />
 
-      <div className="px-4 md:px-6 py-4">
+      <div className="px-6 md:px-10 pt-6 md:pt-8 pb-8">
         <div className="grid grid-cols-7 gap-px text-xs text-fg-faint bg-line">
           {[
             ["Mon", "M"],
